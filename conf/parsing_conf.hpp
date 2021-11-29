@@ -14,29 +14,19 @@
 # define PARSING_CONF_HPP
 # include <iostream>
 
-struct s_conf{
+
+struct s_conf
+{
+    std::string listen;
     std::string server_name;
     std::string error_page;
-    std::string listen;
-    std::string error_page;
+    std::string location;
     size_t      client_max_body_size;
     std::string autoindex;
     std::string index;
     std::string root;
-
 };
 
-class conf
-{
-    public:
-        conf();
-        conf(const conf &src);
-        conf & operator=(const conf &src);
-        ~conf();
 
-    private:
-
-
-};
 
 #endif
