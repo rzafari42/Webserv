@@ -11,20 +11,31 @@ int error(std::string code)
     return -1;
 }
 
-std::vector<std::string > catchvalues(const std::string s1)
+std::vector<std::string> catchvalues(const std::string s1)
 {
-    /*std::string s2;
-    size_t j = 0;
+    std::vector<std::string> v;
+    std::string cpy;
+    int i = 0;
+    int j;
 
-    for (size_t i = 0; i < s1.length(); i++)
+    while (s1[i])
     {
-        if (s1[i] != ' ')
+        j = 0;
+        cpy = "";
+        while (s1[i] != ' ' && s1[i] != '\0')
         {
-            std::cout << s1[i];
-            s2[j++] = s1[i];
+            cpy[j] = s1[i];
+            //std::cout << cpy[j] << std::endl;
+            i++;
+            j++;
         }
+        //cpy[++j] = '\0';
+        std::cout << cpy << std::endl;
+        std::cout << std::endl;
+        v.push_back(cpy);
+        i++;
     }
-    return s2; */
+    return v;
 }
 
 void parsing(std::string file)
@@ -39,9 +50,8 @@ void parsing(std::string file)
 
         while(getline(flux, line))
         {
-            std::vector<std::string > s = catchvalues(line);
-            values[i].push_back(s);
-            //std::cout << line << std::endl;
+            catchvalues(line);
+            //values[i] = catchvalues(line);
             i++;
         }
         flux.close();
