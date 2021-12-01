@@ -15,26 +15,24 @@ std::vector<std::string> catchvalues(const std::string s1)
 {
     std::vector<std::string> v;
     std::string cpy;
-    int i = 0;
-    int j;
+    size_t i = 0;
 
-    while (s1[i])
-    {
-        j = 0;
-        cpy = "";
-        while (s1[i] != ' ' && s1[i] != '\0')
+    //if (s1)
+    //{
+        while (i < s1.length())
         {
-            cpy[j] = s1[i];
-            //std::cout << cpy[j] << std::endl;
+            while (isspace(s1[i]))
+                i++;
+            while (!isspace(s1[i]) && i < s1.length())
+            {
+                cpy.push_back(s1[i]);
+                i++;
+            }
+            v.push_back(cpy);
+            cpy.clear();
             i++;
-            j++;
         }
-        //cpy[++j] = '\0';
-        std::cout << cpy << std::endl;
-        std::cout << std::endl;
-        v.push_back(cpy);
-        i++;
-    }
+   // }
     return v;
 }
 
@@ -47,12 +45,23 @@ void parsing(std::string file)
         std::vector<std::vector<std::string> > values;
         std::string line;
         int i = 0;
+        int j = 0;
 
         while(getline(flux, line))
         {
-            catchvalues(line);
-            //values[i] = catchvalues(line);
-            i++;
+            values.push_back(catchvalues(line));
+            line.clear();
+        }
+        for (int i = 0; i < values.size(); i++)
+        {
+            j = 0;
+            for (int j = 0; j < values[i].size(); j++)
+            {
+                std::cout << values[i][j];
+                if (j < values[i].size() - 1)
+                    std::cout << " ";
+            }
+            std::cout << std::endl;
         }
         flux.close();
     }
