@@ -1,15 +1,4 @@
-#include "iostream"
-#include <fstream>
-#include <vector>
 #include "parsing_conf.hpp"
-#define EMPTY "Error: Not enough arguments"
-#define OPENING_FAILURE "Error: File is not accessible in reading mode"
-
-int error(std::string code)
-{
-    std::cout << code << std::endl;
-    return -1;
-}
 
 std::vector<std::string> catchvalues(const std::string s1)
 {
@@ -17,8 +6,8 @@ std::vector<std::string> catchvalues(const std::string s1)
     std::string cpy;
     size_t i = 0;
 
-    //if (s1)
-    //{
+    if (s1.empty() == false)
+    {
         while (i < s1.length())
         {
             while (isspace(s1[i]))
@@ -32,8 +21,31 @@ std::vector<std::string> catchvalues(const std::string s1)
             cpy.clear();
             i++;
         }
-   // }
+    }
     return v;
+}
+
+void check_server_block(std::vector<std::vector<std::string> > v)
+{
+    std::vector<std::vector<std::string> >::iterator it = v.begin();
+    std::vector<std::vector<std::string> >::iterator ite = v.end();
+    std::vector<std::string>::iterator it_s, ite_s;
+
+    while (it != ite)
+    {
+        it_s = it->begin();
+        ite_s = it->end();
+        while (it_s != ite_s)
+        {
+            if (it_s->compare("server") == 0)
+            {
+                check_position();
+                return;
+            }
+            it_s++;
+        }
+        it++;
+    }
 }
 
 void parsing(std::string file)
@@ -52,17 +64,8 @@ void parsing(std::string file)
             values.push_back(catchvalues(line));
             line.clear();
         }
-        for (int i = 0; i < values.size(); i++)
-        {
-            j = 0;
-            for (int j = 0; j < values[i].size(); j++)
-            {
-                std::cout << values[i][j];
-                if (j < values[i].size() - 1)
-                    std::cout << " ";
-            }
-            std::cout << std::endl;
-        }
+        printlines(values);
+        check_server_block(values);
         flux.close();
     }
     else

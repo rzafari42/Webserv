@@ -13,6 +13,9 @@
 #ifndef PARSING_CONF_HPP
 # define PARSING_CONF_HPP
 # include <iostream>
+# include <fstream>
+# include <vector>
+# include "utils.hpp"
 
 
 struct s_conf
@@ -26,7 +29,5 @@ struct s_conf
     std::string index;
     std::string root;
 };
-
-
 
 #endif
