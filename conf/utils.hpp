@@ -3,6 +3,7 @@
 #include <vector>
 #define EMPTY "Error: Not enough arguments"
 #define OPENING_FAILURE "Error: File is not accessible in reading mode"
+#define SERVER_POSITION "Error: Server block not declared at top"
 
 int error(std::string code)
 {

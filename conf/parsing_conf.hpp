@@ -17,9 +17,10 @@
 # include <vector>
 # include "utils.hpp"
 
-
 struct s_conf
 {
+    int nb_server;
+    int location_pos;
     std::string listen;
     std::string server_name;
     std::string error_page;

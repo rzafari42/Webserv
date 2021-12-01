@@ -25,7 +25,7 @@ std::vector<std::string> catchvalues(const std::string s1)
     return v;
 }
 
-void check_server_block(std::vector<std::vector<std::string> > v)
+void check_server_block(std::vector<std::vector<std::string> > v, s_conf conf)
 {
     std::vector<std::vector<std::string> >::iterator it = v.begin();
     std::vector<std::vector<std::string> >::iterator ite = v.end();
@@ -37,9 +37,16 @@ void check_server_block(std::vector<std::vector<std::string> > v)
         ite_s = it->end();
         while (it_s != ite_s)
         {
-            if (it_s->compare("server") == 0)
+            if (it_s->compare("server") == 0 && conf.location_pos > 0)
             {
-                check_position();
+                error(SERVER_POSITION);
+                return;
+            }
+            else
+            {
+                conf.nb_server++;
+                std::cout << "server found" << std::endl;
+                //check_position();
                 return;
             }
             it_s++;
@@ -48,7 +55,7 @@ void check_server_block(std::vector<std::vector<std::string> > v)
     }
 }
 
-void parsing(std::string file)
+void parsing(std::string file, s_conf conf)
 {
     std::ifstream flux(file);
 
@@ -65,17 +72,32 @@ void parsing(std::string file)
             line.clear();
         }
         printlines(values);
-        check_server_block(values);
+        check_server_block(values, conf);
         flux.close();
     }
     else
         error(OPENING_FAILURE);
 }
 
+void struct_init(s_conf conf)
+{
+    conf.nb_server = 0;
+    conf.location_pos = 0;
+    conf.listen.clear();
+    conf.server_name.clear();
+    conf.error_page.clear();
+    conf.location.clear();
+    conf.autoindex.clear();
+    conf.index.clear();
+    conf.root.clear();
+}
+
 int main(int ac, char **av)
 {
+    s_conf conf;
     if (ac < 2)
         return error(EMPTY);
-    parsing(av[1]);
+    struct_init(conf);
+    parsing(av[1], conf);
     return 0;
 }
