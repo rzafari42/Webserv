@@ -133,7 +133,7 @@ int find_server_name(std::vector<std::string>::iterator it, std::vector<std::str
     return 0;
 }
 
-void fill_struct(std::vector<std::vector<std::string> > v, s_conf conf)
+void fill_struct(std::vector<std::vector<std::string> > v)
 {
     std::vector<std::vector<std::string> >::iterator it = v.begin();
     std::vector<std::vector<std::string> >::iterator ite = v.end();
@@ -144,7 +144,9 @@ void fill_struct(std::vector<std::vector<std::string> > v, s_conf conf)
     {
         it_s = it->begin();
         ite_s = it->end();
-        if (find_server(it_s, ite_s, conf))
+        //std::vector<s_conf> conf;
+
+        if (find_server(it_s, ite_s, conf[i]))
         {
             it++;
             while (it != ite && it_s->compare("}") && it_s->compare("location"))
@@ -170,7 +172,7 @@ void fill_struct(std::vector<std::vector<std::string> > v, s_conf conf)
     return;
 }
 
-void parsing(std::string file, s_conf conf)
+void parsing(std::string file)
 {
     std::ifstream flux(file);
 
@@ -187,7 +189,7 @@ void parsing(std::string file, s_conf conf)
             line.clear();
         }
         //printlines(values);
-        fill_struct(values, conf);
+        fill_struct(values);
         flux.close();
     }
     else
@@ -209,10 +211,8 @@ void struct_init(s_conf conf)
 
 int main(int ac, char **av)
 {
-    s_conf conf;
     if (ac < 2)
         return error(EMPTY);
-    struct_init(conf);
-    parsing(av[1], conf);
+    parsing(av[1]);
     return 0;
 }
