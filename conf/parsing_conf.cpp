@@ -14,6 +14,11 @@ std::vector<std::string> catchvalues(const std::string s1)
                 i++;
             while (!isspace(s1[i]) && i < s1.length())
             {
+                if (s1[i] == '#')
+                {
+                    v.push_back("\0");
+                    return v;
+                }
                 cpy.push_back(s1[i]);
                 i++;
             }
@@ -22,37 +27,147 @@ std::vector<std::string> catchvalues(const std::string s1)
             i++;
         }
     }
+    v.push_back("\0");
     return v;
 }
 
-void check_server_block(std::vector<std::vector<std::string> > v, s_conf conf)
+int find_server(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, s_conf conf)
+{
+    while (it != ite)
+    {
+        if (!it->compare("server") && (++it)->compare("\0") && !it->compare("{"))
+        {
+            conf.nb_server++;
+            return 1;
+        }
+        it++;
+    }
+    return 0;
+}
+
+int find_listen(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, s_conf conf)
+{
+    if (!it->compare("listen"))
+    {
+        it++;
+        if (it->compare("\0"))
+        {
+            conf.listen = *it;
+            std::cout << "listen = " << conf.listen << std::endl;
+        }
+        else
+            return error(LISTEN_EMPTY);
+    }
+    return 0;
+}
+
+int find_root(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, s_conf conf)
+{
+    if (!it->compare("root"))
+    {
+        it++;
+        if (it->compare("\0"))
+        {
+            conf.root = *it;
+            std::cout << "root = " << conf.root << std::endl;
+        }
+        else
+            return error(ROOT_EMPTY);
+    }
+    return 0;
+}
+
+int find_index(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, s_conf conf)
+{
+    if (!it->compare("index"))
+    {
+        it++;
+        if (it->compare("\0"))
+        {
+            conf.index = *it;
+            std::cout << "index = " << conf.index << std::endl;
+        }
+        else
+            return error(INDEX_EMPTY);
+    }
+    return 0;
+}
+
+int find_error_page(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, s_conf conf)
+{
+    if (!it->compare("error_page"))
+    {
+        it++;
+        if (it->compare("\0"))
+        {
+            conf.error_page = *it;
+            it++;
+            while (it != ite)
+            {
+                if (it->compare("\0"))
+                    conf.error_page += ' ';
+                conf.error_page += *it;
+                it++;
+            }
+            std::cout << "error_page = " << conf.error_page << std::endl;
+        }
+        else
+            return error(ERROR_PAGE_EMPTY);
+    }
+    return 0;
+}
+
+int find_server_name(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, s_conf conf)
+{
+    if (!it->compare("server_name"))
+    {
+        it++;
+        if (it->compare("\0"))
+        {
+            conf.server_name = *it;
+            std::cout << "server_name = " << conf.server_name << std::endl;
+        }
+        else
+            return error(SERVER_NAME_EMPTY);
+    }
+    return 0;
+}
+
+void fill_struct(std::vector<std::vector<std::string> > v, s_conf conf)
 {
     std::vector<std::vector<std::string> >::iterator it = v.begin();
     std::vector<std::vector<std::string> >::iterator ite = v.end();
-    std::vector<std::string>::iterator it_s, ite_s;
+    std::vector<std::string>::iterator it_s;
+    std::vector<std::string>::iterator ite_s;
 
     while (it != ite)
     {
         it_s = it->begin();
         ite_s = it->end();
-        while (it_s != ite_s)
+        if (find_server(it_s, ite_s, conf))
         {
-            if (it_s->compare("server") == 0 && conf.location_pos > 0)
+            it++;
+            while (it != ite && it_s->compare("}") && it_s->compare("location"))
             {
-                error(SERVER_POSITION);
-                return;
+                it_s = it->begin();
+                ite_s = it->end();
+                if (find_listen(it_s, ite_s, conf) ||
+                find_root(it_s, ite_s, conf) ||
+                find_index(it_s, ite_s, conf) ||
+                find_error_page(it_s, ite_s, conf) ||
+                find_server_name(it_s, ite_s, conf))
+                {
+                    std::cout << "error " << std::endl;
+                    return;
+                }
+                it++;
             }
-            else
-            {
-                conf.nb_server++;
-                std::cout << "server found" << std::endl;
-                //check_position();
+            if (it == ite)
                 return;
-            }
-            it_s++;
         }
         it++;
     }
+    return;
 }
 
 void parsing(std::string file, s_conf conf)
@@ -71,8 +186,8 @@ void parsing(std::string file, s_conf conf)
             values.push_back(catchvalues(line));
             line.clear();
         }
-        printlines(values);
-        check_server_block(values, conf);
+        //printlines(values);
+        fill_struct(values, conf);
         flux.close();
     }
     else
@@ -82,7 +197,7 @@ void parsing(std::string file, s_conf conf)
 void struct_init(s_conf conf)
 {
     conf.nb_server = 0;
-    conf.location_pos = 0;
+    conf.nb_location = 0;
     conf.listen.clear();
     conf.server_name.clear();
     conf.error_page.clear();
