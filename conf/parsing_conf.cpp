@@ -31,13 +31,27 @@ std::vector<std::string> catchvalues(const std::string s1)
     return v;
 }
 
-int find_server(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, s_server &conf)
+int find_server_block(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, s_server &conf)
 {
     while (it != ite)
     {
         if (!it->compare("server") && (++it)->compare("\0") && !it->compare("{"))
         {
             conf.nb_server += 1;
+            return 1;
+        }
+        it++;
+    }
+    return 0;
+}
+
+int find_location_block(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, s_server &conf)
+{
+    while (it != ite)
+    {
+        if (!it->compare("location") && (++it)->compare("\0") && !it->compare("{"))
+        {
+            conf.nb_location += 1;
             return 1;
         }
         it++;
@@ -147,7 +161,7 @@ void fill_struct(std::vector<std::vector<std::string> > v, std::vector<s_server>
         it_s = it->begin();
         ite_s = it->end();
         struct_init(&conf_tmp);
-        if (find_server(it_s, ite_s, conf_tmp))
+        if (find_server_block(it_s, ite_s, conf_tmp))
         {
             it++;
             while (it != ite && it_s->compare("}") && it_s->compare("location"))
@@ -164,6 +178,14 @@ void fill_struct(std::vector<std::vector<std::string> > v, std::vector<s_server>
                     return;
                 }
                 it++;
+            }
+            if (!it_s->compare("location"))
+            {
+                conf_tmp.nb_location += 1;
+                if (find_location_block(it_s, ite_s, conf_tmp))
+                {
+                    
+                }
             }
             if (it == ite)
             {
@@ -206,7 +228,6 @@ int main(int ac, char **av)
 {
     if (ac < 2)
         return error(EMPTY);
-    
     std::vector<s_server> conf;
     parsing(av[1], &conf);
     return 0;

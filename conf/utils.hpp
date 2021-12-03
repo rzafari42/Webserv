@@ -11,7 +11,8 @@
 #define SERVER_NAME_EMPTY "Error: 'server_name' directive exists but has no value"
 
 struct s_location {
-
+    std::string index;
+    std::vector<std::string> methods;
 };
 
 struct s_server
@@ -80,31 +81,32 @@ void print_conf_struct(std::vector<s_server> conf)
 
     while (it != ite)
     {
-        std::cout << it->nb_server << std::endl;
-        std::cout << it->nb_location << std::endl;
-        std::cout << it->client_max_body_size << std::endl;
-        std::cout << it->listen << std::endl;
-        std::cout << it->server_name << std::endl;
-        std::cout << it->error_page << std::endl;
-        std::cout << it->index << std::endl;
-        std::cout << it->root << std::endl;
-        std::cout << it->location << std::endl;
-        std::cout << it->autoindex << std::endl;
+        std::cout << "Server: " << it->nb_server << std::endl;
+        std::cout << "Location: " << it->nb_location << std::endl;
+        std::cout << "Client_max_body_size: " << it->client_max_body_size << std::endl;
+        std::cout << "Listen: " << it->listen << std::endl;
+        std::cout << "Server_name: " << it->server_name << std::endl;
+        std::cout << "Error_page: " << it->error_page << std::endl;
+        std::cout << "Index: " << it->index << std::endl;
+        std::cout << "Root: " << it->root << std::endl;
+        std::cout << "Location: " << it->location << std::endl;
+        std::cout << "Autoindex: " << it->autoindex << std::endl;
+        std::cout << std::endl;
         it++;
     }
 }
 
 void print_conf_struct(s_server *conf)
 {
-    std::cout << conf->nb_server << std::endl;
-    std::cout << conf->nb_location << std::endl;
-    std::cout << conf->client_max_body_size << std::endl;
-    std::cout << conf->listen << std::endl;
-    std::cout << conf->server_name << std::endl;
-    std::cout << conf->error_page << std::endl;
-    std::cout << conf->index << std::endl;
-    std::cout << conf->root << std::endl;
-    std::cout << conf->location << std::endl;
-    std::cout << conf->autoindex << std::endl;
-    
+    std::cout << "Server: " <<  conf->nb_server << std::endl;
+    std::cout << "Location: " << conf->nb_location << std::endl;
+    std::cout << "Client_max_body_size: " << conf->client_max_body_size << std::endl;
+    std::cout << "Listen: " << conf->listen << std::endl;
+    std::cout << "Server_name: " << conf->server_name << std::endl;
+    std::cout << "Error_page: " << conf->error_page << std::endl;
+    std::cout << "Index: " << conf->index << std::endl;
+    std::cout << "Root: " << conf->root << std::endl;
+    std::cout << "Location: " << conf->location << std::endl;
+    std::cout << "Autoindex: " << conf->autoindex << std::endl;
+    std::cout << std::endl;
 }
