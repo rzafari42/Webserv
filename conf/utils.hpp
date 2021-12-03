@@ -6,9 +6,42 @@
 #define SERVER_POSITION "Error: Server block not declared at top"
 #define LISTEN_EMPTY "Error: 'listen' directive exists but has no value"
 #define ROOT_EMPTY "Error: 'root' directive exists but has no value"
-#define INDEX_EMPTY "Error: 'root' directive exists but has no value"
+#define INDEX_EMPTY "Error: 'index' directive exists but has no value"
 #define ERROR_PAGE_EMPTY "Error: 'error_page' directive exists but has no value"
 #define SERVER_NAME_EMPTY "Error: 'server_name' directive exists but has no value"
+
+struct s_location {
+
+};
+
+struct s_server
+{
+    size_t nb_server;
+    size_t nb_location;
+    std::string listen;
+    std::string root;
+    std::string index;
+    std::string error_page;
+    std::string server_name;
+    std::string location;
+    size_t      client_max_body_size;
+    std::string autoindex;
+    std::string methods;
+};
+
+void struct_init(s_server *conf)
+{
+    conf->nb_server = 0;
+    conf->nb_location = 0;
+    conf->client_max_body_size = 0;
+    conf->listen.clear();
+    conf->server_name.clear();
+    conf->error_page.clear();
+    conf->location.clear();
+    conf->autoindex.clear();
+    conf->index.clear();
+    conf->root.clear();
+}
 
 int error(std::string code)
 {
@@ -38,4 +71,40 @@ void printlines(std::vector<std::vector<std::string> > s)
         std::cout << std::endl;
         it++;
     }
+}
+
+void print_conf_struct(std::vector<s_server> conf)
+{
+    std::vector<s_server>::iterator it = conf.begin();
+    std::vector<s_server>::iterator ite = conf.end();
+
+    while (it != ite)
+    {
+        std::cout << it->nb_server << std::endl;
+        std::cout << it->nb_location << std::endl;
+        std::cout << it->client_max_body_size << std::endl;
+        std::cout << it->listen << std::endl;
+        std::cout << it->server_name << std::endl;
+        std::cout << it->error_page << std::endl;
+        std::cout << it->index << std::endl;
+        std::cout << it->root << std::endl;
+        std::cout << it->location << std::endl;
+        std::cout << it->autoindex << std::endl;
+        it++;
+    }
+}
+
+void print_conf_struct(s_server *conf)
+{
+    std::cout << conf->nb_server << std::endl;
+    std::cout << conf->nb_location << std::endl;
+    std::cout << conf->client_max_body_size << std::endl;
+    std::cout << conf->listen << std::endl;
+    std::cout << conf->server_name << std::endl;
+    std::cout << conf->error_page << std::endl;
+    std::cout << conf->index << std::endl;
+    std::cout << conf->root << std::endl;
+    std::cout << conf->location << std::endl;
+    std::cout << conf->autoindex << std::endl;
+    
 }
