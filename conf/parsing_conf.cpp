@@ -47,14 +47,17 @@ int find_server_block(std::vector<std::string>::iterator it, std::vector<std::st
 
 int find_location_block(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, s_server &conf)
 {
-    while (it != ite)
+    if (!it->compare("location"))
     {
-        if (!it->compare("location") && (++it)->compare("\0") && !it->compare("{"))
+        while (it != ite)
         {
-            conf.nb_location += 1;
-            return 1;
+            if (!it->compare("{"))
+            {
+                conf.nb_location += 1;
+                return 1;
+            }
+            it++;
         }
-        it++;
     }
     return 0;
 }
@@ -147,6 +150,40 @@ int find_server_name(std::vector<std::string>::iterator it, std::vector<std::str
     return 0;
 }
 
+int find_location_index(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, s_server &conf)
+{
+    if (!it->compare("index"))
+    {
+        it++;
+        if (it->compare("\0"))
+        {
+            conf.location.index = *it;
+        }
+        else
+            return error(LOCATION_INDEX_EMPTY);
+    }
+    return 0;
+}
+
+int find_location_methods(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, s_server &conf)
+{
+    if (!it->compare("methods"))
+    {
+        it++;
+        if (it->compare("\0"))
+        {
+            while (*it != "\0")
+            {
+                conf.location.methods.push_back(*it);
+                it++;
+            }
+        }
+        else
+            return error(LOCATION_INDEX_EMPTY);
+    }
+    return 0;  
+}
+
 void fill_struct(std::vector<std::vector<std::string> > v, std::vector<s_server> *conf)
 {
     std::vector<std::vector<std::string> >::iterator it = v.begin();
@@ -164,10 +201,10 @@ void fill_struct(std::vector<std::vector<std::string> > v, std::vector<s_server>
         if (find_server_block(it_s, ite_s, conf_tmp))
         {
             it++;
+            it_s = it->begin();
+            ite_s = it->end();
             while (it != ite && it_s->compare("}") && it_s->compare("location"))
             {
-                it_s = it->begin();
-                ite_s = it->end();
                 if (find_listen(it_s, ite_s, conf_tmp) ||
                 find_root(it_s, ite_s, conf_tmp) ||
                 find_index(it_s, ite_s, conf_tmp) ||
@@ -178,13 +215,24 @@ void fill_struct(std::vector<std::vector<std::string> > v, std::vector<s_server>
                     return;
                 }
                 it++;
+                it_s = it->begin();
+                ite_s = it->end();
             }
             if (!it_s->compare("location"))
             {
-                conf_tmp.nb_location += 1;
                 if (find_location_block(it_s, ite_s, conf_tmp))
                 {
-                    
+                    it++;
+                    it_s = it->begin();
+                    ite_s = it->end();
+                    while (it != ite && it_s->compare("}"))
+                    {
+                        find_location_index(it_s, ite_s, conf_tmp);
+                        find_location_methods(it_s, ite_s, conf_tmp);
+                        it++;
+                        it_s = it->begin();
+                        ite_s = it->end();
+                    }
                 }
             }
             if (it == ite)
@@ -193,6 +241,7 @@ void fill_struct(std::vector<std::vector<std::string> > v, std::vector<s_server>
                 return;
             }
             conf->push_back(conf_tmp);
+            //print_location_methods_struct(conf_tmp.location.methods);
         }
         it++;
     }

@@ -4,11 +4,12 @@
 #define EMPTY "Error: Not enough arguments"
 #define OPENING_FAILURE "Error: File is not accessible in reading mode"
 #define SERVER_POSITION "Error: Server block not declared at top"
-#define LISTEN_EMPTY "Error: 'listen' directive exists but has no value"
-#define ROOT_EMPTY "Error: 'root' directive exists but has no value"
-#define INDEX_EMPTY "Error: 'index' directive exists but has no value"
-#define ERROR_PAGE_EMPTY "Error: 'error_page' directive exists but has no value"
-#define SERVER_NAME_EMPTY "Error: 'server_name' directive exists but has no value"
+#define LISTEN_EMPTY "Error: In Server: 'listen' directive exists but has no value"
+#define ROOT_EMPTY "Error: In Server: 'root' directive exists but has no value"
+#define INDEX_EMPTY "Error: In Server: 'index' directive exists but has no value"
+#define ERROR_PAGE_EMPTY "Error: In Server: 'error_page' directive exists but has no value"
+#define SERVER_NAME_EMPTY "Error: In Server: 'server_name' directive exists but has no value"
+#define LOCATION_INDEX_EMPTY "Error: In Location: 'index' directive exists but has no value"
 
 struct s_location {
     std::string index;
@@ -24,10 +25,10 @@ struct s_server
     std::string index;
     std::string error_page;
     std::string server_name;
-    std::string location;
+    //std::string location;
     size_t      client_max_body_size;
     std::string autoindex;
-    std::string methods;
+    s_location location;
 };
 
 void struct_init(s_server *conf)
@@ -38,7 +39,8 @@ void struct_init(s_server *conf)
     conf->listen.clear();
     conf->server_name.clear();
     conf->error_page.clear();
-    conf->location.clear();
+    conf->location.index.clear();
+    conf->location.methods.clear();
     conf->autoindex.clear();
     conf->index.clear();
     conf->root.clear();
@@ -74,6 +76,20 @@ void printlines(std::vector<std::vector<std::string> > s)
     }
 }
 
+void print_location_methods_struct(std::vector<std::string> conf)
+{
+    std::vector<std::string>::iterator it = conf.begin();
+    std::vector<std::string>::iterator ite = conf.end();
+
+    std::cout << "Location Methods: " << std::endl;
+    while (it != ite)
+    {
+        std::cout << " -" << *it << std::endl;
+        it++;
+    }
+
+}
+
 void print_conf_struct(std::vector<s_server> conf)
 {
     std::vector<s_server>::iterator it = conf.begin();
@@ -89,8 +105,10 @@ void print_conf_struct(std::vector<s_server> conf)
         std::cout << "Error_page: " << it->error_page << std::endl;
         std::cout << "Index: " << it->index << std::endl;
         std::cout << "Root: " << it->root << std::endl;
-        std::cout << "Location: " << it->location << std::endl;
+        std::cout << "Location index: " << it->location.index << std::endl;
         std::cout << "Autoindex: " << it->autoindex << std::endl;
+        print_location_methods_struct(it->location.methods);
+        std::cout << std::endl;
         std::cout << std::endl;
         it++;
     }
@@ -106,7 +124,7 @@ void print_conf_struct(s_server *conf)
     std::cout << "Error_page: " << conf->error_page << std::endl;
     std::cout << "Index: " << conf->index << std::endl;
     std::cout << "Root: " << conf->root << std::endl;
-    std::cout << "Location: " << conf->location << std::endl;
+    std::cout << "Location index: " << conf->location.index << std::endl;
     std::cout << "Autoindex: " << conf->autoindex << std::endl;
     std::cout << std::endl;
 }
