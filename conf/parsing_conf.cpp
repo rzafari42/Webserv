@@ -150,6 +150,37 @@ int find_server_name(std::vector<std::string>::iterator it, std::vector<std::str
     return 0;
 }
 
+int find_autoindex(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, s_server &conf)
+{
+    if (!it->compare("autoindex"))
+    {
+        it++;
+        if (it->compare("\0"))
+        {
+            conf.server_name = *it;
+            //std::cout << "autoindex = " << conf.server_name << std::endl;
+        }
+        else
+            return error(AUTOINDEX_EMPTY);
+    }
+    return 0;
+}
+
+int find_location_root(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, s_server &conf)
+{
+    if (!it->compare("root"))
+    {
+        it++;
+        if (it->compare("\0"))
+        {
+            conf.location.root = *it;
+        }
+        else
+            return error(LOCATION_ROOT_EMPTY);
+    }
+    return 0;
+}
+
 int find_location_index(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, s_server &conf)
 {
     if (!it->compare("index"))
@@ -161,6 +192,36 @@ int find_location_index(std::vector<std::string>::iterator it, std::vector<std::
         }
         else
             return error(LOCATION_INDEX_EMPTY);
+    }
+    return 0;
+}
+
+int find_location_autoindex(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, s_server &conf)
+{
+    if (!it->compare("autoindex"))
+    {
+        it++;
+        if (it->compare("\0"))
+        {
+            conf.location.autoindex = *it;
+        }
+        else
+            return error(LOCATION_AUTOINDEX_EMPTY);
+    }
+    return 0;
+}
+
+int find_location_error_page(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, s_server &conf)
+{
+    if (!it->compare("error_page"))
+    {
+        it++;
+        if (it->compare("\0"))
+        {
+            conf.location.error_page = *it;
+        }
+        else
+            return error(LOCATION_ERROR_PAGE_EMPTY);
     }
     return 0;
 }
@@ -179,7 +240,7 @@ int find_location_methods(std::vector<std::string>::iterator it, std::vector<std
             }
         }
         else
-            return error(LOCATION_INDEX_EMPTY);
+            return error(LOCATION_METHODS_EMPTY);
     }
     return 0;  
 }
@@ -209,8 +270,10 @@ void fill_struct(std::vector<std::vector<std::string> > v, std::vector<s_server>
                 find_root(it_s, ite_s, conf_tmp) ||
                 find_index(it_s, ite_s, conf_tmp) ||
                 find_error_page(it_s, ite_s, conf_tmp) ||
-                find_server_name(it_s, ite_s, conf_tmp))
+                find_server_name(it_s, ite_s, conf_tmp) ||
+                find_autoindex(it_s, ite_s, conf_tmp))
                 {
+                    std::cout << "FILL_STRUCT00" << std::endl;
                     conf->clear();
                     return;
                 }
@@ -227,8 +290,16 @@ void fill_struct(std::vector<std::vector<std::string> > v, std::vector<s_server>
                     ite_s = it->end();
                     while (it != ite && it_s->compare("}"))
                     {
-                        find_location_index(it_s, ite_s, conf_tmp);
-                        find_location_methods(it_s, ite_s, conf_tmp);
+                        if (find_location_root(it_s, ite_s, conf_tmp) || 
+                        find_location_index(it_s, ite_s, conf_tmp) ||
+                        find_location_autoindex(it_s, ite_s, conf_tmp) ||
+                        find_location_error_page(it_s, ite_s, conf_tmp) ||
+                        find_location_methods(it_s, ite_s, conf_tmp))
+                        {
+                            conf->clear();
+                            return;
+                        }
+                        
                         it++;
                         it_s = it->begin();
                         ite_s = it->end();

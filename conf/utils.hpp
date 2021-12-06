@@ -9,10 +9,19 @@
 #define INDEX_EMPTY "Error: In Server: 'index' directive exists but has no value"
 #define ERROR_PAGE_EMPTY "Error: In Server: 'error_page' directive exists but has no value"
 #define SERVER_NAME_EMPTY "Error: In Server: 'server_name' directive exists but has no value"
+#define AUTOINDEX_EMPTY "Error: In Server: 'autoindex' directive exists but has no value"
+#define LOCATION_ROOT_EMPTY "Error: In Location: 'root' directive exists but has no value"
 #define LOCATION_INDEX_EMPTY "Error: In Location: 'index' directive exists but has no value"
+#define LOCATION_AUTOINDEX_EMPTY "Error: In Location: 'autoindex' directive exists but has no value"
+#define LOCATION_ERROR_PAGE_EMPTY "Error: In Location: 'error_page' directive exists but has no value"
+#define LOCATION_METHODS_EMPTY "Error: In Location: 'methods' directive exists but has no value"
 
 struct s_location {
+    std::string root;
     std::string index;
+    std::string autoindex;
+    std::string error_page;
+    size_t      client_max_body_size;
     std::vector<std::string> methods;
 };
 
@@ -25,9 +34,8 @@ struct s_server
     std::string index;
     std::string error_page;
     std::string server_name;
-    //std::string location;
-    size_t      client_max_body_size;
     std::string autoindex;
+    size_t      client_max_body_size;
     s_location location;
 };
 
@@ -35,15 +43,19 @@ void struct_init(s_server *conf)
 {
     conf->nb_server = 0;
     conf->nb_location = 0;
-    conf->client_max_body_size = 0;
+    conf->client_max_body_size = 1;
     conf->listen.clear();
     conf->server_name.clear();
     conf->error_page.clear();
-    conf->location.index.clear();
+    conf->location.root = "html";
+    conf->location.client_max_body_size = 1;
+    conf->location.index = "index.html";
+    conf->location.autoindex = "off";
+    conf->location.error_page.clear();
     conf->location.methods.clear();
-    conf->autoindex.clear();
-    conf->index.clear();
-    conf->root.clear();
+    conf->autoindex = "off";
+    conf->index = "index.html";
+    conf->root = "html";
 }
 
 int error(std::string code)
