@@ -166,6 +166,22 @@ int find_autoindex(std::vector<std::string>::iterator it, std::vector<std::strin
     return 0;
 }
 
+int find_client_max_body_size(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, s_server &conf)
+{
+    if (!it->compare("client_max_body_size"))
+    {
+        it++;
+        if (it->compare("\0"))
+        {
+            std::string str = *it;
+            conf.client_max_body_size = std::atoi(str.c_str());
+        }
+        else
+            return error(CLIENT_MAX_BODY_SIZE_EMPTY);
+    }
+    return 0;
+}
+
 int find_location_root(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, s_server &conf)
 {
     if (!it->compare("root"))
@@ -226,6 +242,22 @@ int find_location_error_page(std::vector<std::string>::iterator it, std::vector<
     return 0;
 }
 
+int find_location_client_max_body_size(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, s_server &conf)
+{
+    if (!it->compare("client_max_body_size"))
+    {
+        it++;
+        if (it->compare("\0"))
+        {
+            std::string str = *it;
+            conf.location.client_max_body_size = std::atoi(str.c_str());
+        }
+        else
+            return error(LOCATION_CLIENT_MAX_BODY_SIZE_EMPTY);
+    }
+    return 0;
+}
+
 int find_location_methods(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, s_server &conf)
 {
     if (!it->compare("methods"))
@@ -271,9 +303,9 @@ void fill_struct(std::vector<std::vector<std::string> > v, std::vector<s_server>
                 find_index(it_s, ite_s, conf_tmp) ||
                 find_error_page(it_s, ite_s, conf_tmp) ||
                 find_server_name(it_s, ite_s, conf_tmp) ||
+                find_client_max_body_size(it_s, ite_s, conf_tmp) ||
                 find_autoindex(it_s, ite_s, conf_tmp))
                 {
-                    std::cout << "FILL_STRUCT00" << std::endl;
                     conf->clear();
                     return;
                 }
@@ -293,6 +325,7 @@ void fill_struct(std::vector<std::vector<std::string> > v, std::vector<s_server>
                         if (find_location_root(it_s, ite_s, conf_tmp) || 
                         find_location_index(it_s, ite_s, conf_tmp) ||
                         find_location_autoindex(it_s, ite_s, conf_tmp) ||
+                        find_location_client_max_body_size(it_s, ite_s, conf_tmp) ||
                         find_location_error_page(it_s, ite_s, conf_tmp) ||
                         find_location_methods(it_s, ite_s, conf_tmp))
                         {
