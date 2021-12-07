@@ -392,8 +392,8 @@ void parsing(std::string file, std::vector<s_server> *conf)
             line.clear();
         }
         fill_struct(values, conf);
-        printlines(values);
-        //print_conf_struct(*conf);
+        //printlines(values);
+        print_conf_struct(*conf);
         flux.close();
     }
     else
