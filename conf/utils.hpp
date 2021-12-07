@@ -17,7 +17,7 @@
 #define LOCATION_ERROR_PAGE_EMPTY "Error: In Location: 'error_page' directive exists but has no value"
 #define LOCATION_CLIENT_MAX_BODY_SIZE_EMPTY "Error: In Location: 'client_max_body_size' directive exists but has no value"
 #define LOCATION_METHODS_EMPTY "Error: In Location: 'methods' directive exists but has no value"
-
+#define UNCLOSED_BRACKET "Error: '}' missing"
 struct s_location {
     std::string root;
     std::string index;
@@ -29,6 +29,7 @@ struct s_location {
 
 struct s_server
 {
+    size_t nb_closing_br;
     size_t nb_server;
     size_t nb_location;
     std::string listen;
@@ -43,6 +44,7 @@ struct s_server
 
 void struct_init(s_server *conf)
 {
+    conf->nb_closing_br = 0;
     conf->nb_server = 0;
     conf->nb_location = 0;
     conf->client_max_body_size = 1;
@@ -111,8 +113,9 @@ void print_conf_struct(std::vector<s_server> conf)
 
     while (it != ite)
     {
-        std::cout << "Server: " << it->nb_server << std::endl;
-        std::cout << "Location: " << it->nb_location << std::endl;
+        std::cout << "nb_Closing_bracket: " << it->nb_server << std::endl;
+        std::cout << "nb_Server: " << it->nb_server << std::endl;
+        std::cout << "nb_Location: " << it->nb_location << std::endl;
         std::cout << "Client_max_body_size: " << it->client_max_body_size << std::endl;
         std::cout << "Listen: " << it->listen << std::endl;
         std::cout << "Server_name: " << it->server_name << std::endl;
@@ -121,6 +124,12 @@ void print_conf_struct(std::vector<s_server> conf)
         std::cout << "Root: " << it->root << std::endl;
         std::cout << "Location index: " << it->location.index << std::endl;
         std::cout << "Autoindex: " << it->autoindex << std::endl;
+        std::cout << "Location/root: " << it->location.root << std::endl;
+        std::cout << "Location/index: " << it->location.index << std::endl;
+        std::cout << "Location/autoindex: " << it->location.autoindex << std::endl;
+        std::cout << "Location/error_page: " << it->location.error_page << std::endl;
+        std::cout << "Location/client_max_body_size: " << it->location.client_max_body_size << std::endl;
+        
         print_location_methods_struct(it->location.methods);
         std::cout << std::endl;
         std::cout << std::endl;

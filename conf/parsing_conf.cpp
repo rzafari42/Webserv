@@ -313,7 +313,15 @@ void fill_struct(std::vector<std::vector<std::string> > v, std::vector<s_server>
                 it_s = it->begin();
                 ite_s = it->end();
             }
-            if (!it_s->compare("location"))
+            if (it == ite)
+            {
+                error(UNCLOSED_BRACKET);
+                conf->clear();
+                return;
+            }
+            else if (!it_s->compare("}"))
+                conf_tmp.nb_closing_br += 1;
+            else if (!it_s->compare("location"))
             {
                 if (find_location_block(it_s, ite_s, conf_tmp))
                 {
@@ -332,22 +340,37 @@ void fill_struct(std::vector<std::vector<std::string> > v, std::vector<s_server>
                             conf->clear();
                             return;
                         }
-                        
                         it++;
                         it_s = it->begin();
                         ite_s = it->end();
                     }
+                    if (it == ite)
+                    {
+                        error(UNCLOSED_BRACKET);
+                        conf->clear();
+                        return;   
+                    }
+                    else if (!it_s->compare("}"))
+                        conf_tmp.nb_closing_br += 1;
                 }
             }
-            if (it == ite)
+            it++;
+            it_s = it->begin();
+            ite_s = it->end();
+            if (it != ite && !it_s->compare("}"))
+                conf_tmp.nb_closing_br +=1;
+            if (conf_tmp.nb_closing_br != conf_tmp.nb_server + conf_tmp.nb_location)
             {
-                conf->push_back(conf_tmp);
+                error(UNCLOSED_BRACKET);
+                conf->clear();
                 return;
             }
-            conf->push_back(conf_tmp);
+            else
+                conf->push_back(conf_tmp);
             //print_location_methods_struct(conf_tmp.location.methods);
         }
-        it++;
+        if (it != ite)
+            it++;
     }
     return;
 }
@@ -368,9 +391,9 @@ void parsing(std::string file, std::vector<s_server> *conf)
             values.push_back(catchvalues(line));
             line.clear();
         }
-        //printlines(values);
         fill_struct(values, conf);
-        print_conf_struct(*conf);
+        printlines(values);
+        //print_conf_struct(*conf);
         flux.close();
     }
     else
