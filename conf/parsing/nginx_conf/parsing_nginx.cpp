@@ -383,8 +383,6 @@ void parsing(std::string file, std::vector<s_server> *conf)
     {
         std::vector<std::vector<std::string> > values;
         std::string line;
-        int i = 0;
-        int j = 0;
 
         while(getline(flux, line))
         {

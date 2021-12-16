@@ -20,7 +20,7 @@
 # define LOCATION_CLIENT_MAX_BODY_SIZE_EMPTY "Error: In Location: 'client_max_body_size' directive exists but has no value"
 # define LOCATION_METHODS_EMPTY "Error: In Location: 'methods' directive exists but has no value"
 # define UNCLOSED_BRACKET "Error: '}' missing"
-# include "parsing_conf.hpp"
+# include "parsing_nginx.hpp"
 
 void struct_init(s_server *conf)
 {
