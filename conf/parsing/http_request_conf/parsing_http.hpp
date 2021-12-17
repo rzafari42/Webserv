@@ -4,7 +4,7 @@
 # include <fstream>
 # include <map>
 
-enum request_method
+enum e_request_method
 {
     GET,
     POST,
@@ -18,25 +18,17 @@ enum request_method
 };
 
 
-struct request_line
+struct s_request_line
 {
     std::string _method;
     std::string _url;
     std::string _version;
 };
 
-class Request
+struct s_request
 {
-    public:
-        Request();
-        Request(const Request & src);
-        ~Request();
-        Request & operator=(const Request & rhs);
-
-
-    private:
-
-        std::map<std::string, std::string> _Header_Content;
+    s_request_line req_line;
+    std::map<std::string, std::string> fields;
 };
 
 #endif

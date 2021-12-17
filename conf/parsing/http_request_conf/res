@@ -1,0 +1,7 @@
+Error: Header Request-Line bad format
+Error: Method is in lowercase
+Map contains:
+Accept-Encoding:  gzip, deflate
+Accept-Language:  en-us
+Connection:  Keep-Alive
+Host:  www.tutorialspoint.com
