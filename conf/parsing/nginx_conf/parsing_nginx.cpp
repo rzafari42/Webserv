@@ -1,25 +1,25 @@
 #include "utils.hpp"
 
-std::vector<std::string> catchvalues(const std::string s1)
+std::vector<std::string> catchvalues(const std::string s)
 {
     std::vector<std::string> v;
     std::string cpy;
-    size_t i = 0;
+    int i = 0;
 
-    if (s1.empty() == false)
+    if (s.empty() == false)
     {
-        while (i < s1.length())
+        while (i < s.length())
         {
-            while (isspace(s1[i]))
+            while (isspace(s[i]) && i < s.length())
                 i++;
-            while (!isspace(s1[i]) && i < s1.length())
+            while (!isspace(s[i]) && i < s.length())
             {
-                if (s1[i] == '#')
+                if (s[i] == '#')
                 {
                     v.push_back("\0");
                     return v;
                 }
-                cpy.push_back(s1[i]);
+                cpy.push_back(s[i]);
                 i++;
             }
             v.push_back(cpy);
@@ -68,10 +68,7 @@ int find_listen(std::vector<std::string>::iterator it, std::vector<std::string>:
     {
         it++;
         if (it->compare("\0"))
-        {
             conf.listen = *it;
-            //std::cout << "listen = " << conf.listen << std::endl;
-        }
         else
             return error(LISTEN_EMPTY);
     }
@@ -84,10 +81,7 @@ int find_root(std::vector<std::string>::iterator it, std::vector<std::string>::i
     {
         it++;
         if (it->compare("\0"))
-        {
             conf.root = *it;
-            //std::cout << "root = " << conf.root << std::endl;
-        }
         else
             return error(ROOT_EMPTY);
     }
@@ -100,10 +94,7 @@ int find_index(std::vector<std::string>::iterator it, std::vector<std::string>::
     {
         it++;
         if (it->compare("\0"))
-        {
             conf.index = *it;
-            //std::cout << "index = " << conf.index << std::endl;
-        }
         else
             return error(INDEX_EMPTY);
     }
@@ -156,10 +147,7 @@ int find_autoindex(std::vector<std::string>::iterator it, std::vector<std::strin
     {
         it++;
         if (it->compare("\0"))
-        {
             conf.server_name = *it;
-            //std::cout << "autoindex = " << conf.server_name << std::endl;
-        }
         else
             return error(AUTOINDEX_EMPTY);
     }
