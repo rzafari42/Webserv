@@ -42,9 +42,9 @@ void struct_init(s_server *conf)
     conf->root = "html";
 }
 
-int error(std::string code)
+int error(std::string str)
 {
-    std::cout << code << std::endl;
+    std::cout << str << std::endl;
     return -1;
 }
 

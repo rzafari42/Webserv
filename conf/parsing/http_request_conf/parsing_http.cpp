@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parsing_http.cpp                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/12/21 12:19:15 by rzafari           #+#    #+#             */
+/*   Updated: 2021/12/21 16:52:40 by rzafari          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "parsing_http.hpp"
 #include "utils.hpp"
 
@@ -12,10 +24,12 @@ int check_format_rqline(std::string s)
         while (!isspace(s[i]) && i < s.length())
             i++;
         nb_arg += 1;
-        if (i < s.length())
+        if (i < s.length() && s[i] != CR)
             nb_space += 1;
         i++;
     }
+    if (s.find(std::string(1, CR)) == std::string::npos)// || s.find(std::string(1, '\n')) == std::string::npos)
+        return error(REQUEST_LINE_FORMAT_CRLF);
     if (nb_space == 2 && nb_arg == 3)
         return 0;
     return error(REQUEST_LINE_FORMAT);
@@ -31,7 +45,7 @@ int check_format_rqfield(std::string s)
     {
         while (!isspace(s[i]) && i < s.length())
         {
-            if (s[i] == ':')
+            if (s[i] == ':' && semi_colon == 0)
             {
                 semi_colon += 1;
                 if (!isspace(s[ i + 1]))
@@ -44,12 +58,14 @@ int check_format_rqfield(std::string s)
             nb_arg += 1;
         i++;
     }
+    if (s.find(std::string(1,CR)) == std::string::npos)
+        return error(REQUEST_FIELD_FORMAT_CRLF);
     if (semi_colon == 1 && nb_arg >= 2)
         return 1;
     return error(REQUEST_FIELD_FORMAT);
 }
 
-int catch_request_line(const std::string s, s_request *req) //Format: Method Request-URI HTTP-Version CRLF
+int catch_request_line(const std::string s, Request *req) //Format: Method Request-URI HTTP-Version CRLF
 {
     int i = 0;
     std::string tmp;
@@ -61,7 +77,7 @@ int catch_request_line(const std::string s, s_request *req) //Format: Method Req
         tmp.push_back(s[i]);
         i++;
     }
-    req->req_line._method = tmp;
+    req->set_method(tmp);
     tmp.clear();
     i++;
     while (!isspace(s[i]))
@@ -69,7 +85,7 @@ int catch_request_line(const std::string s, s_request *req) //Format: Method Req
         tmp.push_back(s[i]);
         i++;
     }
-    req->req_line._url = tmp;
+    req->set_url(tmp);
     tmp.clear();
     i++;
     while (i < s.length())
@@ -77,7 +93,7 @@ int catch_request_line(const std::string s, s_request *req) //Format: Method Req
         tmp.push_back(s[i]);
         i++;
     }
-    req->req_line._version = tmp;
+    req->set_version(tmp);
     return 0;
 }
 
@@ -104,16 +120,19 @@ void catchvalues(const std::string s, std::map<std::string, std::string> &mp)
     value.clear();
 }
 
-void print_map(std::map<std::string, std::string> mymap)
+void check_errors(Request *req)
 {
-    std::map<std::string,std::string>::iterator it;
+    std::map<std::string, std::string>::iterator it;
 
-    std::cout << "Map contains:\n";
-    for (it = mymap.begin(); it != mymap.end(); ++it)
-        std::cout << it->first << ": " << it->second << '\n';
+    //A client MUST include a Host header field in all HTTP/1.1 request messages ->RFC: 14.23 Host
+    if ((it = req->get_fields().find("Host")) == req->get_fields().end())
+    {
+        error(METHOD_HOST_MISSING);
+        return;
+    }
 }
 
-void parsing(std::string file, s_request *request)
+void parsing(std::string file, Request *request)
 {
     std::ifstream flux(file);
 
@@ -142,35 +161,28 @@ void parsing(std::string file, s_request *request)
             else
                 return;
         }
+        else
+        {
+            flux.close();
+            values.clear();
+            return;
+        }
         flux.close();
-        request->fields = values;
+        request->set_fields(values);
         values.clear();
-        print_map(request->fields);
+        //print_map(request->get_fields());
         return;
     }
     else
         error(OPENING_FAILURE);
 }
 
-void check_errors(s_request *req)
-{
-    std::map<std::string, std::string>::iterator it;
-
-    if ((it = req->fields.find("Host")) == req->fields.end())
-    {
-        error(METHOD_HOST_MISSING);
-        return;
-    }
-}
-
 int main(int ac, char **av)
 {
     if (ac < 2)
         return error(EMPTY);
-    s_request request;
-    struct_init(&request);
+    Request request;
     parsing(av[1], &request);
-    check_errors(&request);
     //check if there's an CLRF at the end of each lines and if there's empty line before the body
     return 0;
 }
