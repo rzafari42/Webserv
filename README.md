@@ -9,6 +9,10 @@ Language : C++98
   * Unix  
   * Programmation orientée objet  
 
+## Compatibilité OS
+
+Projet développé pour MacOs et Linux
+
 ## Participants: 
   * [Redwane Zafari](https://github.com/rzafari42)
   * [Théo Videira](https://github.com/tvideira)
