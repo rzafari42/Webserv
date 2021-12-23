@@ -13,3 +13,6 @@ Language : C++98
   * [Redwane Zafari](https://github.com/rzafari42)
   * [Théo Videira](https://github.com/tvideira)
   * [Simon Barre](https://github.com/MrSbarre)
+
+
+Projet développé dans le cadre d'un projet scolaire 👉 [Ecole 42](https://42.fr/)  
