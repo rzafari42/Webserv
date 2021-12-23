@@ -4,7 +4,7 @@ Ce porjet a pour but la création d'un server HTTP en suivant la RFC ([7230](htt
 Language : C++98
 
 ## Compétences développées:  
-  * Réseau & administration sytème  
+  * Réseau & administration système  
   * Rigeur  
   * Unix  
   * Programmation orientée objet  
