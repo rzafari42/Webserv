@@ -13,3 +13,5 @@ Participants:
   * [Redwane Zafari](https://github.com/rzafari42)
   * [Théo Videira](https://github.com/tvideira)
   * [Simon Barre](https://github.com/MrSbarre)
+
+Sujet (FR): [Webserv](https://cdn.intra.42.fr/pdf/pdf/34683/fr.subject.pdf)
