@@ -21,7 +21,7 @@ int main(void)
     pid_t childpid;
     char buffer[1024] = {0};
 
-    char* message = "Hello Client (Redwwane)";
+    char* message = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";;
     memset((char *)&serv_addr, 0, sizeof(serv_addr));
     
 
@@ -51,7 +51,6 @@ int main(void)
         printf("\n+++++++ Waiting for new connection ++++++++\n\n");
         FD_SET(server_fd, &readset);
         fd_ready = select(server_fd + 1, &readset, NULL, NULL, NULL);
-
         if (FD_ISSET(server_fd, &readset))
         {   
             len = sizeof(cli_addr);
@@ -64,16 +63,16 @@ int main(void)
             {
                     close(server_fd);
                     bzero(buffer, sizeof(buffer));
-                    printf("Message From TCP client: ");
+                    printf("Message From TCP client: \n");
                     valread = read(new_socket , buffer, 1024);
-                    printf("%s\n",buffer);
                     if(valread < 0)
                     { 
                         printf("No bytes are there to read");
                     }
-                    write(new_socket , (const char*)message , sizeof(buffer));
-                    printf("------------------Hello message sent-------------------\n");
+                    puts(buffer);
+                    write(new_socket , message , strlen(message));
                     close(new_socket);
+                    printf("------------------Hello message sent-------------------\n");
                     exit(0);
             }
             close(new_socket);
