@@ -17,7 +17,7 @@ int main(void)
     //int fd_ready;
     int addrlen = sizeof(serv_addr);
     long valread;
-    socklen_t len;
+    socklen_t cli_len;
     pid_t childpid;
     char buffer[1024] = {0};
 
@@ -53,13 +53,13 @@ int main(void)
         select(server_fd + 1, &readset, NULL, NULL, NULL); //en attente du statut de lecture d'un fd dans l'ensemble readset. L'ensemble readset est modifié en sortie pour indiquer les fd qui ont changé d'état
         if (FD_ISSET(server_fd, &readset)) //verifie que server_fd soit bien dans l'ensemble readset. Si oui, server_fd est prêt
         {   
-            len = sizeof(cli_addr);
-            if ((new_socket = accept(server_fd, (struct sockaddr*)&serv_addr, (socklen_t*)&addrlen) == -1)) //Extrait la 1er connex° de la file d'attente de listen, crée une nouvelle socket et renvoie un fd faisant référence à cette socket. la sturucture cli_adrr sera remplie avec l'adresse du correspondant qui se connecte
+            cli_len = sizeof(cli_addr);
+            if ((new_socket = accept(server_fd, (struct sockaddr*)&cli_addr,&cli_len) == -1)) //Extrait la 1er connex° de la file d'attente de listen, crée une nouvelle socket et renvoie un fd faisant référence à cette socket. la sturucture cli_adrr sera remplie avec l'adresse du correspondant qui se connecte
             {
                 perror("In accept");
                 exit(EXIT_FAILURE);
             }
-            if ((childpid = fork()) == 0)
+            if ((childpid = fork()) == 0) //Processus
             {
                     close(server_fd);
                     bzero(buffer, sizeof(buffer));
