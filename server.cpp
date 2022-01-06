@@ -66,7 +66,7 @@ int main(void)
                     printf("Message From TCP client: \n");
                     valread = recv(new_socket, buffer, sizeof(buffer), 0);
                     if(valread < 0)
-                        printf("No bytes are there to read");
+                        printf("No bytes are there to read\n");
                     puts(buffer);
                     valsend = send(new_socket, message, strlen(message), 0);
                     if (valsend < 0)
