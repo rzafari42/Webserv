@@ -16,7 +16,7 @@ int main(void)
     fd_set readset; //ensemble de fd
     //int fd_ready;
     int addrlen = sizeof(serv_addr);
-    long valread;
+    long valread, valsend;
     socklen_t cli_len;
     pid_t childpid;
     char buffer[1024] = {0};
@@ -66,10 +66,13 @@ int main(void)
                     printf("Message From TCP client: \n");
                     valread = recv(new_socket, buffer, sizeof(buffer), 0);
                     if(valread < 0)
-                        printf("No bytes are there to read");
+                        printf("No bytes are there to read\n");
                     puts(buffer);
-                    send(new_socket, message, strlen(message), 0);
-                    printf("------------------Hello message sent-------------------\n");
+                    valsend = send(new_socket, message, strlen(message), 0);
+                    if (valsend < 0)
+                        printf("Failed to send the message\n");
+                    else 
+                        printf("------------------Hello message sent-------------------\n");
                     close(new_socket);
                     exit(0);
             }
