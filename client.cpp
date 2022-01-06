@@ -1,5 +1,6 @@
 // Client side C/C++ program to demonstrate Socket programming
 #include <stdio.h>
+#include <sys/types.h>
 #include <sys/socket.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -38,12 +39,10 @@ int main(int argc, char const *argv[])
         return -1;
     }
     strcpy(buffer, "Hello Server. I'm a client");
-    write(sock, buffer, sizeof(buffer));
-   // send(sock , hello , strlen(hello) , 0 );
-    printf("Message from server: ");
-    valread = read( sock , buffer, 1024);
+    send(sock, buffer, sizeof(buffer), 0);
+    printf("Message from server: \n");
+    recv(sock, buffer, sizeof(buffer), 0);
     printf("%s\n",buffer );
     close (sock);
     exit(0);
-    //return 0;
 }

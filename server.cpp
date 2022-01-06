@@ -59,16 +59,16 @@ int main(void)
                 perror("In accept");
                 exit(EXIT_FAILURE);
             }
-            if ((childpid = fork()) == 0) //Processus
+            if ((childpid = fork()) == 0) //Processus fils
             {
                     close(server_fd);
                     bzero(buffer, sizeof(buffer));
                     printf("Message From TCP client: \n");
-                    valread = read(new_socket , buffer, 1024);
+                    valread = recv(new_socket, buffer, sizeof(buffer), 0);
                     if(valread < 0)
                         printf("No bytes are there to read");
                     puts(buffer);
-                    write(new_socket , message , strlen(message));
+                    send(new_socket, message, strlen(message), 0);
                     printf("------------------Hello message sent-------------------\n");
                     close(new_socket);
                     exit(0);
