@@ -140,5 +140,5 @@ footer
 
 #logo_github:hover
 {
-    filter: drop-shadow(4px 4px 4px grey);
+    filter: drop-shadow(4px 4px 0px grey);
 }
