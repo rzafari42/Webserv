@@ -1,8 +1,8 @@
 body
 {
     font-family: 'Source Sans Pro', sans-serif;
-    color: #ffffff;
-    background-color: rgb(235, 235, 235);
+    color: #000000;
+    background-color: rgba(216, 216, 216, 0.904);
 }
 
 header 
@@ -21,8 +21,6 @@ header
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    filter: drop-shadow(3px 3px 3px rgb(0, 0, 0));
-
 }
 
 #members_github
@@ -35,7 +33,7 @@ header
 
 #main_title h1
 {
-    font-size: 130px;
+    font-size: 80px;
     font-weight: bold;
     margin: 0;
 }
@@ -49,7 +47,7 @@ h1,h5,h2
 
 header h2
 {
-    font-size: 70px;
+    font-size: 30px;
     font-weight: bold;
     justify-content: center;
     align-items: center;
@@ -65,7 +63,7 @@ header h5
 
 h5 a
 {
-    font-size: 18px;
+    font-size: 15px;
     font-weight: lighter;
     text-decoration: none;
     letter-spacing: 1px;
@@ -74,7 +72,7 @@ h5 a
 
 nav
 {
-    font-size: 25px;
+    font-size: 16px;
     font-weight: bold;
     display: flex;
     flex-direction: row;
@@ -96,13 +94,13 @@ nav ul
 
 nav li
 {
-    margin-left: 60px;
-    margin-right: 60px;
+    margin-left: 50px;
+    margin-right: 65px;
 }
 
 nav a
 {
-    color: #aaa8a8;
+    color: #000000;
     text-decoration: none;
     letter-spacing: 4px;
     margin-bottom: 0;
@@ -131,13 +129,12 @@ nav a
     width:100%;
 }
 
-
 footer
 {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: 45px;
+    margin-top: 120px;
 }
 
 #logo_github:hover
