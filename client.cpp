@@ -1,6 +1,17 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   client.cpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/12/28 00:15:20 by simbarre          #+#    #+#             */
+/*   Updated: 2021/12/28 00:15:29 by simbarre         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 // Client side C/C++ program to demonstrate Socket programming
 #include <stdio.h>
-#include <sys/types.h>
 #include <sys/socket.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -14,12 +25,12 @@ int main(int argc, char const *argv[])
 {
     int sock = 0; long valread;
     struct sockaddr_in serv_addr;
+    char *hello = "Hello from client";
     char buffer[1024] = {0};
-
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
     {
         printf("\n Socket creation error \n");
-        exit(0);
+        return -1;
     }
 
     memset(&serv_addr, '0', sizeof(serv_addr));
@@ -39,11 +50,9 @@ int main(int argc, char const *argv[])
         printf("\nConnection Failed \n");
         return -1;
     }
-    strcpy(buffer, "Hello Server. I'm a client");
-    send(sock, buffer, sizeof(buffer), 0);
-    printf("Message from server: \n");
-    recv(sock, buffer, sizeof(buffer), 0);
+    send(sock , hello , strlen(hello) , 0 );
+    printf("Hello message sent\n");
+    valread = read( sock , buffer, 1024);
     printf("%s\n",buffer );
-    close (sock);
-    exit(0);
+    return 0;
 }
