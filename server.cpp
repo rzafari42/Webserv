@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 22:01:31 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/12 19:24:47 by simbarre         ###   ########.fr       */
+/*   Updated: 2022/01/13 22:47:16 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@
 #include <arpa/inet.h>
 #include <stdbool.h>
 #include <limits.h>
+#include "Header/HttpResponse.hpp"
 
 //#include <conf/parsing/http_request_conf/utils.hpp>
 //#include <conf/parsing/nginx_conf/utils.hpp>
@@ -64,27 +65,14 @@ void	*handle_connection(int client_socket)
 
 	printf("REQUEST: %s\n", buffer);
 	fflush(stdout);
-
-	if (realpath(buffer, actual_path) == NULL)
-	{
-		printf("ERROR:(bad path): %s\n", buffer);
-		close(client_socket);
-		return (NULL);
-	}
-
-	FILE *fp = fopen(actual_path, "r");
-	if (fp == NULL)
-	{
-		printf("ERROR");
-		close(client_socket);
-		return (NULL);
-	}
-
-	while ((bytes_read = fread(buffer, 1, BUFF_SIZE, fp)) > 0)
-		write(client_socket, buffer, bytes_read);
-
+	
+	HttpResponse res("www/index.html");
+	std::string cont = res.getResponse();
+	char *buff = new char[cont.length()]; 
+	strcpy(buff, cont.c_str());
+	write(client_socket , buff, cont.length());
+	delete [] buff;
 	close(client_socket);
-	fclose(fp);
 	printf("closing connection\n");
 	return (NULL);
 }
