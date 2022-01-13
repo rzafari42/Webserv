@@ -21,6 +21,8 @@ header
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    border: 1px solid blak;
+
 }
 
 #members_github
@@ -37,7 +39,6 @@ header
     font-weight: bold;
     margin: 0;
     filter: drop-shadow(4px 4px 0px grey);
-    margin: 0;
 }
 
 h1,h5,h2
@@ -59,7 +60,7 @@ header h2
 
 header h5
 {
-    margin-bottom: -5px;
+    margin-bottom: 0px;
     color: #7C7A7A;
     font-size: 18px;
     font-weight: lighter;
