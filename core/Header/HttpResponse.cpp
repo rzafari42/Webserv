@@ -16,7 +16,7 @@ HttpResponse::HttpResponse(std::string source)
     else
     {
         std::cout << "404 NOT FOUND" << std::endl;
-        source = "../Webpage/error.html";
+        source = "../www/error.html";
         std::cout << "source: " << source << std::endl;
         std::ifstream sourceFile(source, std::ifstream::in);
         if (sourceFile.good())
@@ -33,11 +33,21 @@ HttpResponse::HttpResponse(std::string source)
     }
     sourceFile.close();
 
+    //Current Date and Time calulation
+    time_t rawtime;
+    struct tm * timeinfo;
+    char date[80];
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+    strftime (date,80,"%a, %d %h %Y %H:%M:%S GMT",timeinfo);
+
     std::ostringstream file;
     file << httpVersion << statusCode << reasonPhrase << "\r\n";
     file << "Cache-Control: no-cache, private\r\n";
     file << "Content-type: text/html\r\n";
     file << "Content-Length: " << contentLength << "\r\n";
+    file << "Content-Language: fr" << "\r\n";
+    file << "date: " << date << "\r\n";
     file << "\r\n";
     file << content;
 

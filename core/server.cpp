@@ -76,7 +76,7 @@ int main(void)
                     if(valread < 0)
                         printf("No bytes are there toread");
                     puts(buffer);
-                    HttpResponse res("../Webpage/hom.html");
+                    HttpResponse res("../www/index.html");
 
                     std::string cont = res.getResponse();
                     char *buff = new char[cont.length()]; 
