@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
+/*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 22:01:31 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/13 22:47:16 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/01/14 21:01:31 by simbarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,17 +27,17 @@
 #include <arpa/inet.h>
 #include <stdbool.h>
 #include <limits.h>
-#include "Header/HttpResponse.hpp"
 
-//#include <conf/parsing/http_request_conf/utils.hpp>
-//#include <conf/parsing/nginx_conf/utils.hpp>
+#include "Header/HttpResponse.hpp"
+#include "conf/parsing/http_request_conf/utils.hpp"
+#include "conf/parsing/nginx_conf/utils.hpp"
 
 typedef struct sockaddr		SA;
 typedef struct sockaddr_in	SA_IN;
 
 int		check(int exp, const char *msg)
 {
-	if (exp == -1 || exp < 0)
+	if (exp < 0)
 	{
 		perror(msg);
 		exit(1);
@@ -65,10 +65,10 @@ void	*handle_connection(int client_socket)
 
 	printf("REQUEST: %s\n", buffer);
 	fflush(stdout);
-	
+
 	HttpResponse res("www/index.html");
 	std::string cont = res.getResponse();
-	char *buff = new char[cont.length()]; 
+	char *buff = new char[cont.length()];
 	strcpy(buff, cont.c_str());
 	write(client_socket , buff, cont.length());
 	delete [] buff;
@@ -109,9 +109,9 @@ int		setup_server(short port, int backlog)
 
 int		main(int argc, char *argv[])
 {
-	int server_socket = setup_server(SERVER_PORT, SERVER_BACKLOG);
+	int		server_socket = setup_server(SERVER_PORT, SERVER_BACKLOG);
 
-	fd_set		current_sockets, ready_sockets;
+	fd_set	current_sockets, ready_sockets;
 
 	FD_ZERO(&current_sockets);
 	FD_SET(server_socket, &current_sockets);
