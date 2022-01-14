@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 22:01:31 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/14 21:47:44 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/01/14 22:16:23 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,14 +71,14 @@ void	*handle_connection(int client_socket)
 	fflush(stdout);
 
 	//Writting the buffer in a file so "req_parsing" can cath it
-	/*std::ofstream myfile;
+	std::ofstream myfile;
 	myfile.open("request.txt", std::ofstream::app);
 	std::string str(buffer);
 	myfile << str;
-	myfile.close();*/
-	/*Request req = req_parsing("conf/conf_files/request01.conf");
+	myfile.close();
+	Request req = req_parsing("request.txt");
 	std::cout << "Req methods = " << req.get_method() << std::endl;
-	std::cout << "\n\n\n" << std::endl;*/
+	std::cout << "\n\n\n" << std::endl;
 	//std::remove("request.txt");
 
 	HttpResponse res("www/index.html");
