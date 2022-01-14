@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 22:01:31 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/14 18:45:50 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/01/14 21:43:30 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ void	*handle_connection(int client_socket)
 	check(bytes_read, "recv error");
 	buffer[msg_size - 1]  = 0;
 
-	printf("REQUEST: %s", buffer);
+	printf("\n\nREQUEST:\n%s\nEND\n\n", buffer);
 	fflush(stdout);
 
 	//Writting the buffer in a file so "req_parsing" can cath it
@@ -75,10 +75,11 @@ void	*handle_connection(int client_socket)
 	myfile.open("request.txt", std::ofstream::app);
 	std::string str(buffer);
 	myfile << str;
-	Request req = req_parsing("request.txt");
+	myfile.close();*/
+	/*Request req = req_parsing("conf/conf_files/request01.conf");
 	std::cout << "Req methods = " << req.get_method() << std::endl;
-	myfile.close();
-	std::remove("request.txt");*/
+	std::cout << "\n\n\n" << std::endl;*/
+	//std::remove("request.txt");
 
 	HttpResponse res("www/index.html");
 	std::string cont = res.getResponse();

@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/21 12:19:15 by rzafari           #+#    #+#             */
-/*   Updated: 2022/01/14 18:45:44 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/01/14 20:48:35 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,10 +29,10 @@ int check_format_rqline(std::string s)
         i++;
     }
     if (s.find(std::string(1, CR)) == std::string::npos)// || s.find(std::string(1, '\n')) == std::string::npos)
-        return error(REQUEST_LINE_FORMAT_CRLF);
+        return error(REQUEST_LINE_FORMAT_CRLF, s);
     if (nb_space == 2 && nb_arg == 3)
         return 0;
-    return error(REQUEST_LINE_FORMAT);
+    return error(REQUEST_LINE_FORMAT, s);
 }
 
 int check_format_rqfield(std::string s)
@@ -49,7 +49,7 @@ int check_format_rqfield(std::string s)
             {
                 semi_colon += 1;
                 if (!isspace(s[ i + 1]))
-                    return error(REQUEST_FIELD_FORMAT_SPACE);
+                    return error(REQUEST_FIELD_FORMAT_SPACE, s);
                 break;
             }
             i++;
@@ -59,10 +59,10 @@ int check_format_rqfield(std::string s)
         i++;
     }
     if (s.find(std::string(1,CR)) == std::string::npos)
-        return error(REQUEST_FIELD_FORMAT_CRLF);
+        return error(REQUEST_FIELD_FORMAT_CRLF, s);
     if (semi_colon == 1 && nb_arg >= 2)
         return 1;
-    return error(REQUEST_FIELD_FORMAT);
+    return error(REQUEST_FIELD_FORMAT, s);
 }
 
 int catch_request_line(const std::string s, Request *req) //Format: Method Request-URI HTTP-Version CRLF
@@ -73,7 +73,7 @@ int catch_request_line(const std::string s, Request *req) //Format: Method Reque
     while (!isspace(s[i]))
     {
         if (!std::isupper(s[i]))
-            return(error(METHOD_LOWERCASE));
+            return(error(METHOD_LOWERCASE, s));
         tmp.push_back(s[i]);
         i++;
     }
@@ -127,7 +127,7 @@ void check_errors(Request *req)
     //A client MUST include a Host header field in all HTTP/1.1 request messages ->RFC: 14.23 Host
     if ((it = req->get_fields().find("Host")) == req->get_fields().end())
     {
-        error(METHOD_HOST_MISSING);
+        error(METHOD_HOST_MISSING, NULL);
         return;
     }
 }
@@ -174,7 +174,7 @@ void parsing(const char* file, Request *request)
         return;
     }
     else
-        error(OPENING_FAILURE);
+        error(OPENING_FAILURE, NULL);
 }
 
 Request req_parsing(const char *av)
