@@ -47,7 +47,7 @@ HttpResponse::HttpResponse(std::string source)
     file << "Content-type: text/html\r\n";
     file << "Content-Length: " << contentLength << "\r\n";
     file << "Content-Language: fr" << "\r\n";
-    file << "date: " << date << "\r\n";
+    file << "Date: " << date << "\r\n";
     file << "\r\n";
     file << content;
 

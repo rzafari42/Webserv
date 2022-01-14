@@ -33,4 +33,6 @@ class Request{
             std::map<std::string, std::string> _fields;
 };
 
+Request req_parsing(const char *av);
+
 #endif

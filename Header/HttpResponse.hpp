@@ -9,6 +9,7 @@ class HttpResponse
     public:
         HttpResponse() : httpVersion("HTTP/1.1"), statusCode(404), reasonPhrase("Not Found"), contentLength(0) {};
         HttpResponse(std::string source);
+        void setstatusCode(int code);
         ~HttpResponse();
 
         std::string getResponse();

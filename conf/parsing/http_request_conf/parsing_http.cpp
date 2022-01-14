@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/21 12:19:15 by rzafari           #+#    #+#             */
-/*   Updated: 2021/12/21 16:52:40 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/01/14 18:45:44 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,7 +132,7 @@ void check_errors(Request *req)
     }
 }
 
-void parsing(std::string file, Request *request)
+void parsing(const char* file, Request *request)
 {
     std::ifstream flux(file);
 
@@ -177,12 +177,19 @@ void parsing(std::string file, Request *request)
         error(OPENING_FAILURE);
 }
 
+Request req_parsing(const char *av)
+{
+    Request request;
+    parsing(av, &request);
+    //check if there's an CLRF at the end of each lines and if there's empty line before the body
+    return request;
+}
+/*
 int main(int ac, char **av)
 {
-    if (ac < 2)
-        return error(EMPTY);
+    (void)ac;
     Request request;
     parsing(av[1], &request);
-    //check if there's an CLRF at the end of each lines and if there's empty line before the body
+    std::cout << "(REQ_PARSING ->PARSING_HTTP.CPP) METHODS = " << request.get_method() << std::endl;
     return 0;
-}
+}*/
