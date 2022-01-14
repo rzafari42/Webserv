@@ -21,7 +21,6 @@
 
 int error(std::string str, std::string line)
 {
-    std::cout << "Error line: "<<  line << std::endl;
     std::cout << str << std::endl;
     return -1;
 }

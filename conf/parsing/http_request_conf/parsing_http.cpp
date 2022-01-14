@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/21 12:19:15 by rzafari           #+#    #+#             */
-/*   Updated: 2022/01/14 20:48:35 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/01/14 23:11:07 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int check_format_rqline(std::string s)
             nb_space += 1;
         i++;
     }
-    if (s.find(std::string(1, CR)) == std::string::npos)// || s.find(std::string(1, '\n')) == std::string::npos)
+    if ((s.find(std::string(1, CR)) == std::string::npos) && (s.find(std::string(1, LF)) == std::string::npos))
         return error(REQUEST_LINE_FORMAT_CRLF, s);
     if (nb_space == 2 && nb_arg == 3)
         return 0;
@@ -58,7 +58,7 @@ int check_format_rqfield(std::string s)
             nb_arg += 1;
         i++;
     }
-    if (s.find(std::string(1,CR)) == std::string::npos)
+    if ((s.find(std::string(1,CR)) == std::string::npos) && (s.find(std::string(1,LF)) == std::string::npos))
         return error(REQUEST_FIELD_FORMAT_CRLF, s);
     if (semi_colon == 1 && nb_arg >= 2)
         return 1;
@@ -132,7 +132,7 @@ void check_errors(Request *req)
     }
 }
 
-void parsing(const char* file, Request *request)
+void parsing(std::string file, Request *request)
 {
     std::ifstream flux(file);
 
@@ -149,6 +149,8 @@ void parsing(const char* file, Request *request)
                 line.clear();
                 while (getline(flux, line))
                 {
+                    if (!line.compare("\r"))
+                        break;
                     if (check_format_rqfield(line))
                     {
                         catchvalues(line, values);
@@ -177,13 +179,14 @@ void parsing(const char* file, Request *request)
         error(OPENING_FAILURE, NULL);
 }
 
-Request req_parsing(const char *av)
+Request req_parsing(std::string av)
 {
     Request request;
     parsing(av, &request);
-    //check if there's an CLRF at the end of each lines and if there's empty line before the body
+    //cath the body part !! 
     return request;
 }
+
 /*
 int main(int ac, char **av)
 {

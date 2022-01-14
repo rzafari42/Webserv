@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 22:01:31 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/14 22:16:23 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/01/14 23:21:54 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ int		check(int exp, const char *msg)
 //ajouter parsing de la requette et tt le reste
 void	*handle_connection(int client_socket)
 {
+	static int i = 0;
 	char	buffer[BUFF_SIZE];
 	size_t	bytes_read;
 	int		msg_size = 0;
@@ -67,19 +68,25 @@ void	*handle_connection(int client_socket)
 	check(bytes_read, "recv error");
 	buffer[msg_size - 1]  = 0;
 
-	printf("\n\nREQUEST:\n%s\nEND\n\n", buffer);
+	printf("REQUEST:\n%s\n", buffer);
 	fflush(stdout);
 
-	//Writting the buffer in a file so "req_parsing" can cath it
+	//Name file creation
+	std::string namefile = "Request_";
+	namefile.append(std::to_string(i));
+	namefile.append(".txt");
+	i++;
+
+	//Writting the buffer in a file so "req_parsing" can catch it
 	std::ofstream myfile;
-	myfile.open("request.txt", std::ofstream::app);
+	myfile.open(namefile, std::ofstream::app);
 	std::string str(buffer);
 	myfile << str;
 	myfile.close();
-	Request req = req_parsing("request.txt");
-	std::cout << "Req methods = " << req.get_method() << std::endl;
-	std::cout << "\n\n\n" << std::endl;
-	//std::remove("request.txt");
+	Request req = req_parsing(namefile);
+	//std::cout << "Req methods = " << req.get_method() << std::endl;
+	std::remove(namefile.c_str());
+	////
 
 	HttpResponse res("www/index.html");
 	std::string cont = res.getResponse();
