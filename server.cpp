@@ -6,7 +6,7 @@
 /*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 22:01:31 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/14 21:01:31 by simbarre         ###   ########.fr       */
+/*   Updated: 2022/01/14 21:22:54 by simbarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,23 +14,7 @@
 #define BUFF_SIZE			4096
 #define SERVER_BACKLOG		100
 
-#include <errno.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <signal.h>
-#include <unistd.h>
-#include <sys/select.h>
-#include <netinet/in.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <stdbool.h>
-#include <limits.h>
-
-#include "Header/HttpResponse.hpp"
-#include "conf/parsing/http_request_conf/utils.hpp"
-#include "conf/parsing/nginx_conf/utils.hpp"
+#include "Header/main_header.hpp"
 
 typedef struct sockaddr		SA;
 typedef struct sockaddr_in	SA_IN;
@@ -65,6 +49,17 @@ void	*handle_connection(int client_socket)
 
 	printf("REQUEST: %s\n", buffer);
 	fflush(stdout);
+
+	Request *r; //request parsing here
+
+	if (r->get_method() == "GET")
+		method_get(r);
+	else if (r->get_method() == "POST")
+		method_post(r);
+	else if (r->get_method() == "DELETE")
+		method_delete(r);
+	else
+		check(-1, "unrecognized method\n");
 
 	HttpResponse res("www/index.html");
 	std::string cont = res.getResponse();
