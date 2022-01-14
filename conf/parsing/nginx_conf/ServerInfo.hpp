@@ -15,16 +15,15 @@ private:
     std::string server_name;
     size_t client_max_body_size;
     std::vector<Location::Location> locations;
+
 public:
-    ServerInfo( void );
-    ~ServerInfo();
+    ServerInfo( void ) {}
+    ~ServerInfo() {}
+    std::vector<Location::Location> getLocations {
+        return locations;
+    }
 };
 
-ServerInfo::ServerInfo( void ) {
-}
-
-ServerInfo::~ServerInfo() {
-}
 
 
 #endif 

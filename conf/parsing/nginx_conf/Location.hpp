@@ -13,15 +13,10 @@ private:
     size_t client_max_body_size;
     std::vector<std::string> methods;
 public:
-    Location( void );
-    ~Location();
+    Location( void ) {}
+    ~Location() {}
+    std::vector<std::string> getMethods() { return methods }
 };
-
-Location::Location( void ) {
-}
-
-Location::~Location() {
-}
 
 
 #endif 
