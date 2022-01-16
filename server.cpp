@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 22:01:31 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/14 21:22:54 by simbarre         ###   ########.fr       */
+/*   Updated: 2022/01/16 14:42:50 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ void	*handle_connection(int client_socket)
 	size_t	bytes_read;
 	int		msg_size = 0;
 	char	actual_path[PATH_MAX + 1];
+	static int i = 0;
 
 	while ((bytes_read = read(client_socket, buffer + msg_size, sizeof(buffer) - msg_size - 1)))
 	{
@@ -50,16 +51,29 @@ void	*handle_connection(int client_socket)
 	printf("REQUEST: %s\n", buffer);
 	fflush(stdout);
 
-	Request *r; //request parsing here
+	//Name file creation
+	std::string namefile = "Request_";
+	namefile.append(std::to_string(i));
+	namefile.append(".txt");
+	i++;
 
-	if (r->get_method() == "GET")
+	std::ofstream myfile;
+	myfile.open(namefile, std::ofstream::app);
+	std::string str(buffer);
+	myfile << str; //Write the request in a file
+	myfile.close();
+	Request req = req_parsing(namefile); //Parsing
+	//std::cout << "Req methods = " << req.get_method() << std::endl;
+	std::remove(namefile.c_str());
+
+	/*if (req.get_method() == "GET")
 		method_get(r);
-	else if (r->get_method() == "POST")
+	else if (req.get_method() == "POST")
 		method_post(r);
-	else if (r->get_method() == "DELETE")
+	else if (req.get_method() == "DELETE")
 		method_delete(r);
 	else
-		check(-1, "unrecognized method\n");
+		check(-1, "unrecognized method\n");*/
 
 	HttpResponse res("www/index.html");
 	std::string cont = res.getResponse();

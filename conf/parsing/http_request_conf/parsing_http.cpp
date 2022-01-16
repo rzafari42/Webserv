@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/21 12:19:15 by rzafari           #+#    #+#             */
-/*   Updated: 2021/12/21 16:52:40 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/01/16 14:37:45 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int check_format_rqline(std::string s)
             nb_space += 1;
         i++;
     }
-    if (s.find(std::string(1, CR)) == std::string::npos)// || s.find(std::string(1, '\n')) == std::string::npos)
+    if ((s.find(std::string(1, CR)) == std::string::npos) && (s.find(std::string(1, LF)) == std::string::npos))
         return error(REQUEST_LINE_FORMAT_CRLF);
     if (nb_space == 2 && nb_arg == 3)
         return 0;
@@ -58,7 +58,7 @@ int check_format_rqfield(std::string s)
             nb_arg += 1;
         i++;
     }
-    if (s.find(std::string(1,CR)) == std::string::npos)
+    if ((s.find(std::string(1,CR)) == std::string::npos) && (s.find(std::string(1,LF)) == std::string::npos))
         return error(REQUEST_FIELD_FORMAT_CRLF);
     if (semi_colon == 1 && nb_arg >= 2)
         return 1;
@@ -149,6 +149,8 @@ void parsing(std::string file, Request *request)
                 line.clear();
                 while (getline(flux, line))
                 {
+                    if (!line.compare("\r"))
+                        break;
                     if (check_format_rqfield(line))
                     {
                         catchvalues(line, values);
@@ -177,7 +179,15 @@ void parsing(std::string file, Request *request)
         error(OPENING_FAILURE);
 }
 
-int main(int ac, char **av)
+Request req_parsing(std::string av)
+{
+    Request request;
+    parsing(av, &request);
+    //cath the body part !! 
+    return request;
+}
+
+/*int main(int ac, char **av)
 {
     if (ac < 2)
         return error(EMPTY);
@@ -185,4 +195,4 @@ int main(int ac, char **av)
     parsing(av[1], &request);
     //check if there's an CLRF at the end of each lines and if there's empty line before the body
     return 0;
-}
+}*/

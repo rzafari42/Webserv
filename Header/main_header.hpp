@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main_header.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/14 21:13:24 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/14 21:13:59 by simbarre         ###   ########.fr       */
+/*   Updated: 2022/01/16 14:40:18 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,12 @@
 #include <arpa/inet.h>
 #include <stdbool.h>
 #include <limits.h>
+#include <iostream>
+#include <fstream>
 
-#include "Header/HttpResponse.hpp"
-#include "conf/parsing/http_request_conf/utils.hpp"
-#include "conf/parsing/nginx_conf/utils.hpp"
+#include "../conf/parsing/http_request_conf/parsing_http.hpp"
+#include "HttpResponse.hpp"
+/*#include "conf/parsing/http_request_conf/utils.hpp"
+#include "conf/parsing/nginx_conf/utils.hpp"*/
 
 #endif
