@@ -1,8 +1,27 @@
 #include "HttpResponse.hpp"
 
-HttpResponse::HttpResponse(std::string source)
+HttpResponse::HttpResponse(std::string method, std::string source)
 {
-    std::ifstream sourceFile(source, std::ifstream::in);
+    int does_method_exist = 0;
+    does_method_exist = check_method_existence(method);
+
+    if (does_method_exist == 0)
+    {
+        if (!method.compare("GET"))
+            get_method();
+        else if (!method.compare("POST"))
+            post_method();
+        else
+            delete_method();
+    }
+    else if (does_method_exist == 1)
+        return_error(501);
+    else
+        return_error(405);
+
+
+    //METHOD GET
+    /*std::ifstream sourceFile(source, std::ifstream::in);
 
     if (sourceFile.good())
     {
@@ -16,8 +35,7 @@ HttpResponse::HttpResponse(std::string source)
     else
     {
         std::cout << "404 NOT FOUND" << std::endl;
-        source = "www/error.html";
-        std::cout << "source: " << source << std::endl;
+        source = "www/error404.html";
         std::ifstream sourceFile(source, std::ifstream::in);
         if (sourceFile.good())
         {
@@ -51,7 +69,16 @@ HttpResponse::HttpResponse(std::string source)
     file << "\r\n";
     file << content;
 
-    response = file.str();
+    response = file.str();*/
+}
+
+int  HttpResponse::check_method_existence(std::string method)
+{
+    if (!method.compare("GET") || !method.compare("POST") || !method.compare("DELETE"))
+        return 0;
+    else if (!method.compare("HEAD") || !method.compare("PUT") || !method.compare("CONNECT") || !method.compare("OPTIONS") || !method.compare("TRACE") || !method.compare("PATCH"))
+        return 1;
+    return -1;
 }
 
 HttpResponse::~HttpResponse(void)
