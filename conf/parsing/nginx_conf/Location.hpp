@@ -13,9 +13,17 @@ private:
     size_t client_max_body_size;
     std::vector<std::string> methods;
 public:
+    // constructor/ destructor
     Location( void ) {}
     ~Location() {}
-    std::vector<std::string> getMethods() { return methods }
+    
+    // getters
+    std::vector<std::string> get_methods( void ) { return methods }
+
+    // setters
+    void set_root(std::string str) {
+        root = str;
+    }
 };
 
 

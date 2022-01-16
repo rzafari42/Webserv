@@ -172,14 +172,15 @@ int find_client_max_body_size(std::vector<std::string>::iterator it, std::vector
     return 0;
 }
 
-int find_location_root(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, s_server &conf)
+int find_location_root(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &conf)
 {
+    std::vector<Location::Location> tmp = conf.get_locations()
     if (!it->compare("root"))
     {
         it++;
         if (it->compare("\0"))
         {
-            conf.location.root = *it;
+            tmp[tmp.end - 1].set_root(*it);
         }
         else
             return error(LOCATION_ROOT_EMPTY);
@@ -267,7 +268,7 @@ int find_location_methods(std::vector<std::string>::iterator it, std::vector<std
     return 0;  
 }
 
-void fill_struct(std::vector<std::vector<std::string> > v, std::vector<s_server> *serv_info)
+void fill_struct(std::vector<std::vector<std::string> > v, std::vector<ServerInfo> *serv_info)
 {
     std::vector<std::vector<std::string> >::iterator it = v.begin();
     std::vector<std::vector<std::string> >::iterator ite = v.end();
@@ -310,7 +311,7 @@ void fill_struct(std::vector<std::vector<std::string> > v, std::vector<s_server>
                 return;
             }
             else if (!it_s->compare("}"))
-                conf_tmp.nb_closing_br += 1;
+                conf_tmp.inc_closing_br();
             else if (!it_s->compare("location"))
             {
                 if (find_location_block(it_s, ite_s, conf_tmp))
@@ -341,15 +342,15 @@ void fill_struct(std::vector<std::vector<std::string> > v, std::vector<s_server>
                         return;   
                     }
                     else if (!it_s->compare("}"))
-                        conf_tmp.nb_closing_br += 1;
+                        conf_tmp.inc_closing_br();
                 }
             }
             it++;
             it_s = it->begin();
             ite_s = it->end();
             if (it != ite && !it_s->compare("}"))
-                conf_tmp.nb_closing_br +=1;
-            if (conf_tmp.nb_closing_br != conf_tmp.nb_server + conf_tmp.nb_location)
+                conf_tmp.inc_closing_br();
+            if (conf_tmp.get_nb_closing_br() != conf_tmp.nb_server + conf_tmp.nb_location)
             {
                 error(UNCLOSED_BRACKET);
                 serv_info->clear();
