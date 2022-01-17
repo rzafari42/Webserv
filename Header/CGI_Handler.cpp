@@ -6,7 +6,7 @@
 /*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/17 14:12:53 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/17 15:09:00 by simbarre         ###   ########.fr       */
+/*   Updated: 2022/01/17 16:07:39 by simbarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,23 +50,37 @@ CGI_Handler	&CGI_Handler::operator=(CGI_Handler const &src)
 	}
 }
 
-std::string	CGI_Handler::run_CGI(void)
+char		**CGI_Handler::env_to_double_char(void)
+{
+	//transform _env t0 double char array
+	char	**ret = new char*[this->_env.size() + 1];
+
+	//with iterator, add element.first + '=' + element.second
+
+	return (NULL);
+}
+
+std::string	CGI_Handler::run_CGI(const std::string &script)
 {
 	//this is the function to call to run the CGI
 
-	pid_t		pid;
-	std::string	ret_body;
+	pid_t			pid;
+	std::string		ret_body;
+	int				fd_saver[2];
+
+	fd_saver[0] = dup(STDIN_FILENO);
+	fd_saver[1] = dup(STDOUT_FILENO);
 
 	pid = fork();
 
 	if (pid == -1)
-		return (NULL);			//error (return Status: 500\r\n\r\n ??)
+		return ("Status: 500\r\n\r\n");
 	else if (pid == 0)
 	{
-		//dup2
-		//execve ?
-		//write
-		std::cout << "hm" << std::endl;
+		//needs all the dup and all
+
+		char	**env = env_to_double_char();
+		execve(script.c_str(), NULL, env);
 	}
 	else
 	{
@@ -75,5 +89,10 @@ std::string	CGI_Handler::run_CGI(void)
 		//yes sir
 	}
 
+
+	dup2(fd_saver[0], STDIN_FILENO);
+	dup2(fd_saver[1], STDOUT_FILENO);
+	close(fd_saver[0]);
+	close(fd_saver[1]);
 	return (ret_body);
 }
