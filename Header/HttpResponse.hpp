@@ -8,7 +8,7 @@
 class HttpResponse
 {
     public:
-        HttpResponse() : _httpVersion("HTTP/1.1"), _statusCode(404), _reasonPhrase("Not Found"), _contentLength(0), _content(""), _response("") {};
+        HttpResponse() : _httpVersion("HTTP/1.1"), _statusCode(404), _reasonPhrase("Not Found"), _contentLength(0), _content(""), _contentType("text/html"), _response("") {};
         HttpResponse(Request *req);
         ~HttpResponse();
 
@@ -37,6 +37,7 @@ class HttpResponse
         std::string _reasonPhrase;
         int _contentLength;
         std::string _content;
+        std::string _contentType;
         std::string _response;
 
         int check_method_existence(std::string method);

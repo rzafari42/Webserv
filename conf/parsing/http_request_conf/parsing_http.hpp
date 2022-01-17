@@ -18,7 +18,7 @@ class Request{
         }
         ~Request() {return;}
         void set_method(std::string str) {_method = str;}
-        void set_url(std::string str) {_url = str;}
+        void set_url(std::string str) {_url = "www" + str;}
         void set_version(std::string str) {_version = str;}
         void set_fields(std::map<std::string, std::string> mp){_fields = mp;}
         std::string get_method() {return _method;}

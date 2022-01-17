@@ -134,12 +134,9 @@ std::string HttpResponse::getResponse()
 
 void HttpResponse::handle_get_method(Request *req)
 {
-    std::cout << "request: " << req->get_url() << "\n\n" << std::endl;
-    if (req->get_url() == "/")
-    {
-        req->get_url() = "../www/index.html";
-        std::cout << "request new url: " << req->get_url() << "\n\n" << std::endl;
-    }
+    if (req->get_url() == "www/")
+        req->set_url("/index.html");
+
     std::ifstream sourceFile(req->get_url(), std::ifstream::in);
 
     if (sourceFile.good())
@@ -150,11 +147,14 @@ void HttpResponse::handle_get_method(Request *req)
         _statusCode = 200;
         _reasonPhrase = "OK";
         _contentLength = _content.size();
+        if (!req->get_url().compare(req->get_url().size() - 3, 3, "css"))
+            _contentType = "text/css";
+        else
+            _contentType = "text/html";
     }
     else
     {
-        std::cout << "404 NOT FOUND" << std::endl;
-        std::ifstream sourceFile("../www/error404.html", std::ifstream::in);
+        std::ifstream sourceFile("error404.html", std::ifstream::in);
         if (sourceFile.good())
         {
             std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
@@ -164,8 +164,6 @@ void HttpResponse::handle_get_method(Request *req)
             _reasonPhrase = "Not Found";
             _contentLength = _content.size();
         }
-        else
-            std::cout << "error while searching for the right file" << std::endl;
     }
     sourceFile.close();
     constructResponse();
@@ -193,9 +191,9 @@ void HttpResponse::constructResponse()
     strftime (date,80,"%a, %d %h %Y %H:%M:%S GMT",timeinfo);
 
     std::ostringstream file;
-    file << _httpVersion << _statusCode << _reasonPhrase << "\r\n";
+    file << _httpVersion << " " << _statusCode << " " << _reasonPhrase << "\r\n";
     file << "Cache-Control: no-cache, private\r\n";
-    file << "Content-type: text/html\r\n";
+    file << "Content-type: " << _contentType << "\r\n";
     file << "Content-Length: " << _contentLength << "\r\n";
     file << "Content-Language: fr" << "\r\n";
     file << "date: " << date << "\r\n";
