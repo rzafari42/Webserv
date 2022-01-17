@@ -6,7 +6,7 @@
 /*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/17 14:13:00 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/17 14:58:20 by simbarre         ###   ########.fr       */
+/*   Updated: 2022/01/17 15:10:19 by simbarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,8 @@
 
 #include "main_header.hpp"
 
-	#include <sys/types.h>
-	#include <sys/wait.h>
+	#include <sys/types.h>			//include in main_header at the end
+	#include <sys/wait.h>			//same
 
 class	CGI_Handler
 {
