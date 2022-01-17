@@ -33,13 +33,13 @@ std::vector<std::string> catchvalues(const std::string s)
     return v;
 }
 
-int find_server_block(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, s_server &conf)
+int find_server_block(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite)
 {
     while (it != ite)
     {
         if (!it->compare("server") && (++it)->compare("\0") && !it->compare("{"))
         {
-            conf.nb_server += 1;
+            //TODO
             return 1;
         }
         it++;
@@ -47,7 +47,7 @@ int find_server_block(std::vector<std::string>::iterator it, std::vector<std::st
     return 0;
 }
 
-int find_location_block(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, s_server &conf)
+int find_location_block(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite)
 {
     if (!it->compare("location"))
     {
@@ -55,7 +55,7 @@ int find_location_block(std::vector<std::string>::iterator it, std::vector<std::
         {
             if (!it->compare("{"))
             {
-                conf.nb_location += 1;
+                //TODO LATER
                 return 1;
             }
             it++;
@@ -64,61 +64,64 @@ int find_location_block(std::vector<std::string>::iterator it, std::vector<std::
     return 0;
 }
 
-int find_listen(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, s_server &conf)
+int find_listen(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &conf)
 {
     if (!it->compare("listen"))
     {
         it++;
         if (it->compare("\0"))
-            conf.listen = *it;
+            conf.set_listen(*it);
         else
             return error(LISTEN_EMPTY);
     }
     return 0;
 }
 
-int find_root(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, s_server &conf)
+int find_root(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &conf)
 {
+
     if (!it->compare("root"))
     {
         it++;
         if (it->compare("\0"))
-            conf.root = *it;
+            conf.set_root(*it);
         else
             return error(ROOT_EMPTY);
     }
     return 0;
 }
 
-int find_index(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, s_server &conf)
+int find_index(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &conf)
 {
     if (!it->compare("index"))
     {
         it++;
         if (it->compare("\0"))
-            conf.index = *it;
+            conf.set_index(*it);
         else
             return error(INDEX_EMPTY);
     }
     return 0;
 }
 
-int find_error_page(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, s_server &conf)
+int find_error_page(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &conf)
 {
+    std::string tmp;
     if (!it->compare("error_page"))
     {
         it++;
         if (it->compare("\0"))
         {
-            conf.error_page = *it;
+            tmp = *it;
             it++;
             while (it != ite)
             {
                 if (it->compare("\0"))
-                    conf.error_page += ' ';
-                conf.error_page += *it;
+                    tmp += ' ';
+                tmp += *it;
                 it++;
             }
+            conf.set_error_page(tmp);
             //std::cout << "error_page = " << conf.error_page << std::endl;
         }
         else
@@ -127,14 +130,14 @@ int find_error_page(std::vector<std::string>::iterator it, std::vector<std::stri
     return 0;
 }
 
-int find_server_name(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, s_server &conf)
+int find_server_name(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &conf)
 {
     if (!it->compare("server_name"))
     {
         it++;
         if (it->compare("\0"))
         {
-            conf.server_name = *it;
+            conf.set_server_name(*it);
             //std::cout << "server_name = " << conf.server_name << std::endl;
         }
         else
@@ -143,20 +146,21 @@ int find_server_name(std::vector<std::string>::iterator it, std::vector<std::str
     return 0;
 }
 
-int find_autoindex(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, s_server &conf)
+int find_autoindex(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &conf)
 {
+    std::vector<Location> tmp = conf.get_locations();
     if (!it->compare("autoindex"))
     {
         it++;
         if (it->compare("\0"))
-            conf.server_name = *it;
+            conf.set_autoindex(*it);
         else
             return error(AUTOINDEX_EMPTY);
     }
     return 0;
 }
 
-int find_client_max_body_size(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, s_server &conf)
+int find_client_max_body_size(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &conf)
 {
     if (!it->compare("client_max_body_size"))
     {
@@ -164,7 +168,7 @@ int find_client_max_body_size(std::vector<std::string>::iterator it, std::vector
         if (it->compare("\0"))
         {
             std::string str = *it;
-            conf.client_max_body_size = std::atoi(str.c_str());
+            conf.set_client_max_body_size(std::atoi(str.c_str()));
         }
         else
             return error(CLIENT_MAX_BODY_SIZE_EMPTY);
@@ -172,15 +176,14 @@ int find_client_max_body_size(std::vector<std::string>::iterator it, std::vector
     return 0;
 }
 
-int find_location_root(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &conf)
+int find_location_root(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, Location &conf)
 {
-    std::vector<Location::Location> tmp = conf.get_locations()
     if (!it->compare("root"))
     {
         it++;
         if (it->compare("\0"))
         {
-            tmp[tmp.end - 1].set_root(*it);
+            conf.set_root(*it);
         }
         else
             return error(LOCATION_ROOT_EMPTY);
@@ -188,14 +191,14 @@ int find_location_root(std::vector<std::string>::iterator it, std::vector<std::s
     return 0;
 }
 
-int find_location_index(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, s_server &conf)
+int find_location_index(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, Location &conf)
 {
     if (!it->compare("index"))
     {
         it++;
         if (it->compare("\0"))
         {
-            conf.location.index = *it;
+            conf.set_index(*it);
         }
         else
             return error(LOCATION_INDEX_EMPTY);
@@ -203,14 +206,14 @@ int find_location_index(std::vector<std::string>::iterator it, std::vector<std::
     return 0;
 }
 
-int find_location_autoindex(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, s_server &conf)
+int find_location_autoindex(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, Location &conf)
 {
     if (!it->compare("autoindex"))
     {
         it++;
         if (it->compare("\0"))
         {
-            conf.location.autoindex = *it;
+            conf.set_autoindex(*it);
         }
         else
             return error(LOCATION_AUTOINDEX_EMPTY);
@@ -218,14 +221,14 @@ int find_location_autoindex(std::vector<std::string>::iterator it, std::vector<s
     return 0;
 }
 
-int find_location_error_page(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, s_server &conf)
+int find_location_error_page(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, Location &conf)
 {
     if (!it->compare("error_page"))
     {
         it++;
         if (it->compare("\0"))
         {
-            conf.location.error_page = *it;
+            conf.set_error_page(*it);
         }
         else
             return error(LOCATION_ERROR_PAGE_EMPTY);
@@ -233,7 +236,7 @@ int find_location_error_page(std::vector<std::string>::iterator it, std::vector<
     return 0;
 }
 
-int find_location_client_max_body_size(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, s_server &conf)
+int find_location_client_max_body_size(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, Location &conf)
 {
     if (!it->compare("client_max_body_size"))
     {
@@ -241,7 +244,7 @@ int find_location_client_max_body_size(std::vector<std::string>::iterator it, st
         if (it->compare("\0"))
         {
             std::string str = *it;
-            conf.location.client_max_body_size = std::atoi(str.c_str());
+            conf.set_client_max_body_size(std::atoi(str.c_str()));
         }
         else
             return error(LOCATION_CLIENT_MAX_BODY_SIZE_EMPTY);
@@ -249,8 +252,9 @@ int find_location_client_max_body_size(std::vector<std::string>::iterator it, st
     return 0;
 }
 
-int find_location_methods(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, s_server &conf)
+int find_location_methods(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, Location &conf)
 {
+    std::vector<std::string> methods = conf.get_methods();
     if (!it->compare("methods"))
     {
         it++;
@@ -258,14 +262,14 @@ int find_location_methods(std::vector<std::string>::iterator it, std::vector<std
         {
             while (*it != "\0")
             {
-                conf.location.methods.push_back(*it);
+                methods.push_back(*it);
                 it++;
             }
         }
         else
             return error(LOCATION_METHODS_EMPTY);
     }
-    return 0;  
+    return 0;
 }
 
 void fill_struct(std::vector<std::vector<std::string> > v, std::vector<ServerInfo> *serv_info)
@@ -277,12 +281,12 @@ void fill_struct(std::vector<std::vector<std::string> > v, std::vector<ServerInf
 
 
     ServerInfo conf_tmp;
+    Location loc_tmp;
     while (it != ite)
     {
         it_s = it->begin();
         ite_s = it->end();
-        struct_init(&conf_tmp);
-        if (find_server_block(it_s, ite_s, conf_tmp))
+        if (find_server_block(it_s, ite_s))
         {
             it++;
             it_s = it->begin();
@@ -314,19 +318,19 @@ void fill_struct(std::vector<std::vector<std::string> > v, std::vector<ServerInf
                 conf_tmp.inc_closing_br();
             else if (!it_s->compare("location"))
             {
-                if (find_location_block(it_s, ite_s, conf_tmp))
+                if (find_location_block(it_s, ite_s))
                 {
                     it++;
                     it_s = it->begin();
                     ite_s = it->end();
                     while (it != ite && it_s->compare("}"))
                     {
-                        if (find_location_root(it_s, ite_s, conf_tmp) || 
-                        find_location_index(it_s, ite_s, conf_tmp) ||
-                        find_location_autoindex(it_s, ite_s, conf_tmp) ||
-                        find_location_client_max_body_size(it_s, ite_s, conf_tmp) ||
-                        find_location_error_page(it_s, ite_s, conf_tmp) ||
-                        find_location_methods(it_s, ite_s, conf_tmp))
+                        if (find_location_root(it_s, ite_s, loc_tmp) ||
+                        find_location_index(it_s, ite_s, loc_tmp) ||
+                        find_location_autoindex(it_s, ite_s, loc_tmp) ||
+                        find_location_client_max_body_size(it_s, ite_s, loc_tmp) ||
+                        find_location_error_page(it_s, ite_s, loc_tmp) ||
+                        find_location_methods(it_s, ite_s, loc_tmp))
                         {
                             serv_info->clear();
                             return;
@@ -339,10 +343,13 @@ void fill_struct(std::vector<std::vector<std::string> > v, std::vector<ServerInf
                     {
                         error(UNCLOSED_BRACKET);
                         serv_info->clear();
-                        return;   
+                        return;
                     }
                     else if (!it_s->compare("}"))
+                    {
+                        conf_tmp.add_location(loc_tmp);
                         conf_tmp.inc_closing_br();
+                    }
                 }
             }
             it++;
@@ -350,7 +357,7 @@ void fill_struct(std::vector<std::vector<std::string> > v, std::vector<ServerInf
             ite_s = it->end();
             if (it != ite && !it_s->compare("}"))
                 conf_tmp.inc_closing_br();
-            if (conf_tmp.get_nb_closing_br() != conf_tmp.nb_server + conf_tmp.nb_location)
+            if (conf_tmp.get_nb_closing_br() == 0)
             {
                 error(UNCLOSED_BRACKET);
                 serv_info->clear();

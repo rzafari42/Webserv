@@ -20,27 +20,8 @@
 # define LOCATION_CLIENT_MAX_BODY_SIZE_EMPTY "Error: In Location: 'client_max_body_size' directive exists but has no value"
 # define LOCATION_METHODS_EMPTY "Error: In Location: 'methods' directive exists but has no value"
 # define UNCLOSED_BRACKET "Error: '}' missing"
-# include "parsing_nginx.hpp"
-
-void struct_init(s_server *conf)
-{
-    conf->nb_closing_br = 0;
-    conf->nb_server = 0;
-    conf->nb_location = 0;
-    conf->client_max_body_size = 1;
-    conf->listen.clear();
-    conf->server_name.clear();
-    conf->error_page.clear();
-    conf->location.root = "html";
-    conf->location.client_max_body_size = 1;
-    conf->location.index = "index.html";
-    conf->location.autoindex = "off";
-    conf->location.error_page.clear();
-    conf->location.methods.clear();
-    conf->autoindex = "off";
-    conf->index = "index.html";
-    conf->root = "html";
-}
+# include "ServerInfo.hpp"
+# include "Location.hpp"
 
 int error(std::string str)
 {
@@ -64,7 +45,7 @@ void printlines(std::vector<std::vector<std::string> > s)
         {
             std::cout << *it_s;
             it_s++;
-            if (it_s != ite_s)  
+            if (it_s != ite_s)
                 std::cout << " ";
         }
         std::cout << std::endl;
@@ -86,50 +67,41 @@ void print_location_methods_struct(std::vector<std::string> conf)
 
 }
 
-void print_conf_struct(std::vector<s_server> conf)
+void print_conf_struct(std::vector<ServerInfo> conf)
 {
-    std::vector<s_server>::iterator it = conf.begin();
-    std::vector<s_server>::iterator ite = conf.end();
+    std::vector<ServerInfo>::iterator it = conf.begin();
+    std::vector<ServerInfo>::iterator ite = conf.end();
+
 
     while (it != ite)
     {
-        std::cout << "nb_Closing_bracket: " << it->nb_server << std::endl;
-        std::cout << "nb_Server: " << it->nb_server << std::endl;
-        std::cout << "nb_Location: " << it->nb_location << std::endl;
-        std::cout << "Client_max_body_size: " << it->client_max_body_size << std::endl;
-        std::cout << "Listen: " << it->listen << std::endl;
-        std::cout << "Server_name: " << it->server_name << std::endl;
-        std::cout << "Error_page: " << it->error_page << std::endl;
-        std::cout << "Index: " << it->index << std::endl;
-        std::cout << "Root: " << it->root << std::endl;
-        std::cout << "Location index: " << it->location.index << std::endl;
-        std::cout << "Autoindex: " << it->autoindex << std::endl;
-        std::cout << "Location/root: " << it->location.root << std::endl;
-        std::cout << "Location/index: " << it->location.index << std::endl;
-        std::cout << "Location/autoindex: " << it->location.autoindex << std::endl;
-        std::cout << "Location/error_page: " << it->location.error_page << std::endl;
-        std::cout << "Location/client_max_body_size: " << it->location.client_max_body_size << std::endl;
-        
-        print_location_methods_struct(it->location.methods);
+        std::cout << "Client_max_body_size: " << it->get_client_max_body_size() << std::endl;
+        std::cout << "Listen: " << it->get_listen() << std::endl;
+        std::cout << "Server_name: " << it->get_server_name() << std::endl;
+        std::cout << "Error_page: " << it->get_error_page() << std::endl;
+        std::cout << "Index: " << it->get_index() << std::endl;
+        std::cout << "Root: " << it->get_root() << std::endl;
+        std::cout << "Autoindex: " << it->get_autoindex() << std::endl;
+
+        std::vector<Location> vec_loc = it->get_locations();
+
+        std::vector<Location>::iterator it_loc = vec_loc.begin();
+        std::vector<Location>::iterator ite_loc = vec_loc.end();
+        while (it_loc != ite_loc)
+        {
+            std::cout << "Location/root: " << it_loc->get_root() << std::endl;
+            std::cout << "Location/index: " << it_loc->get_index() << std::endl;
+            std::cout << "Location/autoindex: " << it_loc->get_autoindex() << std::endl;
+            std::cout << "Location/error_page: " << it_loc->get_error_page() << std::endl;
+            std::cout << "Location/client_max_body_size: " << it_loc->get_client_max_body_size() << std::endl;
+            print_location_methods_struct(it_loc->get_methods());
+            it_loc++;
+        }
         std::cout << std::endl;
         std::cout << std::endl;
         it++;
     }
 }
 
-void print_conf_struct(s_server *conf)
-{
-    std::cout << "Server: " <<  conf->nb_server << std::endl;
-    std::cout << "Location: " << conf->nb_location << std::endl;
-    std::cout << "Client_max_body_size: " << conf->client_max_body_size << std::endl;
-    std::cout << "Listen: " << conf->listen << std::endl;
-    std::cout << "Server_name: " << conf->server_name << std::endl;
-    std::cout << "Error_page: " << conf->error_page << std::endl;
-    std::cout << "Index: " << conf->index << std::endl;
-    std::cout << "Root: " << conf->root << std::endl;
-    std::cout << "Location index: " << conf->location.index << std::endl;
-    std::cout << "Autoindex: " << conf->autoindex << std::endl;
-    std::cout << std::endl;
-}
 
 #endif
