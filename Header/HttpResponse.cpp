@@ -1,18 +1,19 @@
 #include "HttpResponse.hpp"
 
-HttpResponse::HttpResponse(std::string method, std::string source)
+HttpResponse::HttpResponse(Request *req)
 {
     int does_method_exist = 0;
+    std::string method = req->get_method();
     does_method_exist = check_method_existence(method);
 
     if (does_method_exist == 0)
     {
         if (!method.compare("GET"))
-            get_method();
+            _response = handle_get_method(req);
         else if (!method.compare("POST"))
-            post_method();
+            _response = handle_post_method(req);
         else
-            delete_method();
+            _response = handle_delete_method(req);
     }
     else if (does_method_exist == 1)
         return_error(501);
@@ -51,25 +52,7 @@ HttpResponse::HttpResponse(std::string method, std::string source)
     }
     sourceFile.close();
 
-    //Current Date and Time calulation
-    time_t rawtime;
-    struct tm * timeinfo;
-    char date[80];
-    time(&rawtime);
-    timeinfo = localtime(&rawtime);
-    strftime (date,80,"%a, %d %h %Y %H:%M:%S GMT",timeinfo);
-
-    std::ostringstream file;
-    file << httpVersion << statusCode << reasonPhrase << "\r\n";
-    file << "Cache-Control: no-cache, private\r\n";
-    file << "Content-type: text/html\r\n";
-    file << "Content-Length: " << contentLength << "\r\n";
-    file << "Content-Language: fr" << "\r\n";
-    file << "date: " << date << "\r\n";
-    file << "\r\n";
-    file << content;
-
-    response = file.str();*/
+    */
 }
 
 int  HttpResponse::check_method_existence(std::string method)
@@ -85,7 +68,85 @@ HttpResponse::~HttpResponse(void)
 {
 }
 
+void HttpResponse::set_http_version(std::string version)
+{
+    _httpVersion = version;
+}
+
+void HttpResponse::set_status_code(int code)
+{
+    _statusCode = code;
+}
+
+void HttpResponse::set_reasonPhrase(std::string phrase)
+{
+    _reasonPhrase = phrase;
+}
+
+void HttpResponse::set_contentLength(int length)
+{
+    _contentLength = length;
+}
+
+void HttpResponse::set_content(std::string content)
+{
+    _content = content;
+}
+
+std::string HttpResponse::get_http_version()
+{
+    return _httpVersion;
+}
+
+int HttpResponse::get_status_code()
+{
+   return _statusCode;
+}
+
+std::string HttpResponse::get_reasonPhrase()
+{
+    return _reasonPhrase;
+}
+
+int HttpResponse::get_contentLength()
+{
+   return _contentLength;
+}
+
+std::string HttpResponse::get_content()
+{
+    return _content;
+}
+
 std::string HttpResponse::getResponse()
 {
-    return response;
+    return _response;
+}
+
+int HttpResponse::return_error(int code)
+{
+
+}
+
+std::string HttpResponse::constructResponse()
+{
+    //Current Date and Time calulation
+    time_t rawtime;
+    struct tm * timeinfo;
+    char date[80];
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+    strftime (date,80,"%a, %d %h %Y %H:%M:%S GMT",timeinfo);
+
+    std::ostringstream file;
+    file << _httpVersion << _statusCode << _reasonPhrase << "\r\n";
+    file << "Cache-Control: no-cache, private\r\n";
+    file << "Content-type: text/html\r\n";
+    file << "Content-Length: " << _contentLength << "\r\n";
+    file << "Content-Language: fr" << "\r\n";
+    file << "date: " << date << "\r\n";
+    file << "\r\n";
+    file << _content;
+
+    _response = file.str();
 }

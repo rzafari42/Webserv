@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 22:01:31 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/16 14:42:50 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/01/17 11:45:36 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,13 +73,17 @@ void	*handle_connection(int client_socket)
 	else if (req.get_method() == "DELETE")
 		method_delete(r);
 	else
-		check(-1, "unrecognized method\n");*/
+		check(-1, "unrecognized method\n");*/ 
+	/*Send the right status code in parameter (405 "Method Not Allowed" in this case)
+	Another case exists. Code 501 "Not Implemented" wich is sent if the method actually exists but is not implemented in the server (in our case: HEAD, PUT, CONNECT, OPTIONS, TRACE, PATCH)
+	*/
 
-	HttpResponse res("www/index.html");
+	HttpResponse res(&req);
 	std::string cont = res.getResponse();
 	char *buff = new char[cont.length()];
 	strcpy(buff, cont.c_str());
-	write(client_socket , buff, cont.length());
+	
+	write(client_socket , buff, cont.length()); //Envoie de la reponse au client
 	delete [] buff;
 	close(client_socket);
 	printf("closing connection\n");

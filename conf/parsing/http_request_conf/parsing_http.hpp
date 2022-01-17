@@ -9,11 +9,11 @@ class Request{
     public:
         Request() {_method.clear(); _url.clear(); _version.clear();};
         Request(const Request& src) : _method(src._method), _url(src._url), _version(src._version) {};
-        Request &operator=(const Request& src) {
-            _method = src._method;
-            _url = src._url;
-            _version = src._version;
-            _fields = src._fields;
+        Request &operator=(const Request& rhs) {
+            _method = rhs._method;
+            _url = rhs._url;
+            _version = rhs._version;
+            _fields = rhs._fields;
             return *this;
         }
         ~Request() {return;}
