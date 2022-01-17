@@ -6,7 +6,7 @@
 /*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/17 14:12:53 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/17 16:07:39 by simbarre         ###   ########.fr       */
+/*   Updated: 2022/01/17 16:11:10 by simbarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,9 +78,10 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 	else if (pid == 0)
 	{
 		//needs all the dup and all
-
 		char	**env = env_to_double_char();
+
 		execve(script.c_str(), NULL, env);
+		//free env
 	}
 	else
 	{
