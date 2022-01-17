@@ -154,7 +154,8 @@ void HttpResponse::handle_get_method(Request *req)
     }
     else
     {
-        std::ifstream sourceFile("error404.html", std::ifstream::in);
+
+        std::ifstream sourceFile("www/error404.html", std::ifstream::in);
         if (sourceFile.good())
         {
             std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
