@@ -9,17 +9,26 @@ HttpResponse::HttpResponse(Request *req)
     if (does_method_exist == 0)
     {
         if (!method.compare("GET"))
-            _response = handle_get_method(req);
+            handle_get_method(req);
         else if (!method.compare("POST"))
-            _response = handle_post_method(req);
+            handle_post_method(req);
         else
-            _response = handle_delete_method(req);
+            handle_delete_method(req);
     }
     else if (does_method_exist == 1)
-        return_error(501);
+    {
+        _httpVersion = "HTTP1.1";
+        _statusCode = 501;
+        _reasonPhrase = "Not Implemented";
+        constructResponse();
+    }
     else
-        return_error(405);
-
+    {
+        _httpVersion = "HTTP1.1";
+        _statusCode = 405;
+        _reasonPhrase = "Method Not Allowed";
+        constructResponse();
+    }
 
     //METHOD GET
     /*std::ifstream sourceFile(source, std::ifstream::in);
@@ -123,12 +132,57 @@ std::string HttpResponse::getResponse()
     return _response;
 }
 
-int HttpResponse::return_error(int code)
+void HttpResponse::handle_get_method(Request *req)
 {
+    std::cout << "request: " << req->get_url() << "\n\n" << std::endl;
+    if (req->get_url() == "/")
+    {
+        req->get_url() = "../www/index.html";
+        std::cout << "request new url: " << req->get_url() << "\n\n" << std::endl;
+    }
+    std::ifstream sourceFile(req->get_url(), std::ifstream::in);
 
+    if (sourceFile.good())
+    {
+        std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
+        _content = ans;
+        _httpVersion = "HTTP1.1";
+        _statusCode = 200;
+        _reasonPhrase = "OK";
+        _contentLength = _content.size();
+    }
+    else
+    {
+        std::cout << "404 NOT FOUND" << std::endl;
+        std::ifstream sourceFile("../www/error404.html", std::ifstream::in);
+        if (sourceFile.good())
+        {
+            std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
+            _content = ans;
+            _httpVersion = "HTTP1.1";
+            _statusCode = 404;
+            _reasonPhrase = "Not Found";
+            _contentLength = _content.size();
+        }
+        else
+            std::cout << "error while searching for the right file" << std::endl;
+    }
+    sourceFile.close();
+    constructResponse();
 }
 
-std::string HttpResponse::constructResponse()
+void HttpResponse::handle_post_method(Request *req)
+{
+    constructResponse();
+}
+
+void HttpResponse::handle_delete_method(Request *req)
+{
+
+    constructResponse();
+}
+
+void HttpResponse::constructResponse()
 {
     //Current Date and Time calulation
     time_t rawtime;

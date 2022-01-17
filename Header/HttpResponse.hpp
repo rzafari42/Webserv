@@ -4,12 +4,11 @@
 # include <fstream>
 # include <sstream>
 # include "../conf/parsing/http_request_conf/parsing_http.hpp"
-#include "../methodsHandler.hpp"
 
-class HttpResponse : public methodsHandler
+class HttpResponse
 {
     public:
-        HttpResponse() : _httpVersion("HTTP/1.1"), _statusCode(404), _reasonPhrase("Not Found"), _contentLength(0) {};
+        HttpResponse() : _httpVersion("HTTP/1.1"), _statusCode(404), _reasonPhrase("Not Found"), _contentLength(0), _content(""), _response("") {};
         HttpResponse(Request *req);
         ~HttpResponse();
 
@@ -26,7 +25,10 @@ class HttpResponse : public methodsHandler
         std::string get_content();
         std::string getResponse();
 
-        std::string constructResponse();
+        void handle_get_method(Request *req);
+        void handle_post_method(Request *req);
+        void handle_delete_method(Request *req);
+        void constructResponse();
 
 
     private:
@@ -38,7 +40,7 @@ class HttpResponse : public methodsHandler
         std::string _response;
 
         int check_method_existence(std::string method);
-        int return_error(int code);
+        /*int return_error(int code);*/
 };
 
 #endif
