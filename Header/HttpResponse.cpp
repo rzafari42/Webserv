@@ -88,13 +88,6 @@ int  HttpResponse::check_method_existence(std::string method)
             return 1;
     }
     return -1;
-
-
-    /*if (!method.compare("GET") || !method.compare("POST") || !method.compare("DELETE"))
-        return 0;
-    else if (!method.compare("HEAD") || !method.compare("PUT") || !method.compare("CONNECT") || !method.compare("OPTIONS") || !method.compare("TRACE") || !method.compare("PATCH"))
-        return 1;
-    return -1;*/
 }
 
 HttpResponse::~HttpResponse(void)
