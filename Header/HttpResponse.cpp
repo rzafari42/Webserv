@@ -1,7 +1,17 @@
 #include "HttpResponse.hpp"
 
+HttpResponse::HttpResponse()
+{
+    initValues();
+    initErrorMap();
+    initMethods();
+}
+
 HttpResponse::HttpResponse(Request *req)
 {
+    initValues();
+    initErrorMap();
+    initMethods();
     int does_method_exist = 0;
     std::string method = req->get_method();
     does_method_exist = check_method_existence(method);
@@ -15,72 +25,83 @@ HttpResponse::HttpResponse(Request *req)
         else
             handle_delete_method(req);
     }
-    else if (does_method_exist == 1)
-    {
-        _httpVersion = "HTTP1.1";
-        _statusCode = 501;
-        _reasonPhrase = "Not Implemented";
-        constructResponse();
-    }
     else
     {
-        _httpVersion = "HTTP1.1";
-        _statusCode = 405;
-        _reasonPhrase = "Method Not Allowed";
-        constructResponse();
-    }
-
-    //METHOD GET
-    /*std::ifstream sourceFile(source, std::ifstream::in);
-
-    if (sourceFile.good())
-    {
-        std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
-        content = ans;
-        httpVersion = "HTTP1.1";
-        statusCode = 200;
-        reasonPhrase = "OK";
-        contentLength = content.size();
-    }
-    else
-    {
-        std::cout << "404 NOT FOUND" << std::endl;
-        source = "www/error404.html";
-        std::ifstream sourceFile(source, std::ifstream::in);
-        if (sourceFile.good())
-        {
-            std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
-            content = ans;
-            httpVersion = "HTTP1.1";
-            statusCode = 404;
-            reasonPhrase = "Not Found";
-            contentLength = content.size();
-        }
+        if (does_method_exist == 1)
+            _statusCode = 501;
         else
-            std::cout << "error while searching for the right file" << std::endl;
+            _statusCode = 405;
+        _reasonPhrase = _error[_statusCode];
+        constructResponse();
     }
-    sourceFile.close();
+}
 
-    */
+void HttpResponse::initValues()
+{
+    _statusCode = 0;
+    _reasonPhrase = "";
+    _contentLength = 0; 
+    _content = ""; 
+    _contentType = "";
+    _response = ""; 
+}
+
+void HttpResponse::initErrorMap()
+{
+    _error.insert(std::pair<int, std::string>(100,"Continue"));
+    _error.insert(std::pair<int, std::string>(200,"OK"));
+    _error.insert(std::pair<int, std::string>(201,"Created"));
+    _error.insert(std::pair<int, std::string>(204,"No Content"));
+    _error.insert(std::pair<int, std::string>(301,"Moved Permanently"));
+    _error.insert(std::pair<int, std::string>(400,"Bad Request"));
+    _error.insert(std::pair<int, std::string>(404,"Not Found"));
+    _error.insert(std::pair<int, std::string>(405,"Method Not Allowed"));
+    _error.insert(std::pair<int, std::string>(413,"Payload Too Large"));
+    _error.insert(std::pair<int, std::string>(501,"Not Implemented"));
+}
+
+void HttpResponse::initMethods()
+{
+    _implementedMethods.push_back("GET");
+    _implementedMethods.push_back("POST");
+    _implementedMethods.push_back("DELETE");
+
+    _notImplementedMethods.push_back("HEAD");
+    _notImplementedMethods.push_back("PUT");
+    _notImplementedMethods.push_back("CONNECT");
+    _notImplementedMethods.push_back("OPTIONS");
+    _notImplementedMethods.push_back("TRACE");
+    _notImplementedMethods.push_back("PATCH");
 }
 
 int  HttpResponse::check_method_existence(std::string method)
 {
-    if (!method.compare("GET") || !method.compare("POST") || !method.compare("DELETE"))
+    std::vector<std::string>::iterator it;
+
+    it = std::find(_implementedMethods.begin(), _implementedMethods.end(), method);
+    if (it != _implementedMethods.end())
+        return 0;
+    else
+    {
+        it = std::find(_notImplementedMethods.begin(), _notImplementedMethods.end(), method);
+        if (it == _notImplementedMethods.end())
+            return 1;
+    }
+    return -1;
+
+
+    /*if (!method.compare("GET") || !method.compare("POST") || !method.compare("DELETE"))
         return 0;
     else if (!method.compare("HEAD") || !method.compare("PUT") || !method.compare("CONNECT") || !method.compare("OPTIONS") || !method.compare("TRACE") || !method.compare("PATCH"))
         return 1;
-    return -1;
+    return -1;*/
 }
 
 HttpResponse::~HttpResponse(void)
 {
+    _error.clear();
 }
 
-void HttpResponse::set_http_version(std::string version)
-{
-    _httpVersion = version;
-}
 
 void HttpResponse::set_status_code(int code)
 {
@@ -104,7 +125,7 @@ void HttpResponse::set_content(std::string content)
 
 std::string HttpResponse::get_http_version()
 {
-    return _httpVersion;
+    return HTTP_VERSION;
 }
 
 int HttpResponse::get_status_code()
@@ -135,7 +156,7 @@ std::string HttpResponse::getResponse()
 void HttpResponse::handle_get_method(Request *req)
 {
     if (req->get_url() == "www/")
-        req->set_url("/index.html");
+        req->set_url(HOME_PAGE_PATH);
 
     std::ifstream sourceFile(req->get_url(), std::ifstream::in);
 
@@ -143,9 +164,8 @@ void HttpResponse::handle_get_method(Request *req)
     {
         std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
         _content = ans;
-        _httpVersion = "HTTP1.1";
         _statusCode = 200;
-        _reasonPhrase = "OK";
+        _reasonPhrase = _error[_statusCode];
         _contentLength = _content.size();
         if (!req->get_url().compare(req->get_url().size() - 3, 3, "css"))
             _contentType = "text/css";
@@ -160,9 +180,8 @@ void HttpResponse::handle_get_method(Request *req)
         {
             std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
             _content = ans;
-            _httpVersion = "HTTP1.1";
             _statusCode = 404;
-            _reasonPhrase = "Not Found";
+            _reasonPhrase = _error[_statusCode];
             _contentLength = _content.size();
         }
     }
@@ -192,7 +211,7 @@ void HttpResponse::constructResponse()
     strftime (date,80,"%a, %d %h %Y %H:%M:%S GMT",timeinfo);
 
     std::ostringstream file;
-    file << _httpVersion << " " << _statusCode << " " << _reasonPhrase << "\r\n";
+    file << HTTP_VERSION << " " << _statusCode << " " << _reasonPhrase << "\r\n";
     file << "Cache-Control: no-cache, private\r\n";
     file << "Content-type: " << _contentType << "\r\n";
     file << "Content-Length: " << _contentLength << "\r\n";

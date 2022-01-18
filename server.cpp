@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 22:01:31 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/17 11:45:36 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/01/18 14:26:26 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,20 +63,7 @@ void	*handle_connection(int client_socket)
 	myfile << str; //Write the request in a file
 	myfile.close();
 	Request req = req_parsing(namefile); //Parsing
-	//std::cout << "Req methods = " << req.get_method() << std::endl;
 	std::remove(namefile.c_str());
-
-	/*if (req.get_method() == "GET")
-		method_get(r);
-	else if (req.get_method() == "POST")
-		method_post(r);
-	else if (req.get_method() == "DELETE")
-		method_delete(r);
-	else
-		check(-1, "unrecognized method\n");*/ 
-	/*Send the right status code in parameter (405 "Method Not Allowed" in this case)
-	Another case exists. Code 501 "Not Implemented" wich is sent if the method actually exists but is not implemented in the server (in our case: HEAD, PUT, CONNECT, OPTIONS, TRACE, PATCH)
-	*/
 
 	HttpResponse res(&req);
 	std::string cont = res.getResponse();

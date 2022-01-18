@@ -3,16 +3,18 @@
 # include <iostream>
 # include <fstream>
 # include <sstream>
+# include "main_header.hpp"
 # include "../conf/parsing/http_request_conf/parsing_http.hpp"
+# include <algorithm>
+# define HOME_PAGE_PATH "/index.html"
 
 class HttpResponse
 {
     public:
-        HttpResponse() : _httpVersion("HTTP/1.1"), _statusCode(404), _reasonPhrase("Not Found"), _contentLength(0), _content(""), _contentType("text/html"), _response("") {};
+        HttpResponse();
         HttpResponse(Request *req);
         ~HttpResponse();
 
-        void set_http_version(std::string version);
         void set_status_code(int code);
         void set_reasonPhrase(std::string phrase);
         void set_contentLength(int length);
@@ -32,7 +34,10 @@ class HttpResponse
 
 
     private:
-        std::string _httpVersion;
+        void initValues();
+        void initErrorMap();
+        void initMethods();
+
         int _statusCode;
         std::string _reasonPhrase;
         int _contentLength;
@@ -40,8 +45,11 @@ class HttpResponse
         std::string _contentType;
         std::string _response;
 
+
+        std::map<int, std::string> _error;
+        std::vector<std::string> _implementedMethods;
+        std::vector<std::string> _notImplementedMethods;
         int check_method_existence(std::string method);
-        /*int return_error(int code);*/
 };
 
 #endif
