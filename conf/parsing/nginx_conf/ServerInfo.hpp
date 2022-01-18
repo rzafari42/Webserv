@@ -7,7 +7,6 @@
 class ServerInfo
 {
 private:
-    int nb_closing_br;
     std::string listen;
     std::string root;
     std::string index;
@@ -19,16 +18,12 @@ private:
 
 public:
     // constructor/destructor
-    ServerInfo( void ) : nb_closing_br(0) {}
+    ServerInfo( void ) : root("html"), index("index.html"), autoindex("off"), client_max_body_size(1) {}
     ~ServerInfo() {}
 
     //getters
     std::vector<Location> get_locations( void ) {
         return locations;
-    }
-
-    int get_nb_closing_br( void ) {
-        return nb_closing_br;
     }
 
     std::string get_listen( void ) {
@@ -61,14 +56,6 @@ public:
 
 
     //setters
-    void inc_closing_br( void ) {
-        nb_closing_br++;
-    }
-
-    void dec_closing_br( void ) {
-        nb_closing_br--;
-    }
-
     void set_listen( std::string str ) {
         listen = str;
     }

@@ -254,7 +254,7 @@ int find_location_client_max_body_size(std::vector<std::string>::iterator it, st
 
 int find_location_methods(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, Location &conf)
 {
-    std::vector<std::string> methods = conf.get_methods();
+    std::vector<std::string> *methods = conf.get_ptr_methods();
     if (!it->compare("methods"))
     {
         it++;
@@ -262,7 +262,7 @@ int find_location_methods(std::vector<std::string>::iterator it, std::vector<std
         {
             while (*it != "\0")
             {
-                methods.push_back(*it);
+                methods->push_back(*it);
                 it++;
             }
         }
@@ -280,14 +280,21 @@ void fill_struct(std::vector<std::vector<std::string> > v, std::vector<ServerInf
     std::vector<std::string>::iterator ite_s;
 
 
-    ServerInfo conf_tmp;
-    Location loc_tmp;
+    ServerInfo  conf_tmp;
+    Location    loc_tmp;
+
+    int brackets = 0;
+
     while (it != ite)
     {
+        conf_tmp = ServerInfo();
+        loc_tmp = Location();
+
         it_s = it->begin();
         ite_s = it->end();
         if (find_server_block(it_s, ite_s))
         {
+            brackets++;
             it++;
             it_s = it->begin();
             ite_s = it->end();
@@ -315,11 +322,12 @@ void fill_struct(std::vector<std::vector<std::string> > v, std::vector<ServerInf
                 return;
             }
             else if (!it_s->compare("}"))
-                conf_tmp.inc_closing_br();
+                brackets--;
             else if (!it_s->compare("location"))
             {
                 if (find_location_block(it_s, ite_s))
                 {
+                    brackets++;
                     it++;
                     it_s = it->begin();
                     ite_s = it->end();
@@ -348,7 +356,7 @@ void fill_struct(std::vector<std::vector<std::string> > v, std::vector<ServerInf
                     else if (!it_s->compare("}"))
                     {
                         conf_tmp.add_location(loc_tmp);
-                        conf_tmp.inc_closing_br();
+                        brackets--;
                     }
                 }
             }
@@ -356,8 +364,8 @@ void fill_struct(std::vector<std::vector<std::string> > v, std::vector<ServerInf
             it_s = it->begin();
             ite_s = it->end();
             if (it != ite && !it_s->compare("}"))
-                conf_tmp.inc_closing_br();
-            if (conf_tmp.get_nb_closing_br() == 0)
+                brackets--;
+            if (brackets != 0)
             {
                 error(UNCLOSED_BRACKET);
                 serv_info->clear();

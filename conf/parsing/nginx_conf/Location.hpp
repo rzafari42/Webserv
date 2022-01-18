@@ -14,11 +14,16 @@ private:
     std::vector<std::string> methods;
 public:
     // constructor/ destructor
-    Location( void ) {}
+    Location( void ) : root("html"), index("index.html"), autoindex("off"), client_max_body_size(1)  {
+        error_page.clear();
+        methods.clear();
+    }
     ~Location() {}
 
     // getters
     std::vector<std::string> get_methods( void ) { return methods; }
+
+    std::vector<std::string> *get_ptr_methods( void ) { return &methods; }
 
     std::string get_root( void ) {
         return root;
