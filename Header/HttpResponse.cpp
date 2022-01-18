@@ -167,8 +167,8 @@ void HttpResponse::handle_get_method(Request *req)
     }
     else
     {
-
-        std::ifstream sourceFile("www/error404.html", std::ifstream::in);
+        req->set_url(ERROR_404_PATH);
+        std::ifstream sourceFile(req->get_url(), std::ifstream::in);
         if (sourceFile.good())
         {
             std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));

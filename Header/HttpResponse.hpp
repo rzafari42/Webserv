@@ -7,6 +7,8 @@
 # include "../conf/parsing/http_request_conf/parsing_http.hpp"
 # include <algorithm>
 # define HOME_PAGE_PATH "/index.html"
+# define ERROR_404_PATH "/error404.html"
+
 
 class HttpResponse
 {
