@@ -2,6 +2,7 @@
 # define PARSING_HTTP_HPP
 # include <iostream>
 # include <fstream>
+# include <sstream>
 # include <map>
 # define WEBFILE_PATH "www"
 
@@ -26,12 +27,14 @@ class Request{
         std::string get_url() {return _url;}
         std::string get_version() {return _version;}
         std::map<std::string, std::string> get_fields() {return _fields;}
+        std::string get_body() {return _body.str();}
 
         private:
             std::string _method;
             std::string _url;
             std::string _version;
             std::map<std::string, std::string> _fields;
+            std::stringstream _body;
 };
 
 Request req_parsing(std::string av);

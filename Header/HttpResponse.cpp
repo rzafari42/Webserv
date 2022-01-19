@@ -49,15 +49,15 @@ void HttpResponse::initValues()
 void HttpResponse::initErrorMap()
 {
     _error.insert(std::pair<int, std::string>(100,"Continue"));
-    _error.insert(std::pair<int, std::string>(200,"OK"));
-    _error.insert(std::pair<int, std::string>(201,"Created"));
-    _error.insert(std::pair<int, std::string>(204,"No Content"));
+    _error.insert(std::pair<int, std::string>(200,"OK")); //done
+    _error.insert(std::pair<int, std::string>(201,"Created")); //for post method
+    _error.insert(std::pair<int, std::string>(204,"No Content")); //for post method
     _error.insert(std::pair<int, std::string>(301,"Moved Permanently"));
     _error.insert(std::pair<int, std::string>(400,"Bad Request"));
-    _error.insert(std::pair<int, std::string>(404,"Not Found"));
-    _error.insert(std::pair<int, std::string>(405,"Method Not Allowed"));
-    _error.insert(std::pair<int, std::string>(413,"Payload Too Large"));
-    _error.insert(std::pair<int, std::string>(501,"Not Implemented"));
+    _error.insert(std::pair<int, std::string>(404,"Not Found")); //done
+    _error.insert(std::pair<int, std::string>(405,"Method Not Allowed")); //done
+    _error.insert(std::pair<int, std::string>(413,"Payload Too Large")); 
+    _error.insert(std::pair<int, std::string>(501,"Not Implemented")); //done
 }
 
 void HttpResponse::initMethods()
@@ -93,6 +93,8 @@ int  HttpResponse::check_method_existence(std::string method)
 HttpResponse::~HttpResponse(void)
 {
     _error.clear();
+    _implementedMethods.clear();
+    _notImplementedMethods.clear();
 }
 
 

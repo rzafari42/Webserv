@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/21 12:19:15 by rzafari           #+#    #+#             */
-/*   Updated: 2022/01/16 17:58:28 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/01/19 14:03:24 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,6 +159,10 @@ void parsing(std::string file, Request *request)
                     else
                         break;
                 }
+                while (getline(flux, line))
+                {
+                    _body << line << "\r\n";
+                }
             }
             else
                 return;
@@ -179,20 +183,21 @@ void parsing(std::string file, Request *request)
         error(OPENING_FAILURE);
 }
 
-Request req_parsing(std::string av)
+/*Request req_parsing(std::string av)
 {
     Request request;
     parsing(av, &request);
     //cath the body part !! 
     return request;
-}
+}*/
 
-/*int main(int ac, char **av)
+int main(int ac, char **av)
 {
     if (ac < 2)
         return error(EMPTY);
     Request request;
     parsing(av[1], &request);
+    print_map(request.get_fields());
     //check if there's an CLRF at the end of each lines and if there's empty line before the body
     return 0;
-}*/
+}

@@ -29,9 +29,10 @@ void print_map(std::map<std::string, std::string> mymap)
 {
     std::map<std::string,std::string>::iterator it;
 
-    std::cout << "Map contains:\n";
+    std::cout << "Map contains:" << std::endl;
     for (it = mymap.begin(); it != mymap.end(); ++it)
         std::cout << it->first << ": " << it->second << '\n';
+    std::cout << "END" << std::endl;
 }
 
 #endif
