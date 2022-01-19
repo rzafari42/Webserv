@@ -139,6 +139,7 @@ void parsing(std::string file, Request *request)
     if (flux)
     {
         std::map<std::string, std::string> values;
+        std::vector<std::string> body;
         std::string line;
 
         getline(flux, line);
@@ -161,7 +162,8 @@ void parsing(std::string file, Request *request)
                 }
                 while (getline(flux, line))
                 {
-                    _body << line << "\r\n";
+                    std::cout << line << std::endl;
+                    body.push_back(line);
                 }
             }
             else
@@ -175,7 +177,9 @@ void parsing(std::string file, Request *request)
         }
         flux.close();
         request->set_fields(values);
+        request->set_body(body);
         values.clear();
+        body.clear();
         //print_map(request->get_fields());
         return;
     }
@@ -183,21 +187,20 @@ void parsing(std::string file, Request *request)
         error(OPENING_FAILURE);
 }
 
-/*Request req_parsing(std::string av)
+Request req_parsing(std::string av)
 {
     Request request;
     parsing(av, &request);
-    //cath the body part !! 
     return request;
-}*/
+}
 
-int main(int ac, char **av)
+/*int main(int ac, char **av)
 {
     if (ac < 2)
         return error(EMPTY);
     Request request;
     parsing(av[1], &request);
-    print_map(request.get_fields());
+    print_map(request.get_fields(), &request);
     //check if there's an CLRF at the end of each lines and if there's empty line before the body
     return 0;
-}
+}*/

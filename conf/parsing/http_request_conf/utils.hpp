@@ -25,13 +25,20 @@ int error(std::string str)
     return -1;
 }
 
-void print_map(std::map<std::string, std::string> mymap)
+void print_map(std::map<std::string, std::string> mymap, Request *req)
 {
     std::map<std::string,std::string>::iterator it;
 
     std::cout << "Map contains:" << std::endl;
     for (it = mymap.begin(); it != mymap.end(); ++it)
         std::cout << it->first << ": " << it->second << '\n';
+    std::cout << "END" << std::endl;
+
+    std::vector<std::string>::iterator it_vec;
+
+    std::cout << "request_body:" << std::endl;
+    for (int i = 0; i < req->get_body().size(); i++)
+        std::cout << req->get_body()[i] << '\n';
     std::cout << "END" << std::endl;
 }
 
