@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 22:01:31 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/18 14:26:26 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/01/19 18:46:13 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,38 +107,46 @@ int		setup_server(short port, int backlog)
 	return (server_socket);
 }
 
+
+//nc -c localhost 8080 
 int		main(int argc, char *argv[])
 {
-	int		server_socket = setup_server(SERVER_PORT, SERVER_BACKLOG);
-
-	fd_set	current_sockets, ready_sockets;
-
-	FD_ZERO(&current_sockets);
-	FD_SET(server_socket, &current_sockets);
-
-	while (true)
+	if (argc > 1)
 	{
-		ready_sockets = current_sockets;
 
-		check(select(FD_SETSIZE, &ready_sockets, NULL, NULL, NULL), "Failed to select");
+		int		server_socket = setup_server(SERVER_PORT, SERVER_BACKLOG);
 
-		for (int i = 0; i < FD_SETSIZE; i++)
+		fd_set	current_sockets, ready_sockets;
+
+		FD_ZERO(&current_sockets);
+		FD_SET(server_socket, &current_sockets);
+
+		while (true)
 		{
-			if (FD_ISSET(i, &ready_sockets))
+			ready_sockets = current_sockets;
+
+			check(select(FD_SETSIZE, &ready_sockets, NULL, NULL, NULL), "Failed to select");
+
+			for (int i = 0; i < FD_SETSIZE; i++)
 			{
-				if (i == server_socket)
+				if (FD_ISSET(i, &ready_sockets))
 				{
-					//new connection
-					int client_socket = accept_new_connection(server_socket);
-					FD_SET(client_socket, &current_sockets);
-				}
-				else
-				{
-					handle_connection(i);
-					FD_CLR(i, &current_sockets);
+					if (i == server_socket)
+					{
+						//new connection
+						int client_socket = accept_new_connection(server_socket);
+						FD_SET(client_socket, &current_sockets);
+					}
+					else
+					{
+						handle_connection(i);
+						FD_CLR(i, &current_sockets);
+					}
 				}
 			}
 		}
 	}
+	else
+		std::cout << "Configuraion File might be missing !" << std::endl;
 	return (0);
 }

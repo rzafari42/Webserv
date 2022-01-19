@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/14 21:13:24 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/18 14:33:41 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/01/19 18:41:36 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@
 # define HOME_PAGE_PATH  "/index.html"
 
 #include "../conf/parsing/http_request_conf/parsing_http.hpp"
+#include "../conf/parsing/nginx_conf/parsing_nginx.hpp"
 #include "HttpResponse.hpp"
 /*#include "conf/parsing/http_request_conf/utils.hpp"
 #include "conf/parsing/nginx_conf/utils.hpp"*/

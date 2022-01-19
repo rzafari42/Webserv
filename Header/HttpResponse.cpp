@@ -195,10 +195,10 @@ void HttpResponse::handle_delete_method(Request *req)
 
     if (fileToDelete.good())
     {
-        if (remove(request->get_url().c_str()))
+        if (remove(req->get_url().c_str()))
         {
             req->set_url(FILE_DELETED);
-            std::ifstream sourceFile(req->set_url, std::ifstream::in);
+            std::ifstream sourceFile(req->get_url(), std::ifstream::in);
             if (sourceFile.good())
             {
                 std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
@@ -207,6 +207,7 @@ void HttpResponse::handle_delete_method(Request *req)
                 _reasonPhrase = _error[_statusCode];
                 _contentLength = _content.size();
             }
+            sourceFile.close();
         }
         else
         {
@@ -220,6 +221,7 @@ void HttpResponse::handle_delete_method(Request *req)
                 _reasonPhrase = _error[_statusCode];
                 _contentLength = _content.size();
             }
+            sourceFile.close();
         }
     }
     else
@@ -234,8 +236,9 @@ void HttpResponse::handle_delete_method(Request *req)
                 _reasonPhrase = _error[_statusCode];
                 _contentLength = _content.size();
             }
+            sourceFile.close();
     }
-    sourceFile.close;
+    fileToDelete.close();
     constructResponse();
 }
 
