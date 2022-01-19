@@ -191,7 +191,51 @@ void HttpResponse::handle_post_method(Request *req)
 
 void HttpResponse::handle_delete_method(Request *req)
 {
+    std::ifstream fileToDelete(req->get_url(), std::ifstream::in);
 
+    if (fileToDelete.good())
+    {
+        if (remove(request->get_url().c_str()))
+        {
+            req->set_url(FILE_DELETED);
+            std::ifstream sourceFile(req->set_url, std::ifstream::in);
+            if (sourceFile.good())
+            {
+                std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
+                _content = ans;
+                _statusCode = 200;
+                _reasonPhrase = _error[_statusCode];
+                _contentLength = _content.size();
+            }
+        }
+        else
+        {
+            req->set_url(ERROR_404_PATH);
+            std::ifstream sourceFile(req->get_url(), std::ifstream::in);
+            if (sourceFile.good())
+            {
+                std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
+                _content = ans;
+                _statusCode = 404;
+                _reasonPhrase = _error[_statusCode];
+                _contentLength = _content.size();
+            }
+        }
+    }
+    else
+    {
+            req->set_url(ERROR_404_PATH);
+            std::ifstream sourceFile(req->get_url(), std::ifstream::in);
+            if (sourceFile.good())
+            {
+                std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
+                _content = ans;
+                _statusCode = 404;
+                _reasonPhrase = _error[_statusCode];
+                _contentLength = _content.size();
+            }
+    }
+    sourceFile.close;
     constructResponse();
 }
 
