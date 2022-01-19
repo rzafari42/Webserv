@@ -25,7 +25,7 @@ int error(std::string str)
     return -1;
 }
 
-void print_map(std::map<std::string, std::string> mymap, Request *req)
+void print_map(std::map<std::string, std::string> mymap, std::vector<std::string> vec)
 {
     std::map<std::string,std::string>::iterator it;
 
@@ -34,12 +34,15 @@ void print_map(std::map<std::string, std::string> mymap, Request *req)
         std::cout << it->first << ": " << it->second << '\n';
     std::cout << "END" << std::endl;
 
-    std::vector<std::string>::iterator it_vec;
-
+    std::vector<std::string>::iterator it_vec = vec.begin();
+    std::vector<std::string>::iterator ite_vec = vec.end();
+    
     std::cout << "request_body:" << std::endl;
-    for (int i = 0; i < req->get_body().size(); i++)
-        std::cout << req->get_body()[i] << '\n';
-    std::cout << "END" << std::endl;
+    while(it_vec != ite_vec)
+    {
+        std::cout << *it_vec << std::endl;
+        it_vec++;
+    }
 }
 
 #endif

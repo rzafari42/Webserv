@@ -200,7 +200,7 @@ Request req_parsing(std::string av)
         return error(EMPTY);
     Request request;
     parsing(av[1], &request);
-    print_map(request.get_fields(), &request);
+    print_map(request.get_fields(), request.get_body());
     //check if there's an CLRF at the end of each lines and if there's empty line before the body
     return 0;
 }*/
