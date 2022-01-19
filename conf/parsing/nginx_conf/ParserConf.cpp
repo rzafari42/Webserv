@@ -1,8 +1,16 @@
-#include "utils.hpp"
+#include "ParserConf.hpp"
 #include "ServerInfo.hpp"
 #include "Location.hpp"
 
-std::vector<std::string> catchvalues(const std::string s)
+ParserConf::ParserConf( void ) {}
+ParserConf::~ParserConf() {}
+
+static int error(std::string str) {
+    std::cout << str << std::endl;
+    return -1;
+}
+
+static std::vector<std::string> catchvalues(const std::string s)
 {
     std::vector<std::string> v;
     std::string cpy;
@@ -33,7 +41,7 @@ std::vector<std::string> catchvalues(const std::string s)
     return v;
 }
 
-int find_server_block(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite)
+static int find_server_block(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite)
 {
     while (it != ite)
     {
@@ -47,7 +55,7 @@ int find_server_block(std::vector<std::string>::iterator it, std::vector<std::st
     return 0;
 }
 
-int find_location_block(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite)
+static int find_location_block(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite)
 {
     if (!it->compare("location"))
     {
@@ -64,7 +72,7 @@ int find_location_block(std::vector<std::string>::iterator it, std::vector<std::
     return 0;
 }
 
-int find_listen(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &conf)
+static int find_listen(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &conf)
 {
     if (!it->compare("listen"))
     {
@@ -77,7 +85,7 @@ int find_listen(std::vector<std::string>::iterator it, std::vector<std::string>:
     return 0;
 }
 
-int find_root(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &conf)
+static int find_root(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &conf)
 {
 
     if (!it->compare("root"))
@@ -91,7 +99,7 @@ int find_root(std::vector<std::string>::iterator it, std::vector<std::string>::i
     return 0;
 }
 
-int find_index(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &conf)
+static int find_index(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &conf)
 {
     if (!it->compare("index"))
     {
@@ -104,7 +112,7 @@ int find_index(std::vector<std::string>::iterator it, std::vector<std::string>::
     return 0;
 }
 
-int find_error_page(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &conf)
+static int find_error_page(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &conf)
 {
     std::string tmp;
     if (!it->compare("error_page"))
@@ -130,7 +138,7 @@ int find_error_page(std::vector<std::string>::iterator it, std::vector<std::stri
     return 0;
 }
 
-int find_server_name(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &conf)
+static int find_server_name(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &conf)
 {
     if (!it->compare("server_name"))
     {
@@ -145,8 +153,7 @@ int find_server_name(std::vector<std::string>::iterator it, std::vector<std::str
     }
     return 0;
 }
-
-int find_autoindex(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &conf)
+static int find_autoindex(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &conf)
 {
     std::vector<Location> tmp = conf.get_locations();
     if (!it->compare("autoindex"))
@@ -160,7 +167,7 @@ int find_autoindex(std::vector<std::string>::iterator it, std::vector<std::strin
     return 0;
 }
 
-int find_client_max_body_size(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &conf)
+static int find_client_max_body_size(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &conf)
 {
     if (!it->compare("client_max_body_size"))
     {
@@ -176,7 +183,7 @@ int find_client_max_body_size(std::vector<std::string>::iterator it, std::vector
     return 0;
 }
 
-int find_location_root(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, Location &conf)
+static int find_location_root(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, Location &conf)
 {
     if (!it->compare("root"))
     {
@@ -191,7 +198,7 @@ int find_location_root(std::vector<std::string>::iterator it, std::vector<std::s
     return 0;
 }
 
-int find_location_index(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, Location &conf)
+static int find_location_index(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, Location &conf)
 {
     if (!it->compare("index"))
     {
@@ -206,7 +213,7 @@ int find_location_index(std::vector<std::string>::iterator it, std::vector<std::
     return 0;
 }
 
-int find_location_autoindex(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, Location &conf)
+static int find_location_autoindex(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, Location &conf)
 {
     if (!it->compare("autoindex"))
     {
@@ -221,7 +228,7 @@ int find_location_autoindex(std::vector<std::string>::iterator it, std::vector<s
     return 0;
 }
 
-int find_location_error_page(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, Location &conf)
+static int find_location_error_page(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, Location &conf)
 {
     if (!it->compare("error_page"))
     {
@@ -236,7 +243,7 @@ int find_location_error_page(std::vector<std::string>::iterator it, std::vector<
     return 0;
 }
 
-int find_location_client_max_body_size(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, Location &conf)
+static int find_location_client_max_body_size(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, Location &conf)
 {
     if (!it->compare("client_max_body_size"))
     {
@@ -252,7 +259,7 @@ int find_location_client_max_body_size(std::vector<std::string>::iterator it, st
     return 0;
 }
 
-int find_location_methods(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, Location &conf)
+static int find_location_methods(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, Location &conf)
 {
     std::vector<std::string> *methods = conf.get_ptr_methods();
     if (!it->compare("methods"))
@@ -272,7 +279,7 @@ int find_location_methods(std::vector<std::string>::iterator it, std::vector<std
     return 0;
 }
 
-void fill_struct(std::vector<std::vector<std::string> > v, std::vector<ServerInfo> *serv_info)
+static void fill_struct(std::vector<std::vector<std::string> > v, std::vector<ServerInfo> *serv_info)
 {
     std::vector<std::vector<std::string> >::iterator it = v.begin();
     std::vector<std::vector<std::string> >::iterator ite = v.end();
@@ -365,7 +372,7 @@ void fill_struct(std::vector<std::vector<std::string> > v, std::vector<ServerInf
             ite_s = it->end();
             if (it != ite && !it_s->compare("}"))
                 brackets--;
-            if (brackets != 0)
+            if (brackets == 0)
             {
                 error(UNCLOSED_BRACKET);
                 serv_info->clear();
@@ -373,7 +380,6 @@ void fill_struct(std::vector<std::vector<std::string> > v, std::vector<ServerInf
             }
             else
                 serv_info->push_back(conf_tmp);
-            //print_location_methods_struct(conf_tmp.location.methods);
         }
         if (it != ite)
             it++;
@@ -381,7 +387,7 @@ void fill_struct(std::vector<std::vector<std::string> > v, std::vector<ServerInf
     return;
 }
 
-void parsing(std::string file, std::vector<ServerInfo> *serv_info)
+void ParserConf::parse(std::string file, std::vector<ServerInfo> *serv_info)
 {
     std::ifstream flux(file);
 
@@ -396,19 +402,8 @@ void parsing(std::string file, std::vector<ServerInfo> *serv_info)
             line.clear();
         }
         fill_struct(values, serv_info);
-        //printlines(values);
-        print_conf_struct(*serv_info);
         flux.close();
     }
     else
         error(OPENING_FAILURE);
-}
-
-int main(int ac, char **av)
-{
-    if (ac < 2)
-        return error(EMPTY);
-    std::vector<ServerInfo> serv_info;
-    parsing(av[1], &serv_info);
-    return 0;
 }
