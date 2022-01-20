@@ -77,8 +77,11 @@ static int find_listen(std::vector<std::string>::iterator it, std::vector<std::s
     if (!it->compare("listen"))
     {
         it++;
-        if (it->compare("\0"))
+        if (it->compare("\0")) {
+            std::cout << *it << std::endl;
             conf.set_listen(*it);
+            std::cout << conf.get_listen() << std::endl;
+        }
         else
             return error(LISTEN_EMPTY);
     }
@@ -286,103 +289,65 @@ static void fill_struct(std::vector<std::vector<std::string> > v, std::vector<Se
     std::vector<std::string>::iterator it_s;
     std::vector<std::string>::iterator ite_s;
 
-
     ServerInfo  conf_tmp;
     Location    loc_tmp;
 
     int brackets = 0;
 
-    while (it != ite)
-    {
-        conf_tmp = ServerInfo();
-        loc_tmp = Location();
-
+    while (it != ite) {
         it_s = it->begin();
         ite_s = it->end();
-        if (find_server_block(it_s, ite_s))
-        {
-            brackets++;
+
+        if (find_server_block(it_s, ite_s)) {
+            conf_tmp = ServerInfo();
             it++;
+            brackets++;
             it_s = it->begin();
             ite_s = it->end();
-            while (it != ite && it_s->compare("}") && it_s->compare("location"))
-            {
+            while (it != ite && it_s->compare("}")) {
+                // ELEMENTS IN SERVER BLOCK
                 if (find_listen(it_s, ite_s, conf_tmp) ||
-                find_root(it_s, ite_s, conf_tmp) ||
-                find_index(it_s, ite_s, conf_tmp) ||
-                find_error_page(it_s, ite_s, conf_tmp) ||
-                find_server_name(it_s, ite_s, conf_tmp) ||
-                find_client_max_body_size(it_s, ite_s, conf_tmp) ||
-                find_autoindex(it_s, ite_s, conf_tmp))
-                {
+                        find_root(it_s, ite_s, conf_tmp) ||
+                        find_index(it_s, ite_s, conf_tmp) ||
+                        find_error_page(it_s, ite_s, conf_tmp) ||
+                        find_server_name(it_s, ite_s, conf_tmp) ||
+                        find_client_max_body_size(it_s, ite_s, conf_tmp) ||
+                        find_autoindex(it_s, ite_s, conf_tmp)) {
                     serv_info->clear();
                     return;
                 }
-                it++;
-                it_s = it->begin();
-                ite_s = it->end();
-            }
-            if (it == ite)
-            {
-                error(UNCLOSED_BRACKET);
-                serv_info->clear();
-                return;
-            }
-            else if (!it_s->compare("}"))
-                brackets--;
-            else if (!it_s->compare("location"))
-            {
-                if (find_location_block(it_s, ite_s))
-                {
-                    brackets++;
-                    it++;
-                    it_s = it->begin();
-                    ite_s = it->end();
-                    while (it != ite && it_s->compare("}"))
-                    {
+                if (it_s->compare("location")) {
+                    loc_tmp = Location();
+                    while (it != ite && it_s->compare("}")) {
+                        // ELEMENTS IN LOCATION BLOCK 
                         if (find_location_root(it_s, ite_s, loc_tmp) ||
-                        find_location_index(it_s, ite_s, loc_tmp) ||
-                        find_location_autoindex(it_s, ite_s, loc_tmp) ||
-                        find_location_client_max_body_size(it_s, ite_s, loc_tmp) ||
-                        find_location_error_page(it_s, ite_s, loc_tmp) ||
-                        find_location_methods(it_s, ite_s, loc_tmp))
-                        {
+                                find_location_index(it_s, ite_s, loc_tmp) ||
+                                find_location_autoindex(it_s, ite_s, loc_tmp) ||
+                                find_location_client_max_body_size(it_s, ite_s, loc_tmp) ||
+                                find_location_error_page(it_s, ite_s, loc_tmp) ||
+                                find_location_methods(it_s, ite_s, loc_tmp)) {
                             serv_info->clear();
                             return;
                         }
                         it++;
                         it_s = it->begin();
-                        ite_s = it->end();
+                        ite_s = it->end();  
                     }
-                    if (it == ite)
-                    {
-                        error(UNCLOSED_BRACKET);
-                        serv_info->clear();
-                        return;
-                    }
-                    else if (!it_s->compare("}"))
-                    {
-                        conf_tmp.add_location(loc_tmp);
-                        brackets--;
-                    }
+                    brackets--;
+                    conf_tmp.add_location(loc_tmp);
+                }
+                if (it != ite) {
+                    it++;
+                    it_s = it->begin();
+                    ite_s = it->end();
                 }
             }
-            it++;
-            it_s = it->begin();
-            ite_s = it->end();
-            if (it != ite && !it_s->compare("}"))
-                brackets--;
-            if (brackets == 0)
-            {
-                error(UNCLOSED_BRACKET);
-                serv_info->clear();
-                return;
-            }
-            else
-                serv_info->push_back(conf_tmp);
+            brackets--;
+            serv_info->push_back(conf_tmp);
         }
-        if (it != ite)
+        if (it != ite) {
             it++;
+        }
     }
     return;
 }
