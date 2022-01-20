@@ -14,8 +14,16 @@ HttpResponse::HttpResponse(Request *req)
     initMethods();
     int does_method_exist = 0;
     std::string method = req->get_method();
-    does_method_exist = check_method_existence(method);
 
+   if (req->get_content_length_missing() == true)
+   {
+        _statusCode = 411;
+        _reasonPhrase = _error[_statusCode];
+        constructResponse();
+        return ;
+   }
+
+    does_method_exist = check_method_existence(method);
     if (does_method_exist == 0)
     {
         if (!method.compare("GET"))
@@ -42,7 +50,7 @@ void HttpResponse::initValues()
     _reasonPhrase = "";
     _contentLength = 0; 
     _content = ""; 
-    _contentType = "";
+    _contentType = "text/html";
     _response = ""; 
 }
 
@@ -56,6 +64,7 @@ void HttpResponse::initErrorMap()
     _error.insert(std::pair<int, std::string>(400,"Bad Request"));
     _error.insert(std::pair<int, std::string>(404,"Not Found")); //done
     _error.insert(std::pair<int, std::string>(405,"Method Not Allowed")); //done
+    _error.insert(std::pair<int, std::string>(411,"Length Required"));
     _error.insert(std::pair<int, std::string>(413,"Payload Too Large")); 
     _error.insert(std::pair<int, std::string>(501,"Not Implemented")); //done
 }
@@ -147,6 +156,15 @@ std::string HttpResponse::getResponse()
 {
     return _response;
 }
+
+void HttpResponse::requestParsingError(int code)
+{
+    _statusCode = 501;
+    _reasonPhrase = _error[_statusCode];
+    _contentType = "text/html";
+    constructResponse();
+}
+
 
 void HttpResponse::handle_get_method(Request *req)
 {

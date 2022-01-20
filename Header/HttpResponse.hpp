@@ -18,7 +18,7 @@ class HttpResponse
         HttpResponse();
         HttpResponse(Request *req);
         ~HttpResponse();
-
+        
         void set_status_code(int code);
         void set_reasonPhrase(std::string phrase);
         void set_contentLength(int length);
@@ -30,6 +30,8 @@ class HttpResponse
         int get_contentLength();
         std::string get_content();
         std::string getResponse();
+
+        void requestParsingError(int code);
 
         void handle_get_method(Request *req);
         void handle_post_method(Request *req);

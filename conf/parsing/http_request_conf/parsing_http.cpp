@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/21 12:19:15 by rzafari           #+#    #+#             */
-/*   Updated: 2022/01/19 14:03:24 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/01/20 12:09:47 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,10 +160,21 @@ void parsing(std::string file, Request *request)
                     else
                         break;
                 }
-                while (getline(flux, line))
+                if (flux.eof() == false)
                 {
-                    std::cout << line << std::endl;
-                    body.push_back(line);
+                    if (values.find("Content-Length") != values.end())
+                    {
+                        int body_size = std::stoi(values["Content-Length"]);
+                        while (getline(flux, line) && body_size > 0)
+                        {
+                            std::cout << line << std::endl;
+                            body.push_back(line);
+                            line.clear();
+                            body_size--;
+                        }
+                    }
+                    else
+                        request->set_content_length_missing();
                 }
             }
             else
