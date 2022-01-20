@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 22:01:31 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/19 18:46:13 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/01/20 16:26:35 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,14 +113,18 @@ int		main(int argc, char *argv[])
 {
 	if (argc > 1)
 	{
+		std::vector<ServerInfo> conf; 
+		ParserConf parser;
 
+		parser.parse(argv[1], &conf);
+		
 		int		server_socket = setup_server(SERVER_PORT, SERVER_BACKLOG);
 
 		fd_set	current_sockets, ready_sockets;
 
 		FD_ZERO(&current_sockets);
 		FD_SET(server_socket, &current_sockets);
-
+		
 		while (true)
 		{
 			ready_sockets = current_sockets;

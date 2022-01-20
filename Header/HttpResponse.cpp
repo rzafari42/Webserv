@@ -213,7 +213,7 @@ void HttpResponse::handle_delete_method(Request *req)
 
     if (fileToDelete.good())
     {
-        if (remove(req->get_url().c_str()))
+        if (!remove(req->get_url().c_str()))
         {
             req->set_url(FILE_DELETED);
             std::ifstream sourceFile(req->get_url(), std::ifstream::in);
