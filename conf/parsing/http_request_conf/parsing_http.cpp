@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/21 12:19:15 by rzafari           #+#    #+#             */
-/*   Updated: 2022/01/20 12:09:47 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/01/20 14:45:00 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,6 +164,7 @@ void parsing(std::string file, Request *request)
                 {
                     if (values.find("Content-Length") != values.end())
                     {
+                        std::cout << "content_length" << std::endl;
                         int body_size = std::stoi(values["Content-Length"]);
                         while (getline(flux, line) && body_size > 0)
                         {
@@ -174,7 +175,10 @@ void parsing(std::string file, Request *request)
                         }
                     }
                     else
+                    {
+                        std::cout << "lol" << std::endl;
                         request->set_content_length_missing();
+                    }
                 }
             }
             else
@@ -214,4 +218,5 @@ Request req_parsing(std::string av)
     print_map(request.get_fields(), request.get_body());
     //check if there's an CLRF at the end of each lines and if there's empty line before the body
     return 0;
-}*/
+}
+*/

@@ -38,7 +38,6 @@ class HttpResponse
         void handle_delete_method(Request *req);
         void constructResponse();
 
-
     private:
         void initValues();
         void initErrorMap();
