@@ -77,11 +77,8 @@ static int find_listen(std::vector<std::string>::iterator it, std::vector<std::s
     if (!it->compare("listen"))
     {
         it++;
-        if (it->compare("\0")) {
-            std::cout << *it << std::endl;
+        if (it->compare("\0"))
             conf.set_listen(*it);
-            std::cout << conf.get_listen() << std::endl;
-        }
         else
             return error(LISTEN_EMPTY);
     }
@@ -90,7 +87,6 @@ static int find_listen(std::vector<std::string>::iterator it, std::vector<std::s
 
 static int find_root(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &conf)
 {
-
     if (!it->compare("root"))
     {
         it++;
@@ -316,10 +312,11 @@ static void fill_struct(std::vector<std::vector<std::string> > v, std::vector<Se
                     serv_info->clear();
                     return;
                 }
-                if (it_s->compare("location")) {
+                if (!it_s->compare("location")) {
                     loc_tmp = Location();
+                    brackets++;
                     while (it != ite && it_s->compare("}")) {
-                        // ELEMENTS IN LOCATION BLOCK 
+                        // ELEMENTS IN LOCATION BLOCK
                         if (find_location_root(it_s, ite_s, loc_tmp) ||
                                 find_location_index(it_s, ite_s, loc_tmp) ||
                                 find_location_autoindex(it_s, ite_s, loc_tmp) ||
@@ -339,6 +336,7 @@ static void fill_struct(std::vector<std::vector<std::string> > v, std::vector<Se
                 if (it != ite) {
                     it++;
                     it_s = it->begin();
+                    //std::cout << *it_s << std::endl;
                     ite_s = it->end();
                 }
             }
@@ -348,6 +346,10 @@ static void fill_struct(std::vector<std::vector<std::string> > v, std::vector<Se
         if (it != ite) {
             it++;
         }
+    }
+    if (brackets) {
+        error(UNCLOSED_BRACKET);
+        serv_info->clear();
     }
     return;
 }
