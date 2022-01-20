@@ -37,7 +37,9 @@ static std::vector<std::string> catchvalues(const std::string s)
             i++;
         }
     }
-    v.push_back("\0");
+    for (std::vector<std::string>::iterator it = v.begin(); it != v.end(); it++){
+        std::cout << *it << std::endl;
+    }
     return v;
 }
 
@@ -45,7 +47,7 @@ static int find_server_block(std::vector<std::string>::iterator it, std::vector<
 {
     while (it != ite)
     {
-        if (!it->compare("server") && (++it)->compare("\0") && !it->compare("{"))
+        if (!it->compare("server") && (++it) != ite && !it->compare("{"))
         {
             //TODO
             return 1;
@@ -77,7 +79,7 @@ static int find_listen(std::vector<std::string>::iterator it, std::vector<std::s
     if (!it->compare("listen"))
     {
         it++;
-        if (it->compare("\0"))
+        if (it != ite)
             conf.set_listen(*it);
         else
             return error(LISTEN_EMPTY);
@@ -90,7 +92,7 @@ static int find_root(std::vector<std::string>::iterator it, std::vector<std::str
     if (!it->compare("root"))
     {
         it++;
-        if (it->compare("\0"))
+        if (it != ite)
             conf.set_root(*it);
         else
             return error(ROOT_EMPTY);
@@ -103,7 +105,7 @@ static int find_index(std::vector<std::string>::iterator it, std::vector<std::st
     if (!it->compare("index"))
     {
         it++;
-        if (it->compare("\0"))
+        if (it != ite)
             conf.set_index(*it);
         else
             return error(INDEX_EMPTY);
@@ -117,13 +119,13 @@ static int find_error_page(std::vector<std::string>::iterator it, std::vector<st
     if (!it->compare("error_page"))
     {
         it++;
-        if (it->compare("\0"))
+        if (it != ite)
         {
             tmp = *it;
             it++;
             while (it != ite)
             {
-                if (it->compare("\0"))
+                if (it != ite)
                     tmp += ' ';
                 tmp += *it;
                 it++;
@@ -142,7 +144,7 @@ static int find_server_name(std::vector<std::string>::iterator it, std::vector<s
     if (!it->compare("server_name"))
     {
         it++;
-        if (it->compare("\0"))
+        if (it != ite)
         {
             conf.set_server_name(*it);
             //std::cout << "server_name = " << conf.server_name << std::endl;
@@ -158,7 +160,7 @@ static int find_autoindex(std::vector<std::string>::iterator it, std::vector<std
     if (!it->compare("autoindex"))
     {
         it++;
-        if (it->compare("\0"))
+        if (it != ite)
             conf.set_autoindex(*it);
         else
             return error(AUTOINDEX_EMPTY);
@@ -171,7 +173,7 @@ static int find_client_max_body_size(std::vector<std::string>::iterator it, std:
     if (!it->compare("client_max_body_size"))
     {
         it++;
-        if (it->compare("\0"))
+        if (it != ite)
         {
             std::string str = *it;
             conf.set_client_max_body_size(std::atoi(str.c_str()));
@@ -187,7 +189,7 @@ static int find_location_root(std::vector<std::string>::iterator it, std::vector
     if (!it->compare("root"))
     {
         it++;
-        if (it->compare("\0"))
+        if (it != ite)
         {
             conf.set_root(*it);
         }
@@ -202,7 +204,7 @@ static int find_location_index(std::vector<std::string>::iterator it, std::vecto
     if (!it->compare("index"))
     {
         it++;
-        if (it->compare("\0"))
+        if (it != ite)
         {
             conf.set_index(*it);
         }
@@ -217,7 +219,7 @@ static int find_location_autoindex(std::vector<std::string>::iterator it, std::v
     if (!it->compare("autoindex"))
     {
         it++;
-        if (it->compare("\0"))
+        if (it != ite)
         {
             conf.set_autoindex(*it);
         }
@@ -232,7 +234,7 @@ static int find_location_error_page(std::vector<std::string>::iterator it, std::
     if (!it->compare("error_page"))
     {
         it++;
-        if (it->compare("\0"))
+        if (it != ite)
         {
             conf.set_error_page(*it);
         }
@@ -247,7 +249,7 @@ static int find_location_client_max_body_size(std::vector<std::string>::iterator
     if (!it->compare("client_max_body_size"))
     {
         it++;
-        if (it->compare("\0"))
+        if (it != ite)
         {
             std::string str = *it;
             conf.set_client_max_body_size(std::atoi(str.c_str()));
@@ -264,9 +266,9 @@ static int find_location_methods(std::vector<std::string>::iterator it, std::vec
     if (!it->compare("methods"))
     {
         it++;
-        if (it->compare("\0"))
+        if (it != ite)
         {
-            while (*it != "\0")
+            while (it != ite)
             {
                 methods->push_back(*it);
                 it++;
