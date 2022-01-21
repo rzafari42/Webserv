@@ -37,9 +37,6 @@ static std::vector<std::string> catchvalues(const std::string s)
             i++;
         }
     }
-    for (std::vector<std::string>::iterator it = v.begin(); it != v.end(); it++){
-        std::cout << *it << std::endl;
-    }
     return v;
 }
 
@@ -131,7 +128,6 @@ static int find_error_page(std::vector<std::string>::iterator it, std::vector<st
                 it++;
             }
             conf.set_error_page(tmp);
-            //std::cout << "error_page = " << conf.error_page << std::endl;
         }
         else
             return error(ERROR_PAGE_EMPTY);
@@ -145,10 +141,7 @@ static int find_server_name(std::vector<std::string>::iterator it, std::vector<s
     {
         it++;
         if (it != ite)
-        {
             conf.set_server_name(*it);
-            //std::cout << "server_name = " << conf.server_name << std::endl;
-        }
         else
             return error(SERVER_NAME_EMPTY);
     }
@@ -298,7 +291,6 @@ static void fill_struct(std::vector<std::vector<std::string> > v, std::vector<Se
 
         if (find_server_block(it_s, ite_s)) {
             conf_tmp = ServerInfo();
-            it++;
             brackets++;
             it_s = it->begin();
             ite_s = it->end();
@@ -338,7 +330,6 @@ static void fill_struct(std::vector<std::vector<std::string> > v, std::vector<Se
                 if (it != ite) {
                     it++;
                     it_s = it->begin();
-                    //std::cout << *it_s << std::endl;
                     ite_s = it->end();
                 }
             }
@@ -362,13 +353,17 @@ void ParserConf::parse(std::string file, std::vector<ServerInfo> *serv_info)
 
     if (flux)
     {
-        std::vector<std::vector<std::string> > values;
+        std::vector<std::vector<std::string>> values;
+        std::vector<std::string> tmp;
         std::string line;
 
         while(getline(flux, line))
         {
-            values.push_back(catchvalues(line));
-            line.clear();
+            tmp = catchvalues(line);
+            if (!tmp.empty()) {
+                values.push_back(tmp);
+                line.clear();
+            }
         }
         fill_struct(values, serv_info);
         flux.close();
