@@ -20,8 +20,8 @@ int check_format_rqline(std::string s, Request *req)
     int nb_space = 0;
     int nb_arg = 0;
 
-    /*if (s.find("\r\n") == std::string::npos)
-        return error(REQUEST_LINE_FORMAT_CRLF, 1);*/
+    if (s.find("\r\n") == std::string::npos)
+        return error(REQUEST_LINE_FORMAT_CRLF, 1, req);
     s.erase(s.size() - 2);
     while (i < s.length())
     {
@@ -44,7 +44,12 @@ int check_format_rqfield(std::string s, Request *req)
     int nb_arg = 0;
     
     if (s.find("\r\n") == std::string::npos)
+    {
+        if (s.empty())
+            std::cout << "Line is empty" << std::endl;
+        std::cout << "CRLF Line: |" << s << '|'<< std::endl;
         return error(REQUEST_FIELD_FORMAT_CRLF, 1, req);
+    }
     s.erase(s.size() - 2);
     while (i < s.length())
     {
@@ -64,7 +69,11 @@ int check_format_rqfield(std::string s, Request *req)
         i++;
     }
     if (semi_colon == 1 && nb_arg >= 2)
+    {
+        std::cout << "LINE ACCEPTED: " << s << std::endl;
         return 0;
+    }
+    std::cout << "LINE AFTER: " << s << std::endl;
     return error(REQUEST_FIELD_FORMAT, 1, req);
 }
 
@@ -221,14 +230,15 @@ Request req_parsing(std::string av)
 {
     Request request;
     parsing(av, &request);
+    std::cout << "Parsing Ended" << std::endl;
     return request;
 }
 
 /*int main(int ac, char **av)
 {
-    if (ac < 2)
-        return error(EMPTY);
     Request request;
+    if (ac < 2)
+        return error(EMPTY, 0, &request);
     parsing(av[1], &request);
     print_map(request.get_fields(), request.get_body());
     //check if there's an CLRF at the end of each lines and if there's empty line before the body

@@ -39,7 +39,7 @@ void	*handle_connection(int client_socket)
 	char	actual_path[PATH_MAX + 1];
 	static int i = 0;
 
-	while ((bytes_read = read(client_socket, buffer + msg_size, sizeof(buffer) - msg_size - 1)))
+	while ((bytes_read = read(client_socket, buffer + msg_size, sizeof(buffer) - msg_size)))
 	{
 		msg_size += bytes_read;
 		if (msg_size > BUFF_SIZE - 1 || buffer[msg_size - 1] == '\n')
@@ -48,7 +48,7 @@ void	*handle_connection(int client_socket)
 	check(bytes_read, "recv error");
 	buffer[msg_size - 1]  = 0;
 
-	printf("REQUEST: %s\n", buffer);
+	printf("REQUEST: \n%s\n", buffer);
 	fflush(stdout);
 
 	//Name file creation
@@ -63,7 +63,7 @@ void	*handle_connection(int client_socket)
 	myfile << str; //Write the request in a file
 	myfile.close();
 	Request req = req_parsing(namefile); //Parsing
-	std::remove(namefile.c_str());
+	//std::remove(namefile.c_str());
 
 	HttpResponse res(&req);
 	std::string cont = res.getResponse();
