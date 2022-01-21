@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/21 12:19:15 by rzafari           #+#    #+#             */
-/*   Updated: 2022/01/21 15:59:58 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/01/21 17:03:28 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ int check_format_rqfield(std::string s)
     int nb_arg = 0;
     
     if (s.find("\r\n") == std::string::npos)
-        return error(REQUEST_LINE_FORMAT_CRLF);
+        return error(REQUEST_FIELD_FORMAT_CRLF);
     s.erase(s.size() - 2);
     while (i < s.length())
     {
@@ -73,7 +73,7 @@ int catch_request_line(const std::string s, Request *req) //Format: Method Reque
     int i = 0;
     std::string tmp;
 
-    while (!isspace(s[i]))
+    while (!isspace(s[i]) && i < s.length())
     {
         if (!std::isupper(s[i]))
             return(error(METHOD_LOWERCASE));
@@ -83,7 +83,7 @@ int catch_request_line(const std::string s, Request *req) //Format: Method Reque
     req->set_method(tmp);
     tmp.clear();
     i++;
-    while (!isspace(s[i]))
+    while (!isspace(s[i]) && i < s.length())
     {
         tmp.push_back(s[i]);
         i++;
@@ -106,12 +106,12 @@ void catchvalues(const std::string s, std::map<std::string, std::string> &mp)
     std::string value;
     int i = 0;
 
-    while (s[i] != ':' && i < s.length() - 2)
+    while (s[i] != ':' && i < s.length())
     {
         name.push_back(s[i]);
         i++;
     }
-    if (s[i] == ':' && i < s.length() - 2)
+    if (s[i] == ':' && i < s.length())
         i++;
     while (i < s.length() - 2)
     {
