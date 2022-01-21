@@ -6,12 +6,13 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/21 12:19:15 by rzafari           #+#    #+#             */
-/*   Updated: 2022/01/20 14:45:00 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/01/21 15:58:37 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parsing_http.hpp"
 #include "utils.hpp"
+#include <fstream>
 
 int check_format_rqline(std::string s)
 {
@@ -19,7 +20,10 @@ int check_format_rqline(std::string s)
     int nb_space = 0;
     int nb_arg = 0;
 
-    while (i < s.length())
+    if (s.find("\r\n") == std::string::npos)
+        return error(REQUEST_LINE_FORMAT_CRLF);
+    s.erase(s.size() - 2);
+    while (i < s.length() - 2)
     {
         while (!isspace(s[i]) && i < s.length())
             i++;
@@ -28,8 +32,6 @@ int check_format_rqline(std::string s)
             nb_space += 1;
         i++;
     }
-    if ((s.find(std::string(1, CR)) == std::string::npos) && (s.find(std::string(1, LF)) == std::string::npos))
-        return error(REQUEST_LINE_FORMAT_CRLF);
     if (nb_space == 2 && nb_arg == 3)
         return 0;
     return error(REQUEST_LINE_FORMAT);
@@ -41,6 +43,9 @@ int check_format_rqfield(std::string s)
     int semi_colon = 0;
     int nb_arg = 0;
     
+    if (s.find("\r\n") == std::string::npos)
+        return error(REQUEST_LINE_FORMAT_CRLF);
+    s.erase(s.size() - 2);
     while (i < s.length())
     {
         while (!isspace(s[i]) && i < s.length())
@@ -58,10 +63,8 @@ int check_format_rqfield(std::string s)
             nb_arg += 1;
         i++;
     }
-    if ((s.find(std::string(1,CR)) == std::string::npos) && (s.find(std::string(1,LF)) == std::string::npos))
-        return error(REQUEST_FIELD_FORMAT_CRLF);
     if (semi_colon == 1 && nb_arg >= 2)
-        return 1;
+        return 0;
     return error(REQUEST_FIELD_FORMAT);
 }
 
@@ -103,14 +106,14 @@ void catchvalues(const std::string s, std::map<std::string, std::string> &mp)
     std::string value;
     int i = 0;
 
-    while (s[i] != ':' && i < s.length())
+    while (s[i] != ':' && i < s.length() - 2)
     {
         name.push_back(s[i]);
         i++;
     }
-    if (s[i] == ':' && i < s.length())
+    if (s[i] == ':' && i < s.length() - 2)
         i++;
-    while (i < s.length())
+    while (i < s.length() - 2)
     {
         value.push_back(s[i]);
         i++;
@@ -142,23 +145,33 @@ void parsing(std::string file, Request *request)
         std::vector<std::string> body;
         std::string line;
 
-        getline(flux, line);
+        char c;
+        while (flux.get(c) && c != '\n')
+            line.push_back(c);
+        line.push_back(c);
         if (!check_format_rqline(line))
         {
             if (!catch_request_line(line, request))
             {
                 line.clear();
-                while (getline(flux, line))
+                while (1)
                 {
-                    if (!line.compare("\r"))
+                    while (flux.get(c) && c != '\n')
+                        line.push_back(c);
+                    line.push_back(c);
+                    if (!line.compare("\r\n"))
                         break;
-                    if (check_format_rqfield(line))
+                    if (!check_format_rqfield(line))
                     {
                         catchvalues(line, values);
                         line.clear();
                     }
                     else
-                        break;
+                    {
+                        flux.close();
+                        values.clear();
+                        return;
+                    }
                 }
                 if (flux.eof() == false)
                 {
@@ -168,17 +181,13 @@ void parsing(std::string file, Request *request)
                         int body_size = std::stoi(values["Content-Length"]);
                         while (getline(flux, line) && body_size > 0)
                         {
-                            std::cout << line << std::endl;
                             body.push_back(line);
                             line.clear();
                             body_size--;
                         }
                     }
                     else
-                    {
-                        std::cout << "lol" << std::endl;
                         request->set_content_length_missing();
-                    }
                 }
             }
             else
@@ -218,5 +227,4 @@ Request req_parsing(std::string av)
     print_map(request.get_fields(), request.get_body());
     //check if there's an CLRF at the end of each lines and if there's empty line before the body
     return 0;
-}
-*/
+}*/
