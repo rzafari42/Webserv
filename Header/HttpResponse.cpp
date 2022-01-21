@@ -7,6 +7,60 @@ HttpResponse::HttpResponse()
     initMethods();
 }
 
+bool HttpResponse::check_basic_error(Request *req)
+{
+    if (req->get_isError() == true)
+    {
+        req->set_url(ERROR_400_PATH);
+        std::ifstream sourceFile(req->get_url(), std::ifstream::in);
+        if (sourceFile.good())
+        {
+            std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
+            _content = ans;
+            _statusCode = 400;
+            _reasonPhrase = _error[_statusCode];
+            _contentLength = _content.size();
+        }
+        sourceFile.close();
+        constructResponse();
+        return false;
+    }
+    if (req->get_version().compare("HTTP/1.1") != 0)
+    {
+        req->set_url(ERROR_505_PATH);
+        std::ifstream sourceFile(req->get_url(), std::ifstream::in);
+        if (sourceFile.good())
+        {
+            std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
+            _content = ans;
+            _statusCode = 505;
+            _reasonPhrase = _error[_statusCode];
+            _contentLength = _content.size();
+        }
+        sourceFile.close();
+        constructResponse();
+        return false;
+    }
+
+    if (req->get_content_length_missing() == true)
+    {
+            req->set_url(ERROR_411_PATH);
+            std::ifstream sourceFile(req->get_url(), std::ifstream::in);
+            if (sourceFile.good())
+            {
+                std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
+                _content = ans;
+                _statusCode = 411;
+                _reasonPhrase = _error[_statusCode];
+                _contentLength = _content.size();
+            }
+            sourceFile.close();
+            constructResponse();
+            return false;
+    }
+    return true;
+}
+
 HttpResponse::HttpResponse(Request *req)
 {
     initValues();
@@ -15,14 +69,8 @@ HttpResponse::HttpResponse(Request *req)
     int does_method_exist = 0;
     std::string method = req->get_method();
 
-   if (req->get_content_length_missing() == true)
-   {
-        _statusCode = 411;
-        _reasonPhrase = _error[_statusCode];
-        constructResponse();
-        return ;
-   }
-
+    if (check_basic_error(req) == false)
+        return;
     does_method_exist = check_method_existence(method);
     if (does_method_exist == 0)
     {
@@ -67,6 +115,7 @@ void HttpResponse::initErrorMap()
     _error.insert(std::pair<int, std::string>(411,"Length Required"));
     _error.insert(std::pair<int, std::string>(413,"Payload Too Large")); 
     _error.insert(std::pair<int, std::string>(501,"Not Implemented")); //done
+    _error.insert(std::pair<int, std::string>(505," HTTP Version Not Supported")); //done
 }
 
 void HttpResponse::initMethods()

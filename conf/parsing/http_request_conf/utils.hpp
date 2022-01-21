@@ -19,8 +19,10 @@
 # define LF '\n'
 # include "parsing_http.hpp"
 
-int error(std::string str)
+int error(std::string str, int i, Request *request)
 {
+    if(i == 1)
+        request->set_isError();
     std::cout << str << std::endl;
     return -1;
 }

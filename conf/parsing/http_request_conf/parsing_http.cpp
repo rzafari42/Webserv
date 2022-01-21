@@ -14,16 +14,16 @@
 #include "utils.hpp"
 #include <fstream>
 
-int check_format_rqline(std::string s)
+int check_format_rqline(std::string s, Request *req)
 {
     int i = 0;
     int nb_space = 0;
     int nb_arg = 0;
 
-    if (s.find("\r\n") == std::string::npos)
-        return error(REQUEST_LINE_FORMAT_CRLF);
+    /*if (s.find("\r\n") == std::string::npos)
+        return error(REQUEST_LINE_FORMAT_CRLF, 1);*/
     s.erase(s.size() - 2);
-    while (i < s.length() - 2)
+    while (i < s.length())
     {
         while (!isspace(s[i]) && i < s.length())
             i++;
@@ -34,17 +34,17 @@ int check_format_rqline(std::string s)
     }
     if (nb_space == 2 && nb_arg == 3)
         return 0;
-    return error(REQUEST_LINE_FORMAT);
+    return error(REQUEST_LINE_FORMAT, 1, req);
 }
 
-int check_format_rqfield(std::string s)
+int check_format_rqfield(std::string s, Request *req)
 {
     int i = 0;
     int semi_colon = 0;
     int nb_arg = 0;
     
     if (s.find("\r\n") == std::string::npos)
-        return error(REQUEST_FIELD_FORMAT_CRLF);
+        return error(REQUEST_FIELD_FORMAT_CRLF, 1, req);
     s.erase(s.size() - 2);
     while (i < s.length())
     {
@@ -54,7 +54,7 @@ int check_format_rqfield(std::string s)
             {
                 semi_colon += 1;
                 if (!isspace(s[ i + 1]))
-                    return error(REQUEST_FIELD_FORMAT_SPACE);
+                    return error(REQUEST_FIELD_FORMAT_SPACE, 1, req);
                 break;
             }
             i++;
@@ -65,7 +65,7 @@ int check_format_rqfield(std::string s)
     }
     if (semi_colon == 1 && nb_arg >= 2)
         return 0;
-    return error(REQUEST_FIELD_FORMAT);
+    return error(REQUEST_FIELD_FORMAT, 1, req);
 }
 
 int catch_request_line(const std::string s, Request *req) //Format: Method Request-URI HTTP-Version CRLF
@@ -76,7 +76,7 @@ int catch_request_line(const std::string s, Request *req) //Format: Method Reque
     while (!isspace(s[i]) && i < s.length())
     {
         if (!std::isupper(s[i]))
-            return(error(METHOD_LOWERCASE));
+            return error(METHOD_LOWERCASE , 1, req);
         tmp.push_back(s[i]);
         i++;
     }
@@ -113,7 +113,7 @@ void catchvalues(const std::string s, std::map<std::string, std::string> &mp)
     }
     if (s[i] == ':' && i < s.length())
         i++;
-    while (i < s.length() - 2)
+    while (i < s.length())
     {
         value.push_back(s[i]);
         i++;
@@ -130,7 +130,7 @@ void check_errors(Request *req)
     //A client MUST include a Host header field in all HTTP/1.1 request messages ->RFC: 14.23 Host
     if ((it = req->get_fields().find("Host")) == req->get_fields().end())
     {
-        error(METHOD_HOST_MISSING);
+        error(METHOD_HOST_MISSING, 1, req);
         return;
     }
 }
@@ -149,8 +149,9 @@ void parsing(std::string file, Request *request)
         while (flux.get(c) && c != '\n')
             line.push_back(c);
         line.push_back(c);
-        if (!check_format_rqline(line))
+        if (!check_format_rqline(line, request))
         {
+            line.erase(line.size() - 2);
             if (!catch_request_line(line, request))
             {
                 line.clear();
@@ -161,8 +162,9 @@ void parsing(std::string file, Request *request)
                     line.push_back(c);
                     if (!line.compare("\r\n"))
                         break;
-                    if (!check_format_rqfield(line))
+                    if (!check_format_rqfield(line, request))
                     {
+                        line.erase(line.size() - 2);
                         catchvalues(line, values);
                         line.clear();
                     }
@@ -191,7 +193,11 @@ void parsing(std::string file, Request *request)
                 }
             }
             else
+            {
+                flux.close();
+                values.clear();
                 return;
+            }
         }
         else
         {
@@ -208,7 +214,7 @@ void parsing(std::string file, Request *request)
         return;
     }
     else
-        error(OPENING_FAILURE);
+        error(OPENING_FAILURE, 0, request);
 }
 
 Request req_parsing(std::string av)
