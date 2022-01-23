@@ -6,7 +6,7 @@
 /*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/17 14:12:53 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/20 07:32:17 by simbarre         ###   ########.fr       */
+/*   Updated: 2022/01/23 17:38:39 by simbarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,6 +101,7 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 		dup2(pipe_fd[0], 0);
 
 		int	fd_tmp = open("/tmp/cgi_output", O_RDWR);	//add lots more things here + error check, this is the file where the output is going to be stored then read
+														//create if not exists, and all that stuff
 		dup2(fd_tmp, 1);
 		dup2(fd_tmp, 2);
 		execve(script.c_str(), args, env);				//add error check + maybe do something else with args ?
