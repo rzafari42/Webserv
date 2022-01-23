@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 22:01:31 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/21 16:44:59 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/01/23 15:09:48 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ void	*handle_connection(int client_socket)
 	myfile << str; //Write the request in a file
 	myfile.close();
 	Request req = req_parsing(namefile); //Parsing
-	//std::remove(namefile.c_str());
+	std::remove(namefile.c_str());
 
 	HttpResponse res(&req);
 	std::string cont = res.getResponse();

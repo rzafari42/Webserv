@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/21 12:19:15 by rzafari           #+#    #+#             */
-/*   Updated: 2022/01/21 17:03:28 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/01/23 15:09:18 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,12 +44,7 @@ int check_format_rqfield(std::string s, Request *req)
     int nb_arg = 0;
     
     if (s.find("\r\n") == std::string::npos)
-    {
-        if (s.empty())
-            std::cout << "Line is empty" << std::endl;
-        std::cout << "CRLF Line: |" << s << '|'<< std::endl;
         return error(REQUEST_FIELD_FORMAT_CRLF, 1, req);
-    }
     s.erase(s.size() - 2);
     while (i < s.length())
     {
@@ -69,11 +64,7 @@ int check_format_rqfield(std::string s, Request *req)
         i++;
     }
     if (semi_colon == 1 && nb_arg >= 2)
-    {
-        std::cout << "LINE ACCEPTED: " << s << std::endl;
         return 0;
-    }
-    std::cout << "LINE AFTER: " << s << std::endl;
     return error(REQUEST_FIELD_FORMAT, 1, req);
 }
 
@@ -169,7 +160,7 @@ void parsing(std::string file, Request *request)
                     while (flux.get(c) && c != '\n')
                         line.push_back(c);
                     line.push_back(c);
-                    if (!line.compare("\r\n"))
+                    if ((line[0] == '\r' && line[1] == '\n' ) || line[0] == '\r')
                         break;
                     if (!check_format_rqfield(line, request))
                     {
@@ -184,21 +175,21 @@ void parsing(std::string file, Request *request)
                         return;
                     }
                 }
-                if (flux.eof() == false)
+                if (flux.eof())
                 {
-                    if (values.find("Content-Length") != values.end())
-                    {
-                        std::cout << "content_length" << std::endl;
-                        int body_size = std::stoi(values["Content-Length"]);
-                        while (getline(flux, line) && body_size > 0)
+                   // if (values.find("Content-Length") != values.end())
+                    //{
+                     //   std::cout << "content_length" << std::endl;
+                       // int body_size = std::stoi(values["Content-Length"]);
+                        while (getline(flux, line))// && body_size > 0)
                         {
                             body.push_back(line);
                             line.clear();
-                            body_size--;
+                           // body_size--;
                         }
-                    }
-                    else
-                        request->set_content_length_missing();
+                   // }
+                    //else
+                     //   request->set_content_length_missing();
                 }
             }
             else
@@ -230,7 +221,6 @@ Request req_parsing(std::string av)
 {
     Request request;
     parsing(av, &request);
-    std::cout << "Parsing Ended" << std::endl;
     return request;
 }
 
