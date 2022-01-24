@@ -35,6 +35,11 @@ public:
     ~ParserConf();
 
     void parse(std::string file, std::vector<ServerInfo> *serv_info);
+
+    class ParsingConfigFileException : public std::exception {
+        public:
+            virtual const char * what(const char*) const throw();
+    };
 };
 
 #endif

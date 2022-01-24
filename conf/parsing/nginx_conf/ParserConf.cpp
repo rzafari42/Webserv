@@ -54,6 +54,10 @@ static int find_server_block(std::vector<std::string>::iterator it, std::vector<
     return 0;
 }
 
+//static int find_element();
+
+//static int find_element_location_block();
+
 static int find_location_block(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite)
 {
     if (!it->compare("location"))
@@ -71,110 +75,88 @@ static int find_location_block(std::vector<std::string>::iterator it, std::vecto
     return 0;
 }
 
-static int find_listen(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &conf)
-{
-    if (!it->compare("listen"))
-    {
-        it++;
-        if (it != ite)
-            conf.set_listen(*it);
-        else
-            return error(LISTEN_EMPTY);
-    }
-    return 0;
+static void put_listen(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &serv_info) {
+    if (it != ite)
+        serv_info.set_listen(*it);
+    else
+        throw ParserConf::ParsingConfigFileException(LISTEN_EMPTY);
 }
 
-static int find_root(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &conf)
-{
-    if (!it->compare("root"))
-    {
-        it++;
-        if (it != ite)
-            conf.set_root(*it);
-        else
-            return error(ROOT_EMPTY);
-    }
-    return 0;
+static void put_root(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &serv_info) {
+    if (it != ite)
+        serv_info.set_root(*it);
+    else
+        throw ParserConf::ParsingConfigFileException(ROOT_EMPTY);
+    
 }
 
-static int find_index(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &conf)
+static void put_index(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &serv_info)
 {
-    if (!it->compare("index"))
-    {
-        it++;
-        if (it != ite)
-            conf.set_index(*it);
-        else
-            return error(INDEX_EMPTY);
-    }
-    return 0;
+    if (it != ite)
+        serv_info.set_index(*it);
+    else
+        throw ParserConf::ParsingConfigFileException(INDEX_EMPTY);
 }
 
-static int find_error_page(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &conf)
+static void put_error_page(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &serv_info)
 {
     std::string tmp;
-    if (!it->compare("error_page"))
+    if (it != ite)
     {
+        tmp = *it;
         it++;
-        if (it != ite)
+        while (it != ite)
         {
-            tmp = *it;
+            if (it != ite)
+                tmp += ' ';
+            tmp += *it;
             it++;
-            while (it != ite)
-            {
-                if (it != ite)
-                    tmp += ' ';
-                tmp += *it;
-                it++;
-            }
-            conf.set_error_page(tmp);
         }
-        else
-            return error(ERROR_PAGE_EMPTY);
+        serv_info.set_error_page(tmp);
     }
-    return 0;
+    else
+        throw ParserConf::ParsingConfigFileException(ERROR_PAGE_EMPTY);
 }
 
-static int find_server_name(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &conf)
+static void put_server_name(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &serv_info)
 {
-    if (!it->compare("server_name"))
-    {
-        it++;
         if (it != ite)
-            conf.set_server_name(*it);
+            serv_info.set_server_name(*it);
         else
-            return error(SERVER_NAME_EMPTY);
-    }
-    return 0;
+            throw ParserConf::ParsingConfigFileException(SERVER_NAME_EMPTY);
 }
-static int find_autoindex(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &conf)
+static void put_autoindex(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &serv_info)
 {
-    std::vector<Location> tmp = conf.get_locations();
-    if (!it->compare("autoindex"))
-    {
-        it++;
         if (it != ite)
-            conf.set_autoindex(*it);
+            serv_info.set_autoindex(*it);
         else
-            return error(AUTOINDEX_EMPTY);
-    }
-    return 0;
+            throw ParserConf::ParsingConfigFileException(AUTOINDEX_EMPTY);
 }
 
-static int find_client_max_body_size(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &conf)
+static void put_client_max_body_size(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &serv_info)
 {
-    if (!it->compare("client_max_body_size"))
-    {
-        it++;
-        if (it != ite)
-        {
-            std::string str = *it;
-            conf.set_client_max_body_size(std::atoi(str.c_str()));
-        }
-        else
-            return error(CLIENT_MAX_BODY_SIZE_EMPTY);
-    }
-    return 0;
+    if (it != ite)
+        serv_info.set_client_max_body_size(std::atoi((*it).c_str()));
+    else
+        throw ParserConf::ParsingConfigFileException(CLIENT_MAX_BODY_SIZE_EMPTY);
+}
+
+static int find_element_server_block(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &serv_info) {
+    if (!it->compare("listen"))
+        put_listen(++it, ite, serv_info);
+    else if (!it->compare("root"))
+        put_root(++it, ite, serv_info);
+    else if (!it->compare("index"))
+        put_index(++it, ite, serv_info);
+    else if (!it->compare("autoindex"))
+        put_autoindex(++it, ite, serv_info);
+    else if (!it->compare("error_page"))
+        put_error_page(++it, ite, serv_info);
+    else if (!it->compare("client_max_body_size"))
+        put_client_max_body_size(++it, ite, serv_info);
+    else
+        return 1; // FAILURE
+    return 0; // SUCCESS
 }
 
 static int find_location_root(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, Location &conf)
@@ -296,13 +278,7 @@ static void fill_struct(std::vector<std::vector<std::string> > v, std::vector<Se
             ite_s = it->end();
             while (it != ite && it_s->compare("}")) {
                 // ELEMENTS IN SERVER BLOCK
-                if (find_listen(it_s, ite_s, conf_tmp) ||
-                        find_root(it_s, ite_s, conf_tmp) ||
-                        find_index(it_s, ite_s, conf_tmp) ||
-                        find_error_page(it_s, ite_s, conf_tmp) ||
-                        find_server_name(it_s, ite_s, conf_tmp) ||
-                        find_client_max_body_size(it_s, ite_s, conf_tmp) ||
-                        find_autoindex(it_s, ite_s, conf_tmp)) {
+                if (find_element_server_block) {
                     serv_info->clear();
                     return;
                 }
@@ -347,8 +323,13 @@ static void fill_struct(std::vector<std::vector<std::string> > v, std::vector<Se
     return;
 }
 
-void ParserConf::parse(std::string file, std::vector<ServerInfo> *serv_info)
-{
+
+
+const char * ParserConf::ParsingConfigFileException::what(const char*) const throw() {
+    return "ParsingFileException";
+}
+
+void ParserConf::parse(std::string file, std::vector<ServerInfo> *serv_info) {
     std::ifstream flux(file);
 
     if (flux)
