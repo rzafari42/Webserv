@@ -78,6 +78,8 @@ static int find_listen(std::vector<std::string>::iterator it, std::vector<std::s
     {
         it++;
         if (it->compare("\0"))
+
+        
             conf.set_listen(*it);
         else
             return error(LISTEN_EMPTY);

@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/21 12:19:15 by rzafari           #+#    #+#             */
-/*   Updated: 2022/01/23 17:00:06 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/01/25 13:50:16 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,16 +100,24 @@ int catch_request_line(const std::string s, Request *req) //Format: Method Reque
     return 0;
 }
 
-void catchvalues(const std::string s, std::map<std::string, std::string> &mp)
+int catchvalues(const std::string s, std::map<std::string, std::string> &mp, Request *req)
 {
     std::string name;
     std::string value;
     int i = 0;
 
+    std::map<std::string, std::string>::iterator it = mp.begin();
+    std::map<std::string, std::string>::iterator ite = mp.end();
     while (s[i] != ':' && i < s.length())
     {
         name.push_back(s[i]);
         i++;
+    }
+    while (it != ite) /* À TESTER LA REDEFINITION D'UN HEADER" */
+    {
+        if (!it->first.compare(name))
+            return error(DEFINED_TWICE, 1, req);
+        it++;
     }
     if (s[i] == ':' && i < s.length())
         i++;
@@ -121,6 +129,7 @@ void catchvalues(const std::string s, std::map<std::string, std::string> &mp)
     mp.insert(std::pair<std::string, std::string>(name, value));
     name.clear();
     value.clear();
+    return 0;
 }
 
 void check_errors(Request *req)
@@ -165,52 +174,43 @@ void parsing(std::string file, Request *request)
                     if (!check_format_rqfield(line, request))
                     {
                         line.erase(line.size() - 2);
-                        catchvalues(line, values);
+                        if (catchvalues(line, values, request) != 0)
+                        {
+                            parsingClear(flux, values, body, line);
+                            return;
+                        }
                         line.clear();
                     }
                     else
                     {
-                        flux.close();
-                        values.clear();
+                        parsingClear(flux, values, body, line);
                         return;
                     }
                 }
                 if (flux.eof())
                 {
-                   // if (values.find("Content-Length") != values.end())
-                    //{
-                     //   std::cout << "content_length" << std::endl;
-                       // int body_size = std::stoi(values["Content-Length"]);
-                        while (getline(flux, line))// && body_size > 0)
-                        {
-                            body.push_back(line);
-                            line.clear();
-                           // body_size--;
-                        }
-                   // }
-                    //else
-                     //   request->set_content_length_missing();
+                    while (getline(flux, line))
+                    {
+                        body.push_back(line);
+                        line.clear();
+                    }
                 }
             }
             else
             {
-                flux.close();
-                values.clear();
+                parsingClear(flux, values, body, line);
                 return;
             }
         }
         else
         {
-            flux.close();
-            values.clear();
+            parsingClear(flux, values, body, line);
             return;
         }
-        flux.close();
         request->set_fields(values);
         request->set_body(body);
-        values.clear();
-        body.clear();
-        //print_map(request->get_fields());
+        //print_map(request->get_fields(), request->get_body());
+        parsingClear(flux, values, body, line);
         return;
     }
     else

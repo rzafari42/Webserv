@@ -9,7 +9,7 @@ HttpResponse::HttpResponse()
 
 bool HttpResponse::check_basic_error(Request *req)
 {
-    if (req->get_isError() == true)
+    if (req->get_isErrorSyntax() == true)
     {
         req->set_url(ERROR_400_PATH);
         std::ifstream sourceFile(req->get_url(), std::ifstream::in);
@@ -42,22 +42,6 @@ bool HttpResponse::check_basic_error(Request *req)
         return false;
     }
 
-    if (req->get_content_length_missing() == true)
-    {
-            req->set_url(ERROR_411_PATH);
-            std::ifstream sourceFile(req->get_url(), std::ifstream::in);
-            if (sourceFile.good())
-            {
-                std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
-                _content = ans;
-                _statusCode = 411;
-                _reasonPhrase = _error[_statusCode];
-                _contentLength = _content.size();
-            }
-            sourceFile.close();
-            constructResponse();
-            return false;
-    }
     return true;
 }
 

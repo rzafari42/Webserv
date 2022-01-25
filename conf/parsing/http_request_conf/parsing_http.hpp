@@ -11,7 +11,7 @@
 class Request{
 
     public:
-        Request() {_method.clear(); _url.clear(); _version.clear(); _body.clear(); _content_length_missing = false; _isError = false;};
+        Request() {_method.clear(); _url.clear(); _version.clear(); _body.clear(); _isErrorSyntax = false;};
         Request(const Request& src) : _method(src._method), _url(src._url), _version(src._version) {};
         Request &operator=(const Request& rhs) {
             _method = rhs._method;
@@ -26,16 +26,14 @@ class Request{
         void set_version(std::string str) {_version = str;}
         void set_fields(std::map<std::string, std::string> mp){_fields = mp;}
         void set_body(std::vector<std::string> str){_body = str;};
-        void set_content_length_missing(void){_content_length_missing = true;};
-        void set_isError(void){_isError = true;};
+        void set_isErrorSyntax(void){_isErrorSyntax = true;};
 
         std::string get_method() {return _method;}
         std::string get_url() {return _url;}
         std::string get_version() {return _version;}
         std::map<std::string, std::string> get_fields() {return _fields;}
         std::vector<std::string> get_body() {return _body;}
-        bool get_content_length_missing() {return _content_length_missing;};
-        bool get_isError() {return _isError;};
+        bool get_isErrorSyntax() {return _isErrorSyntax;};
 
         private:
             std::string _method;
@@ -43,8 +41,7 @@ class Request{
             std::string _version;
             std::map<std::string, std::string> _fields;
             std::vector<std::string> _body;
-            bool _content_length_missing;
-            bool _isError;
+            bool _isErrorSyntax;
 };
 
 Request req_parsing(std::string av);
