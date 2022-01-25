@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/14 21:13:24 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/20 16:26:19 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/01/24 14:48:24 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@
 # include <fstream>
 # include <map>
 # include <vector>
-# define HTTP_VERSION "HTTP1.1"
+# define HTTP_VERSION "HTTP/1.1"
 # define HOME_PAGE_PATH  "/index.html"
 
 #include "../conf/parsing/http_request_conf/parsing_http.hpp"

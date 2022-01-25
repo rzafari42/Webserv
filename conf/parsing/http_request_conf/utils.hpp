@@ -40,11 +40,13 @@ void print_map(std::map<std::string, std::string> mymap, std::vector<std::string
     std::vector<std::string>::iterator ite_vec = vec.end();
     
     std::cout << "request_body:" << std::endl;
+    std::cout << '|' << std::endl;
     while(it_vec != ite_vec)
     {
         std::cout << *it_vec << std::endl;
         it_vec++;
     }
+    std::cout << '|' << std::endl;
 }
 
 #endif

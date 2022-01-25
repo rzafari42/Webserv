@@ -155,57 +155,6 @@ HttpResponse::~HttpResponse(void)
     _notImplementedMethods.clear();
 }
 
-
-void HttpResponse::set_status_code(int code)
-{
-    _statusCode = code;
-}
-
-void HttpResponse::set_reasonPhrase(std::string phrase)
-{
-    _reasonPhrase = phrase;
-}
-
-void HttpResponse::set_contentLength(int length)
-{
-    _contentLength = length;
-}
-
-void HttpResponse::set_content(std::string content)
-{
-    _content = content;
-}
-
-std::string HttpResponse::get_http_version()
-{
-    return HTTP_VERSION;
-}
-
-int HttpResponse::get_status_code()
-{
-   return _statusCode;
-}
-
-std::string HttpResponse::get_reasonPhrase()
-{
-    return _reasonPhrase;
-}
-
-int HttpResponse::get_contentLength()
-{
-   return _contentLength;
-}
-
-std::string HttpResponse::get_content()
-{
-    return _content;
-}
-
-std::string HttpResponse::getResponse()
-{
-    return _response;
-}
-
 void HttpResponse::requestParsingError(int code)
 {
     _statusCode = 501;
@@ -213,6 +162,8 @@ void HttpResponse::requestParsingError(int code)
     _contentType = "text/html";
     constructResponse();
 }
+
+
 
 
 void HttpResponse::handle_get_method(Request *req)
@@ -251,10 +202,18 @@ void HttpResponse::handle_get_method(Request *req)
     constructResponse();
 }
 
+
+
+
+
 void HttpResponse::handle_post_method(Request *req)
 {
     constructResponse();
 }
+
+
+
+
 
 void HttpResponse::handle_delete_method(Request *req)
 {
@@ -308,6 +267,13 @@ void HttpResponse::handle_delete_method(Request *req)
     fileToDelete.close();
     constructResponse();
 }
+
+void HttpResponse::redirection(Request *req)
+{
+    
+}
+
+
 
 void HttpResponse::constructResponse()
 {
