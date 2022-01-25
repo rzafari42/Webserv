@@ -85,6 +85,6 @@ int main(int ac, char **av)
     ParserConf parser;
     parser.parse(av[1], &serv_info);
     print_conf_struct(serv_info);
-    
+
     return 0;
 }

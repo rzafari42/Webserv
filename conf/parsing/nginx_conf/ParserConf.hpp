@@ -18,6 +18,7 @@
 # define LOCATION_CLIENT_MAX_BODY_SIZE_EMPTY "Error: In Location: 'client_max_body_size' directive exists but has no value"
 # define LOCATION_METHODS_EMPTY "Error: In Location: 'methods' directive exists but has no value"
 # define UNCLOSED_BRACKET "Error: '}' missing"
+# define MISSING_SEMICOLON "Error: ';' missing"
 
 # include <iostream>
 # include <fstream>
@@ -37,8 +38,13 @@ public:
     void parse(std::string file, std::vector<ServerInfo> *serv_info);
 
     class ParsingConfigFileException : public std::exception {
+        private:
+            const char *_message;
+            ParsingConfigFileException( void );
+        
         public:
-            virtual const char * what(const char*) const throw();
+            ParsingConfigFileException(const char * message) : _message(message) {}
+            virtual const char * what() const throw() { return _message; }
     };
 };
 

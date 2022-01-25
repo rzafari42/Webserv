@@ -24,15 +24,14 @@ static std::vector<std::string> catchvalues(const std::string s)
                 i++;
             while (!isspace(s[i]) && i < s.length())
             {
-                if (s[i] == '#')
-                {
-                    v.push_back("\0");
-                    return v;
-                }
+                if (s[i] == ';')
+                    break ;
                 cpy.push_back(s[i]);
                 i++;
             }
             v.push_back(cpy);
+            if (s[i] == ';')
+            v.push_back(";");
             cpy.clear();
             i++;
         }
@@ -53,10 +52,6 @@ static int find_server_block(std::vector<std::string>::iterator it, std::vector<
     }
     return 0;
 }
-
-//static int find_element();
-
-//static int find_element_location_block();
 
 static int find_location_block(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite)
 {
@@ -105,7 +100,7 @@ static void put_error_page(std::vector<std::string>::iterator it, std::vector<st
     {
         tmp = *it;
         it++;
-        while (it != ite)
+        while (it != ite && it->compare(";"))
         {
             if (it != ite)
                 tmp += ' ';
@@ -152,111 +147,87 @@ static int find_element_server_block(std::vector<std::string>::iterator it, std:
         put_autoindex(++it, ite, serv_info);
     else if (!it->compare("error_page"))
         put_error_page(++it, ite, serv_info);
+    else if (!it->compare("server_name"))
+        put_server_name(++it, ite, serv_info);
     else if (!it->compare("client_max_body_size"))
         put_client_max_body_size(++it, ite, serv_info);
+    else if (!it->compare("location"))
+        return 0;
     else
         return 1; // FAILURE
+    if ((ite - 1)->compare(";"))
+        throw ParserConf::ParsingConfigFileException(MISSING_SEMICOLON);
     return 0; // SUCCESS
 }
 
-static int find_location_root(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, Location &conf)
-{
+static void put_location_root(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, Location &loc) {
+    if (it != ite)
+        loc.set_root(*it);
+    else
+        throw ParserConf::ParsingConfigFileException(LOCATION_ROOT_EMPTY);
+}
+
+static void put_location_index(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, Location &loc) {
+    if (it != ite)
+        loc.set_index(*it);
+    else
+        throw ParserConf::ParsingConfigFileException(LOCATION_INDEX_EMPTY);
+}
+
+static void put_location_autoindex(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, Location &loc) {
+    if (it != ite)
+        loc.set_autoindex(*it);
+    else
+        throw ParserConf::ParsingConfigFileException(LOCATION_AUTOINDEX_EMPTY);
+}
+
+static void put_location_error_page(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, Location &loc) {
+    if (it != ite)
+        loc.set_error_page(*it);
+    else
+        throw ParserConf::ParsingConfigFileException(LOCATION_ERROR_PAGE_EMPTY);
+}
+
+static void put_location_client_max_body_size(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, Location &loc) {
+    if (it != ite)
+        loc.set_client_max_body_size(std::atoi((*it).c_str()));
+    else
+        throw ParserConf::ParsingConfigFileException(LOCATION_CLIENT_MAX_BODY_SIZE_EMPTY);
+}
+
+static void put_location_methods(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, Location &loc) {
+    std::vector<std::string> *methods = loc.get_ptr_methods();
+    if (it != ite) {
+        while (it != ite && it->compare(";")) {
+            methods->push_back(*it);
+            it++;
+        }
+    }
+    else
+        throw ParserConf::ParsingConfigFileException(LOCATION_METHODS_EMPTY);
+}
+
+static int find_element_location_block(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, Location &loc) {
     if (!it->compare("root"))
-    {
-        it++;
-        if (it != ite)
-        {
-            conf.set_root(*it);
-        }
-        else
-            return error(LOCATION_ROOT_EMPTY);
-    }
+        put_location_root(++it, ite, loc);
+    else if (!it->compare("index"))
+        put_location_index(++it, ite, loc);
+    else if (!it->compare("autoindex"))
+        put_location_autoindex(++it, ite, loc);
+    else if (!it->compare("error_page"))
+        put_location_error_page(++it, ite, loc);
+    else if (!it->compare("methods"))
+        put_location_methods(++it, ite, loc);
+    else if (!it->compare("client_max_body_size"))
+        put_location_client_max_body_size(++it, ite, loc);
+    else
+        return 1; // FAILURE
+    if ((ite - 1)->compare(";"))
+        throw ParserConf::ParsingConfigFileException(MISSING_SEMICOLON);
     return 0;
 }
 
-static int find_location_index(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, Location &conf)
-{
-    if (!it->compare("index"))
-    {
-        it++;
-        if (it != ite)
-        {
-            conf.set_index(*it);
-        }
-        else
-            return error(LOCATION_INDEX_EMPTY);
-    }
-    return 0;
-}
-
-static int find_location_autoindex(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, Location &conf)
-{
-    if (!it->compare("autoindex"))
-    {
-        it++;
-        if (it != ite)
-        {
-            conf.set_autoindex(*it);
-        }
-        else
-            return error(LOCATION_AUTOINDEX_EMPTY);
-    }
-    return 0;
-}
-
-static int find_location_error_page(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, Location &conf)
-{
-    if (!it->compare("error_page"))
-    {
-        it++;
-        if (it != ite)
-        {
-            conf.set_error_page(*it);
-        }
-        else
-            return error(LOCATION_ERROR_PAGE_EMPTY);
-    }
-    return 0;
-}
-
-static int find_location_client_max_body_size(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, Location &conf)
-{
-    if (!it->compare("client_max_body_size"))
-    {
-        it++;
-        if (it != ite)
-        {
-            std::string str = *it;
-            conf.set_client_max_body_size(std::atoi(str.c_str()));
-        }
-        else
-            return error(LOCATION_CLIENT_MAX_BODY_SIZE_EMPTY);
-    }
-    return 0;
-}
-
-static int find_location_methods(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, Location &conf)
-{
-    std::vector<std::string> *methods = conf.get_ptr_methods();
-    if (!it->compare("methods"))
-    {
-        it++;
-        if (it != ite)
-        {
-            while (it != ite)
-            {
-                methods->push_back(*it);
-                it++;
-            }
-        }
-        else
-            return error(LOCATION_METHODS_EMPTY);
-    }
-    return 0;
-}
-
-static void fill_struct(std::vector<std::vector<std::string> > v, std::vector<ServerInfo> *serv_info)
-{
+static void fill_struct(std::vector<std::vector<std::string> > v, std::vector<ServerInfo> *serv_info) {
     std::vector<std::vector<std::string> >::iterator it = v.begin();
     std::vector<std::vector<std::string> >::iterator ite = v.end();
     std::vector<std::string>::iterator it_s;
@@ -274,25 +245,24 @@ static void fill_struct(std::vector<std::vector<std::string> > v, std::vector<Se
         if (find_server_block(it_s, ite_s)) {
             conf_tmp = ServerInfo();
             brackets++;
+            it++;
             it_s = it->begin();
             ite_s = it->end();
             while (it != ite && it_s->compare("}")) {
                 // ELEMENTS IN SERVER BLOCK
-                if (find_element_server_block) {
+                if (find_element_server_block(it_s, ite_s, conf_tmp)) {
                     serv_info->clear();
                     return;
                 }
                 if (!it_s->compare("location")) {
                     loc_tmp = Location();
                     brackets++;
+                    it++;
+                    it_s = it->begin();
+                    ite_s = it->end();
                     while (it != ite && it_s->compare("}")) {
                         // ELEMENTS IN LOCATION BLOCK
-                        if (find_location_root(it_s, ite_s, loc_tmp) ||
-                                find_location_index(it_s, ite_s, loc_tmp) ||
-                                find_location_autoindex(it_s, ite_s, loc_tmp) ||
-                                find_location_client_max_body_size(it_s, ite_s, loc_tmp) ||
-                                find_location_error_page(it_s, ite_s, loc_tmp) ||
-                                find_location_methods(it_s, ite_s, loc_tmp)) {
+                        if (find_element_location_block(it_s, ite_s, loc_tmp)) {
                             serv_info->clear();
                             return;
                         }
@@ -321,12 +291,6 @@ static void fill_struct(std::vector<std::vector<std::string> > v, std::vector<Se
         serv_info->clear();
     }
     return;
-}
-
-
-
-const char * ParserConf::ParsingConfigFileException::what(const char*) const throw() {
-    return "ParsingFileException";
 }
 
 void ParserConf::parse(std::string file, std::vector<ServerInfo> *serv_info) {
