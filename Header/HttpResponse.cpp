@@ -164,7 +164,7 @@ void HttpResponse::handle_get_method(Request *req)  //add ParserConf here
             _content = ans;
         /*else
         {
-            cgi CGI_Handler(req, conf);
+            cgi CGI_Handler(req, conf, loc);
             _content = cgi.run_CGI(req->getCgiScript());
         }*/
         _statusCode = 200;
