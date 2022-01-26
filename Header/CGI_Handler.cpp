@@ -6,7 +6,7 @@
 /*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/17 14:12:53 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/26 12:59:44 by simbarre         ###   ########.fr       */
+/*   Updated: 2022/01/26 13:40:41 by simbarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ CGI_Handler::CGI_Handler()								//left to fill all of this with the parser
 	_env["REDIRECT_STATUS"]		= "200";
 	_env["REMOTE_ADDR"]			= "";					//Returns the IP address of the client that sent the request
 	_env["REMOTE_USER"]			= "";					//Returns the login of the user making this request if the user has been authenticated (optional)
-	_env["REQUEST_METHOD"]		= "";					//change to the request.method() function (returns NULL ?)
+	_env["REQUEST_METHOD"]		= "";					//change to the request.method() function
 	_env["SCRIPT_NAME"]			= "";					//Returns the part of the URL from the protocol name up to the query string in the first line of the HTTP request.
 	_env["SERVER_NAME"]			= "webserv";			//change to hostname
 	_env["SERVER_PORT"]			= 8080;
@@ -45,8 +45,9 @@ CGI_Handler	&CGI_Handler::operator=(CGI_Handler const &src)
 
 std::string	file_to_str(std::string in)
 {
-	std::ifstream t(in);
-	std::stringstream buffer;
+	std::ifstream		t(in);
+	std::stringstream	buffer;
+
 	buffer << t.rdbuf();
 	return (buffer.str());
 }
@@ -93,7 +94,8 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 		close(pipe_fd[1]);
 		dup2(pipe_fd[0], 0);
 
-		int	fd_tmp = open("/tmp/cgi_output", O_RDWR);	//add lots more things here + error check, this is the file where the output is going to be stored then read
+		int	fd_tmp = open("/tmp/cgi_output", O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
+														//add lots more things here + error check, this is the file where the output is going to be stored then read
 														//create if not exists, and all that stuff
 		dup2(fd_tmp, 1);
 		dup2(fd_tmp, 2);
@@ -107,7 +109,8 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 	else
 	{
 		close(pipe_fd[0]);
-		//write(fd[1], request.body.c_str(), request.body.lenght()); //here, write the request body to the file in tmp (MOST IMPORTANT PART LOL)
+		//write(fd[1], request.body.c_str(), request.body.lenght());
+														//here, write the request body to the file in tmp (MOST IMPORTANT PART LOL)
 		close(pipe_fd[1]);
 		waitpid(pid, NULL, 0);							//everyone uses -1 insted of pid
 	}
