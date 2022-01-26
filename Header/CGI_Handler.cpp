@@ -6,16 +6,19 @@
 /*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/17 14:12:53 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/26 13:40:41 by simbarre         ###   ########.fr       */
+/*   Updated: 2022/01/26 14:30:14 by simbarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "CGI_Handler.hpp"
 
-CGI_Handler::CGI_Handler()								//left to fill all of this with the parser
+CGI_Handler::CGI_Handler(Request &request, ParserConf &conf) : _req(request), _conf(conf)
 {
+	std::string tmp_body(request.get_body().begin(), request.get_body().end());
+	_body = tmp_body;
+
 	_env["AUTH_TYPE"]			= "";					//no security
-	_env["CONTENT_LENGTH"]		= "";					//length of the request body in bytes made available by the input stream -> to_string
+	_env["CONTENT_LENGTH"]		= tmp_body.length();
 	_env["CONTENT_TYPE"]		= "";					//MIME type of the body of the request
 	_env["GATEWAY_INTERFACE"]	= "CGI/1.1";
 	_env["PATH_INFO"]			= "";					//identifies the resource or sub-resource to be returned by the CGI script, and it is derived from the portion of the URI path following the script name but preceding any query data
@@ -24,9 +27,9 @@ CGI_Handler::CGI_Handler()								//left to fill all of this with the parser
 	_env["REDIRECT_STATUS"]		= "200";
 	_env["REMOTE_ADDR"]			= "";					//Returns the IP address of the client that sent the request
 	_env["REMOTE_USER"]			= "";					//Returns the login of the user making this request if the user has been authenticated (optional)
-	_env["REQUEST_METHOD"]		= "";					//change to the request.method() function
-	_env["SCRIPT_NAME"]			= "";					//Returns the part of the URL from the protocol name up to the query string in the first line of the HTTP request.
-	_env["SERVER_NAME"]			= "webserv";			//change to hostname
+	_env["REQUEST_METHOD"]		= "";					//request.get_method();
+	_env["SCRIPT_NAME"]			= "";					//conf.script_name;
+	_env["SERVER_NAME"]			= "webserv";			//conf.server_name;
 	_env["SERVER_PORT"]			= 8080;
 	_env["SERVER_PROTOCOL"]		= "HTTP/1.1";
 	_env["SERVER_SOFTWARE"]		= "webserv/1.1";
@@ -109,8 +112,7 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 	else
 	{
 		close(pipe_fd[0]);
-		//write(fd[1], request.body.c_str(), request.body.lenght());
-														//here, write the request body to the file in tmp (MOST IMPORTANT PART LOL)
+		write(pipe_fd[1], _body.c_str(), _body.length());
 		close(pipe_fd[1]);
 		waitpid(pid, NULL, 0);							//everyone uses -1 insted of pid
 	}

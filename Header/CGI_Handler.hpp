@@ -6,7 +6,7 @@
 /*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/17 14:13:00 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/17 16:04:43 by simbarre         ###   ########.fr       */
+/*   Updated: 2022/01/26 14:21:49 by simbarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,12 @@
 	#include <sys/types.h>			//include in main_header at the end
 	#include <sys/wait.h>			//same
 
+	class ParserConf{};				//to remove
+
 class	CGI_Handler
 {
 	public:
-		CGI_Handler();
+		CGI_Handler(Request &request, ParserConf &conf);
 		CGI_Handler(CGI_Handler const &src);
 		virtual	~CGI_Handler() {}
 
@@ -32,6 +34,9 @@ class	CGI_Handler
 
 	private:
 		std::map<std::string, std::string>	_env;
+		Request								_req;
+		ParserConf							_conf;
+		std::string							_body;
 };
 
 #endif
