@@ -6,7 +6,7 @@
 /*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/17 14:13:00 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/26 14:47:14 by simbarre         ###   ########.fr       */
+/*   Updated: 2022/01/26 14:48:05 by simbarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,6 @@
 
 	#include <sys/types.h>			//include in main_header at the end
 	#include <sys/wait.h>			//same
-
-	class ParserConf{};				//to remove
 
 class	CGI_Handler
 {
