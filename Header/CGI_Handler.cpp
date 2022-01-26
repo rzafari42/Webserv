@@ -6,34 +6,30 @@
 /*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/17 14:12:53 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/23 17:38:39 by simbarre         ###   ########.fr       */
+/*   Updated: 2022/01/26 14:45:36 by simbarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "CGI_Handler.hpp"
 
-CGI_Handler::CGI_Handler()								//left to fill all of this with the parser
+CGI_Handler::CGI_Handler(Request &request, ParserConf &conf) : _req(request), _conf(conf)
 {
-	_env["AUTH_TYPE"]			= "";
-	_env["CONTENT_LENGTH"]		= "";
-	_env["CONTENT_TYPE"]		= "";
-	_env["DOCUMENT_ROOT"]		= "";
+	std::string tmp_body(request.get_body().begin(), request.get_body().end());
+	_body = tmp_body;
+
+	_env["AUTH_TYPE"]			= "";					//no security
+	_env["CONTENT_LENGTH"]		= tmp_body.length();
+	_env["CONTENT_TYPE"]		= "";					//MIME type of the body of the request
 	_env["GATEWAY_INTERFACE"]	= "CGI/1.1";
-	_env["HTTP_ACCEPT"]			= "";
-	_env["HTTP_COOKIE"]			= "";					//stays NULL
-	_env["HTTP_FROM"]			= "";
-	_env["HTTP_REFERER"]		= "";
-	_env["HTTP_USER_AGENT"]		= "";
-	_env["PATH_INFO"]			= "";
-	_env["PATH_TRANSLATED"]		= "";
-	_env["QUERY_STRING"]		= "";
-	_env["REMOTE_ADDR"]			= "";
-	_env["REMOTE_HOST"]			= "";
-	_env["REMOTE_IDENT"]		= "";
-	_env["REMOTE_USER"]			= "";
-	_env["REQUEST_METHOD"]		= "";
-	_env["SCRIPT_NAME"]			= "";
-	_env["SERVER_NAME"]			= "webserv";			//change to hostname
+	_env["PATH_INFO"]			= "";					//identifies the resource or sub-resource to be returned by the CGI script, and it is derived from the portion of the URI path following the script name but preceding any query data
+	_env["PATH_TRANSLATED"]		= "";					//Maps the script's virtual path to the physical path used to call the script
+	_env["QUERY_STRING"]		= "";					//The query string that is contained in the request URL after the path.
+	_env["REDIRECT_STATUS"]		= "200";
+	_env["REMOTE_ADDR"]			= "";					//Returns the IP address of the client that sent the request
+	_env["REMOTE_USER"]			= "";					//Returns the login of the user making this request if the user has been authenticated (optional)
+	_env["REQUEST_METHOD"]		= "";					//request.get_method();
+	_env["SCRIPT_NAME"]			= "";					//conf.script_name;
+	_env["SERVER_NAME"]			= "webserv";			//conf.server_name;
 	_env["SERVER_PORT"]			= 8080;
 	_env["SERVER_PROTOCOL"]		= "HTTP/1.1";
 	_env["SERVER_SOFTWARE"]		= "webserv/1.1";
@@ -52,8 +48,9 @@ CGI_Handler	&CGI_Handler::operator=(CGI_Handler const &src)
 
 std::string	file_to_str(std::string in)
 {
-	std::ifstream t(in);
-	std::stringstream buffer;
+	std::ifstream		t(in);
+	std::stringstream	buffer;
+
 	buffer << t.rdbuf();
 	return (buffer.str());
 }
@@ -100,7 +97,8 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 		close(pipe_fd[1]);
 		dup2(pipe_fd[0], 0);
 
-		int	fd_tmp = open("/tmp/cgi_output", O_RDWR);	//add lots more things here + error check, this is the file where the output is going to be stored then read
+		int	fd_tmp = open("/tmp/cgi_output", O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
+														//add lots more things here + error check, this is the file where the output is going to be stored then read
 														//create if not exists, and all that stuff
 		dup2(fd_tmp, 1);
 		dup2(fd_tmp, 2);
@@ -109,12 +107,13 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 		close(fd_tmp);
 		close(pipe_fd[0]);
 		exit(0);
+
 		delete [] env;									//see if this deletes all
 	}
 	else
 	{
 		close(pipe_fd[0]);
-		//write(fd[1], request.body.c_str(), request.body.lenght()); //here, write the request body to the file in tmp (MOST IMPORTANT PART LOL)
+		write(pipe_fd[1], _body.c_str(), _body.length());
 		close(pipe_fd[1]);
 		waitpid(pid, NULL, 0);							//everyone uses -1 insted of pid
 	}
