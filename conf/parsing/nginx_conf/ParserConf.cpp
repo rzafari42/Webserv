@@ -45,7 +45,6 @@ static int find_server_block(std::vector<std::string>::iterator it, std::vector<
     {
         if (!it->compare("server") && (++it) != ite && !it->compare("{"))
         {
-            //TODO
             return 1;
         }
         it++;
@@ -61,7 +60,6 @@ static int find_location_block(std::vector<std::string>::iterator it, std::vecto
         {
             if (!it->compare("{"))
             {
-                //TODO LATER
                 return 1;
             }
             it++;
