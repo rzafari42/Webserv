@@ -3,42 +3,66 @@
 # include <iostream>
 # include <fstream>
 # include <sstream>
+# include "main_header.hpp"
 # include "../conf/parsing/http_request_conf/parsing_http.hpp"
-#include "../methodsHandler.hpp"
+# include <algorithm>
+# define HOME_PAGE_PATH "/index.html"
+# define ERROR_400_PATH "/error400.html"
+# define ERROR_404_PATH "/error404.html"
+# define ERROR_411_PATH "/error411.html"
+# define ERROR_505_PATH "/error505.html"
 
-class HttpResponse : public methodsHandler
+
+# define FILE_DELETED "/file_deleted.html"
+
+
+
+class HttpResponse
 {
     public:
-        HttpResponse() : _httpVersion("HTTP/1.1"), _statusCode(404), _reasonPhrase("Not Found"), _contentLength(0) {};
+        HttpResponse();
         HttpResponse(Request *req);
         ~HttpResponse();
+        
+        void set_status_code(int code) { _statusCode = code; };
+        void set_reasonPhrase(std::string phrase) { _reasonPhrase = phrase; };
+        void set_contentLength(int length) { _contentLength = length; };
+        void set_content(std::string content) { _content = content; };
 
-        void set_http_version(std::string version);
-        void set_status_code(int code);
-        void set_reasonPhrase(std::string phrase);
-        void set_contentLength(int length);
-        void set_content(std::string content);
+        std::string get_http_version() { return HTTP_VERSION; };
+        int get_status_code() { return _statusCode; };
+        std::string get_reasonPhrase() { return _reasonPhrase; };
+        int get_contentLength() { return _contentLength; };
+        std::string get_content() { return _content; };
+        std::string getResponse() { return _response; };
 
-        std::string get_http_version();
-        int get_status_code();
-        std::string get_reasonPhrase();
-        int get_contentLength();
-        std::string get_content();
-        std::string getResponse();
+        void requestParsingError(int code);
 
-        std::string constructResponse();
+        void handle_get_method(Request *req);
+        void handle_post_method(Request *req);
+        void handle_delete_method(Request *req);
 
+        void redirection(Request *req);
+        void constructResponse();
 
     private:
-        std::string _httpVersion;
+        void initValues();
+        void initErrorMap();
+        void initMethods();
+
         int _statusCode;
         std::string _reasonPhrase;
         int _contentLength;
         std::string _content;
+        std::string _contentType;
         std::string _response;
 
+
+        std::map<int, std::string> _error;
+        std::vector<std::string> _implementedMethods;
+        std::vector<std::string> _notImplementedMethods;
         int check_method_existence(std::string method);
-        int return_error(int code);
+        bool check_basic_error(Request *req);
 };
 
 #endif

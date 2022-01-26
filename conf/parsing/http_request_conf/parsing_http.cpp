@@ -6,19 +6,23 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/21 12:19:15 by rzafari           #+#    #+#             */
-/*   Updated: 2022/01/16 17:58:28 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/01/25 13:50:16 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parsing_http.hpp"
 #include "utils.hpp"
+#include <fstream>
 
-int check_format_rqline(std::string s)
+int check_format_rqline(std::string s, Request *req)
 {
     int i = 0;
     int nb_space = 0;
     int nb_arg = 0;
 
+    if (s.find("\r") == std::string::npos)
+        return error(REQUEST_LINE_FORMAT_CRLF, 1, req);
+    s.erase(s.size() - 2);
     while (i < s.length())
     {
         while (!isspace(s[i]) && i < s.length())
@@ -28,19 +32,20 @@ int check_format_rqline(std::string s)
             nb_space += 1;
         i++;
     }
-    if ((s.find(std::string(1, CR)) == std::string::npos) && (s.find(std::string(1, LF)) == std::string::npos))
-        return error(REQUEST_LINE_FORMAT_CRLF);
     if (nb_space == 2 && nb_arg == 3)
         return 0;
-    return error(REQUEST_LINE_FORMAT);
+    return error(REQUEST_LINE_FORMAT, 1, req);
 }
 
-int check_format_rqfield(std::string s)
+int check_format_rqfield(std::string s, Request *req)
 {
     int i = 0;
     int semi_colon = 0;
     int nb_arg = 0;
     
+    if (s.find("\r\n") == std::string::npos)
+        return error(REQUEST_FIELD_FORMAT_CRLF, 1, req);
+    s.erase(s.size() - 2);
     while (i < s.length())
     {
         while (!isspace(s[i]) && i < s.length())
@@ -49,7 +54,7 @@ int check_format_rqfield(std::string s)
             {
                 semi_colon += 1;
                 if (!isspace(s[ i + 1]))
-                    return error(REQUEST_FIELD_FORMAT_SPACE);
+                    return error(REQUEST_FIELD_FORMAT_SPACE, 1, req);
                 break;
             }
             i++;
@@ -58,11 +63,9 @@ int check_format_rqfield(std::string s)
             nb_arg += 1;
         i++;
     }
-    if ((s.find(std::string(1,CR)) == std::string::npos) && (s.find(std::string(1,LF)) == std::string::npos))
-        return error(REQUEST_FIELD_FORMAT_CRLF);
     if (semi_colon == 1 && nb_arg >= 2)
-        return 1;
-    return error(REQUEST_FIELD_FORMAT);
+        return 0;
+    return error(REQUEST_FIELD_FORMAT, 1, req);
 }
 
 int catch_request_line(const std::string s, Request *req) //Format: Method Request-URI HTTP-Version CRLF
@@ -70,17 +73,17 @@ int catch_request_line(const std::string s, Request *req) //Format: Method Reque
     int i = 0;
     std::string tmp;
 
-    while (!isspace(s[i]))
+    while (!isspace(s[i]) && i < s.length())
     {
         if (!std::isupper(s[i]))
-            return(error(METHOD_LOWERCASE));
+            return error(METHOD_LOWERCASE , 1, req);
         tmp.push_back(s[i]);
         i++;
     }
     req->set_method(tmp);
     tmp.clear();
     i++;
-    while (!isspace(s[i]))
+    while (!isspace(s[i]) && i < s.length())
     {
         tmp.push_back(s[i]);
         i++;
@@ -97,16 +100,24 @@ int catch_request_line(const std::string s, Request *req) //Format: Method Reque
     return 0;
 }
 
-void catchvalues(const std::string s, std::map<std::string, std::string> &mp)
+int catchvalues(const std::string s, std::map<std::string, std::string> &mp, Request *req)
 {
     std::string name;
     std::string value;
     int i = 0;
 
+    std::map<std::string, std::string>::iterator it = mp.begin();
+    std::map<std::string, std::string>::iterator ite = mp.end();
     while (s[i] != ':' && i < s.length())
     {
         name.push_back(s[i]);
         i++;
+    }
+    while (it != ite) /* À TESTER LA REDEFINITION D'UN HEADER" */
+    {
+        if (!it->first.compare(name))
+            return error(DEFINED_TWICE, 1, req);
+        it++;
     }
     if (s[i] == ':' && i < s.length())
         i++;
@@ -118,6 +129,7 @@ void catchvalues(const std::string s, std::map<std::string, std::string> &mp)
     mp.insert(std::pair<std::string, std::string>(name, value));
     name.clear();
     value.clear();
+    return 0;
 }
 
 void check_errors(Request *req)
@@ -127,7 +139,7 @@ void check_errors(Request *req)
     //A client MUST include a Host header field in all HTTP/1.1 request messages ->RFC: 14.23 Host
     if ((it = req->get_fields().find("Host")) == req->get_fields().end())
     {
-        error(METHOD_HOST_MISSING);
+        error(METHOD_HOST_MISSING, 1, req);
         return;
     }
 }
@@ -139,60 +151,86 @@ void parsing(std::string file, Request *request)
     if (flux)
     {
         std::map<std::string, std::string> values;
+        std::vector<std::string> body;
         std::string line;
 
-        getline(flux, line);
-        if (!check_format_rqline(line))
+        char c;
+        while (flux.get(c) && c != '\n')
+            line.push_back(c);
+        line.push_back(c);
+        if (!check_format_rqline(line, request))
         {
+            line.erase(line.size() - 2);
             if (!catch_request_line(line, request))
             {
                 line.clear();
-                while (getline(flux, line))
+                while (1)
                 {
-                    if (!line.compare("\r"))
+                    while (flux.get(c) && c != '\n')
+                        line.push_back(c);
+                    line.push_back(c);
+                    if ((line[0] == '\r' && line[1] == '\n' ) || line[0] == '\r')
                         break;
-                    if (check_format_rqfield(line))
+                    if (!check_format_rqfield(line, request))
                     {
-                        catchvalues(line, values);
+                        line.erase(line.size() - 2);
+                        if (catchvalues(line, values, request) != 0)
+                        {
+                            parsingClear(flux, values, body, line);
+                            return;
+                        }
                         line.clear();
                     }
                     else
-                        break;
+                    {
+                        parsingClear(flux, values, body, line);
+                        return;
+                    }
+                }
+                if (flux.eof())
+                {
+                    while (getline(flux, line))
+                    {
+                        body.push_back(line);
+                        line.clear();
+                    }
                 }
             }
             else
+            {
+                parsingClear(flux, values, body, line);
                 return;
+            }
         }
         else
         {
-            flux.close();
-            values.clear();
+            parsingClear(flux, values, body, line);
             return;
         }
-        flux.close();
         request->set_fields(values);
-        values.clear();
-        //print_map(request->get_fields());
+        request->set_body(body);
+        //print_map(request->get_fields(), request->get_body());
+        parsingClear(flux, values, body, line);
         return;
     }
     else
-        error(OPENING_FAILURE);
+        error(OPENING_FAILURE, 0, request);
 }
 
 Request req_parsing(std::string av)
 {
     Request request;
     parsing(av, &request);
-    //cath the body part !! 
     return request;
 }
 
 /*int main(int ac, char **av)
 {
-    if (ac < 2)
-        return error(EMPTY);
     Request request;
+    if (ac < 2)
+        return error(EMPTY, 0, &request);
     parsing(av[1], &request);
+    print_map(request.get_fields(), request.get_body());
     //check if there's an CLRF at the end of each lines and if there's empty line before the body
     return 0;
 }*/

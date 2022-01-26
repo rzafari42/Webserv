@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 22:01:31 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/17 11:45:36 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/01/25 13:50:22 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ void	*handle_connection(int client_socket)
 	check(bytes_read, "recv error");
 	buffer[msg_size - 1]  = 0;
 
-	printf("REQUEST: %s\n", buffer);
+	printf("REQUEST: \n%s\n", buffer);
 	fflush(stdout);
 
 	//Name file creation
@@ -63,20 +63,7 @@ void	*handle_connection(int client_socket)
 	myfile << str; //Write the request in a file
 	myfile.close();
 	Request req = req_parsing(namefile); //Parsing
-	//std::cout << "Req methods = " << req.get_method() << std::endl;
 	std::remove(namefile.c_str());
-
-	/*if (req.get_method() == "GET")
-		method_get(r);
-	else if (req.get_method() == "POST")
-		method_post(r);
-	else if (req.get_method() == "DELETE")
-		method_delete(r);
-	else
-		check(-1, "unrecognized method\n");*/ 
-	/*Send the right status code in parameter (405 "Method Not Allowed" in this case)
-	Another case exists. Code 501 "Not Implemented" wich is sent if the method actually exists but is not implemented in the server (in our case: HEAD, PUT, CONNECT, OPTIONS, TRACE, PATCH)
-	*/
 
 	HttpResponse res(&req);
 	std::string cont = res.getResponse();
@@ -120,38 +107,50 @@ int		setup_server(short port, int backlog)
 	return (server_socket);
 }
 
+
+//nc -c localhost 8080 
 int		main(int argc, char *argv[])
 {
-	int		server_socket = setup_server(SERVER_PORT, SERVER_BACKLOG);
-
-	fd_set	current_sockets, ready_sockets;
-
-	FD_ZERO(&current_sockets);
-	FD_SET(server_socket, &current_sockets);
-
-	while (true)
+	if (argc > 1)
 	{
-		ready_sockets = current_sockets;
+		std::vector<ServerInfo> conf; 
+		ParserConf parser;
 
-		check(select(FD_SETSIZE, &ready_sockets, NULL, NULL, NULL), "Failed to select");
+		parser.parse(argv[1], &conf);
+		
+		int		server_socket = setup_server(SERVER_PORT, SERVER_BACKLOG);
 
-		for (int i = 0; i < FD_SETSIZE; i++)
+		fd_set	current_sockets, ready_sockets;
+
+		FD_ZERO(&current_sockets);
+		FD_SET(server_socket, &current_sockets);
+		
+		while (true)
 		{
-			if (FD_ISSET(i, &ready_sockets))
+			ready_sockets = current_sockets;
+
+			check(select(FD_SETSIZE, &ready_sockets, NULL, NULL, NULL), "Failed to select");
+
+			for (int i = 0; i < FD_SETSIZE; i++)
 			{
-				if (i == server_socket)
+				if (FD_ISSET(i, &ready_sockets))
 				{
-					//new connection
-					int client_socket = accept_new_connection(server_socket);
-					FD_SET(client_socket, &current_sockets);
-				}
-				else
-				{
-					handle_connection(i);
-					FD_CLR(i, &current_sockets);
+					if (i == server_socket)
+					{
+						//new connection
+						int client_socket = accept_new_connection(server_socket);
+						FD_SET(client_socket, &current_sockets);
+					}
+					else
+					{
+						handle_connection(i);
+						FD_CLR(i, &current_sockets);
+					}
 				}
 			}
 		}
 	}
+	else
+		std::cout << "Configuraion File might be missing !" << std::endl;
 	return (0);
 }
