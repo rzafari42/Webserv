@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 22:01:31 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/25 13:50:22 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/01/26 17:15:32 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,22 +91,45 @@ int		accept_new_connection(int server_socket)
 int		setup_server(short port, int backlog)
 {
 	int		server_socket, client_socket, addr_size;
+	int		opt = 1;
 
 	SA_IN	server_addr;
 
 	check((server_socket = socket(AF_INET, SOCK_STREAM, 0)), "Failed to create socket.");
+	check(setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR , &opt, sizeof(opt)), "Setsockopt failed!");
+	check(fcntl(server_socket, F_SETFL, O_NONBLOCK), "fcntl() failed!");
 
 	server_addr.sin_family		= AF_INET;
 	server_addr.sin_addr.s_addr	= INADDR_ANY;
 	server_addr.sin_port		= htons(port);
 
 	check(bind(server_socket, (SA*)&server_addr, sizeof(server_addr)), "Bind failed!");
-
 	check(listen(server_socket, backlog), "Listen failed!");
 
 	return (server_socket);
 }
 
+void get_port(std::string *port, std::string address)
+{
+	std::string::iterator it = address.begin();
+	std::string::iterator ite = address.end();
+
+	while (*it != ':')
+		it++;
+	it++;
+	while (it != ite)
+	{
+		port->push_back(*it);
+		it++;
+	}
+}
+
+static int stringToInt(std::string s ) 
+{
+    int i;
+    std::istringstream(s) >> i;
+    return i;
+}
 
 //nc -c localhost 8080 
 int		main(int argc, char *argv[])
@@ -115,15 +138,37 @@ int		main(int argc, char *argv[])
 	{
 		std::vector<ServerInfo> conf; 
 		ParserConf parser;
-
-		parser.parse(argv[1], &conf);
-		
-		int		server_socket = setup_server(SERVER_PORT, SERVER_BACKLOG);
-
+		int		server_socket = 0;
+		std::string address = "";
+		std::string port = "";
 		fd_set	current_sockets, ready_sockets;
 
+
+		parser.parse(argv[1], &conf);
+
+		std::vector<ServerInfo>::iterator it = conf.begin();
+		std::vector<ServerInfo>::iterator ite = conf.end();
+		
 		FD_ZERO(&current_sockets);
-		FD_SET(server_socket, &current_sockets);
+			std::cout << "main00\nit = " << it->get_listen() << "\nite : " << ite->get_listen() << std::endl;
+		while (it != ite)
+		{	
+			port.clear();
+			address.clear();
+			address = it->get_listen();
+			std::cout << address << std::endl;
+			get_port(&port, address);
+			std::cout << "port : " << port << std::endl;
+			server_socket = setup_server(stringToInt(port), SERVER_BACKLOG);
+			FD_SET(server_socket, &current_sockets);
+			it++;
+		}
+		
+		/*server_socket = setup_server(SERVER_PORT, SERVER_BACKLOG);
+
+
+		FD_ZERO(&current_sockets);
+		FD_SET(server_socket, &current_sockets);*/
 		
 		while (true)
 		{

@@ -284,7 +284,7 @@ void ParserConf::parse(std::string file, std::vector<ServerInfo> *serv_info) {
 
     if (flux)
     {
-        std::vector<std::vector<std::string>> values;
+        std::vector<std::vector<std::string> > values;
         std::vector<std::string> tmp;
         std::string line;
 
