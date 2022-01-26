@@ -14,8 +14,10 @@
 # define LOCATION_ROOT_EMPTY "Error: In Location: 'root' directive exists but has no value"
 # define LOCATION_INDEX_EMPTY "Error: In Location: 'index' directive exists but has no value"
 # define LOCATION_AUTOINDEX_EMPTY "Error: In Location: 'autoindex' directive exists but has no value"
-# define LOCATION_ERROR_PAGE_EMPTY "Error: In Location: 'error_page' directive exists but has no value"
-# define LOCATION_CLIENT_MAX_BODY_SIZE_EMPTY "Error: In Location: 'client_max_body_size' directive exists but has no value"
+# define LOCATION_RETURN_EMPTY "Error: In Location: 'return' directive exists but has no value"
+# define LOCATION_RETURN_MISSING_PATH "Error: In Location: 'return' directive exists but path is missing"
+# define LOCATION_CGI_EMPTY "Error: In Location: 'cgi' directive exists but has no value"
+# define LOCATION_CGI_MISSING_PATH "Error: In Location: 'cgi' directive exists but path is missing"
 # define LOCATION_METHODS_EMPTY "Error: In Location: 'methods' directive exists but has no value"
 # define UNCLOSED_BRACKET "Error: '}' missing"
 # define MISSING_SEMICOLON "Error: ';' missing"
@@ -41,7 +43,7 @@ public:
         private:
             const char *_message;
             ParsingConfigFileException( void );
-        
+
         public:
             ParsingConfigFileException(const char * message) : _message(message) {}
             virtual const char * what() const throw() { return _message; }

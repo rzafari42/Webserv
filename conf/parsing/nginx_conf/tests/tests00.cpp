@@ -50,9 +50,7 @@ void print_conf_struct(std::vector<ServerInfo> conf)
         std::cout << "Listen: " << it->get_listen() << std::endl;
         std::cout << "Server_name: " << it->get_server_name() << std::endl;
         std::cout << "Error_page: " << it->get_error_page() << std::endl;
-        std::cout << "Index: " << it->get_index() << std::endl;
         std::cout << "Root: " << it->get_root() << std::endl;
-        std::cout << "Autoindex: " << it->get_autoindex() << std::endl;
 
         std::vector<Location> vec_loc = it->get_locations();
 
@@ -63,8 +61,8 @@ void print_conf_struct(std::vector<ServerInfo> conf)
             std::cout << "Location/root: " << it_loc->get_root() << std::endl;
             std::cout << "Location/index: " << it_loc->get_index() << std::endl;
             std::cout << "Location/autoindex: " << it_loc->get_autoindex() << std::endl;
-            std::cout << "Location/error_page: " << it_loc->get_error_page() << std::endl;
-            std::cout << "Location/client_max_body_size: " << it_loc->get_client_max_body_size() << std::endl;
+            std::cout << "Location/return: " << it_loc->get_return_code() << " " << it_loc->get_return_path() << std::endl;
+            std::cout << "Location/cgi: " << it_loc->get_cgi_extension() << " " << it_loc->get_cgi_path() << std::endl;
             print_location_methods_struct(it_loc->get_methods());
             it_loc++;
         }

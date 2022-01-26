@@ -9,14 +9,21 @@ private:
     std::string root;
     std::string index;
     std::string autoindex;
-    std::string error_page;
-    size_t client_max_body_size;
+    std::size_t return_code;
+    std::string return_path;
+    std::string cgi_extension;
+    std::string cgi_path;
     std::vector<std::string> methods;
 public:
     // constructor/ destructor
-    Location( void ) : root("html"), index("index.html"), autoindex("off"), client_max_body_size(1)  {
-        error_page.clear();
+    Location( void ) : return_code(0) {
         methods.clear();
+        root.clear();
+        index.clear();
+        autoindex.clear();
+        return_path.clear();
+        cgi_extension.clear();
+        cgi_path.clear();
     }
     ~Location() {}
 
@@ -37,12 +44,20 @@ public:
         return autoindex;
     }
 
-    std::string get_error_page( void ) {
-        return error_page;
+    std::size_t get_return_code( void ) {
+        return return_code;
     }
 
-    size_t get_client_max_body_size( void ) {
-        return client_max_body_size;
+    std::string get_return_path( void ) {
+        return return_path;
+    }
+
+    std::string get_cgi_extension( void ) {
+        return cgi_extension;
+    }
+
+    std::string get_cgi_path( void ) {
+        return cgi_path;
     }
 
     // setters
@@ -58,12 +73,20 @@ public:
         autoindex = str;
     }
 
-    void set_error_page( std::string str ) {
-        error_page = str;
+    void set_return_code( size_t n ) {
+        return_code = n;
     }
 
-    void set_client_max_body_size( size_t n ) {
-        client_max_body_size = n;
+    void set_return_path( std::string str ) {
+        return_path = str;
+    }
+
+    void set_cgi_extension( std::string str ) {
+        cgi_extension = str;
+    }
+
+    void set_cgi_path( std::string str ) {
+        cgi_path = str;
     }
 };
 
