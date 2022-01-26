@@ -17,11 +17,6 @@ private:
 public:
     // constructor/destructor
     ServerInfo( void ) : client_max_body_size(0) {
-        listen.clear();
-        root.clear();
-        error_page.clear();
-        server_name.clear();
-        locations.clear();
     }
     ~ServerInfo() {}
 
@@ -31,7 +26,9 @@ public:
     }
 
     std::string get_listen( void ) {
-        return listen;
+        if (!listen.empty())
+            return listen;
+        return (NULL);
     }
 
     std::string get_root( void ) {
