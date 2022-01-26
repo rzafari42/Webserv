@@ -9,8 +9,6 @@ class ServerInfo
 private:
     std::string listen;
     std::string root;
-    std::string index;
-    std::string autoindex;
     std::string error_page;
     std::string server_name;
     size_t client_max_body_size;
@@ -18,7 +16,13 @@ private:
 
 public:
     // constructor/destructor
-    ServerInfo( void ) : root("html"), index("index.html"), autoindex("off"), client_max_body_size(1) {}
+    ServerInfo( void ) : client_max_body_size(0) {
+        listen.clear();
+        root.clear();
+        error_page.clear();
+        server_name.clear();
+        locations.clear();
+    }
     ~ServerInfo() {}
 
     //getters
@@ -32,14 +36,6 @@ public:
 
     std::string get_root( void ) {
         return root;
-    }
-
-    std::string get_index( void ) {
-        return index;
-    }
-
-    std::string get_autoindex( void ) {
-        return autoindex;
     }
 
     std::string get_error_page( void ) {
@@ -62,14 +58,6 @@ public:
 
     void set_root( std::string str ) {
         root = str;
-    }
-
-    void set_index( std::string str ) {
-        index = str;
-    }
-
-    void set_autoindex( std::string str ) {
-        autoindex = str;
     }
 
     void set_error_page( std::string str ) {
