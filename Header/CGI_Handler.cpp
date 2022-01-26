@@ -6,7 +6,7 @@
 /*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/17 14:12:53 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/23 17:38:39 by simbarre         ###   ########.fr       */
+/*   Updated: 2022/01/26 12:59:44 by simbarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,25 +14,18 @@
 
 CGI_Handler::CGI_Handler()								//left to fill all of this with the parser
 {
-	_env["AUTH_TYPE"]			= "";
-	_env["CONTENT_LENGTH"]		= "";
-	_env["CONTENT_TYPE"]		= "";
-	_env["DOCUMENT_ROOT"]		= "";
+	_env["AUTH_TYPE"]			= "";					//no security
+	_env["CONTENT_LENGTH"]		= "";					//length of the request body in bytes made available by the input stream -> to_string
+	_env["CONTENT_TYPE"]		= "";					//MIME type of the body of the request
 	_env["GATEWAY_INTERFACE"]	= "CGI/1.1";
-	_env["HTTP_ACCEPT"]			= "";
-	_env["HTTP_COOKIE"]			= "";					//stays NULL
-	_env["HTTP_FROM"]			= "";
-	_env["HTTP_REFERER"]		= "";
-	_env["HTTP_USER_AGENT"]		= "";
-	_env["PATH_INFO"]			= "";
-	_env["PATH_TRANSLATED"]		= "";
-	_env["QUERY_STRING"]		= "";
-	_env["REMOTE_ADDR"]			= "";
-	_env["REMOTE_HOST"]			= "";
-	_env["REMOTE_IDENT"]		= "";
-	_env["REMOTE_USER"]			= "";
-	_env["REQUEST_METHOD"]		= "";
-	_env["SCRIPT_NAME"]			= "";
+	_env["PATH_INFO"]			= "";					//identifies the resource or sub-resource to be returned by the CGI script, and it is derived from the portion of the URI path following the script name but preceding any query data
+	_env["PATH_TRANSLATED"]		= "";					//Maps the script's virtual path to the physical path used to call the script
+	_env["QUERY_STRING"]		= "";					//The query string that is contained in the request URL after the path.
+	_env["REDIRECT_STATUS"]		= "200";
+	_env["REMOTE_ADDR"]			= "";					//Returns the IP address of the client that sent the request
+	_env["REMOTE_USER"]			= "";					//Returns the login of the user making this request if the user has been authenticated (optional)
+	_env["REQUEST_METHOD"]		= "";					//change to the request.method() function (returns NULL ?)
+	_env["SCRIPT_NAME"]			= "";					//Returns the part of the URL from the protocol name up to the query string in the first line of the HTTP request.
 	_env["SERVER_NAME"]			= "webserv";			//change to hostname
 	_env["SERVER_PORT"]			= 8080;
 	_env["SERVER_PROTOCOL"]		= "HTTP/1.1";
