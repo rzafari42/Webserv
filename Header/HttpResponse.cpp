@@ -155,34 +155,42 @@ void HttpResponse::handle_get_method(Request *req)
     if (req->get_url() == "www/")
         req->set_url(HOME_PAGE_PATH);
 
-    std::ifstream sourceFile(req->get_url(), std::ifstream::in);
-
-    if (sourceFile.good())
+    std::map<std::string, std::string> cgi = req->get_cgi();
+    if (cgi.empty())
     {
-        std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
-        _content = ans;
-        _statusCode = 200;
-        _reasonPhrase = _error[_statusCode];
-        _contentLength = _content.size();
-        if (!req->get_url().compare(req->get_url().size() - 3, 3, "css"))
-            _contentType = "text/css";
-        else
-            _contentType = "text/html";
-    }
-    else
-    {
-        req->set_url(ERROR_404_PATH);
         std::ifstream sourceFile(req->get_url(), std::ifstream::in);
+
         if (sourceFile.good())
         {
             std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
             _content = ans;
-            _statusCode = 404;
+            _statusCode = 200;
             _reasonPhrase = _error[_statusCode];
             _contentLength = _content.size();
+            if (!req->get_url().compare(req->get_url().size() - 3, 3, "css"))
+                _contentType = "text/css";
+            else
+                _contentType = "text/html";
         }
+        else
+        {
+            req->set_url(ERROR_404_PATH);
+            std::ifstream sourceFile(req->get_url(), std::ifstream::in);
+            if (sourceFile.good())
+            {
+                std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
+                _content = ans;
+                _statusCode = 404;
+                _reasonPhrase = _error[_statusCode];
+                _contentLength = _content.size();
+            }
+        }
+        sourceFile.close();
     }
-    sourceFile.close();
+    else
+    {
+        //call to cgi here
+    }
     constructResponse();
 }
 
