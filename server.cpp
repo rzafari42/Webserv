@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 22:01:31 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/27 13:11:17 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/01/27 15:22:13 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,7 +138,8 @@ int		main(int argc, char *argv[])
 	{
 		std::vector<ServerInfo> conf;
 		ParserConf parser;
-		int		server_socket = 0;
+		std::vector<int> server_socket;
+		//int		server_socket = 0;
 		std::string address;
 		std::string port;
 		fd_set	current_sockets, ready_sockets;
@@ -149,27 +150,32 @@ int		main(int argc, char *argv[])
 		std::vector<ServerInfo>::iterator it = conf.begin();
 		std::vector<ServerInfo>::iterator ite = conf.end();
 		
-		/*FD_ZERO(&current_sockets);
+		FD_ZERO(&current_sockets);
 		std::cout << "hi there" << std::endl;
 		while (it != ite)
 		{
 			port.clear();
 			address.clear();
 			address = it->get_listen();
-			std::cout << address << std::endl;
+			std::cout << "address:" << address << std::endl;
 			get_port(&port, address);
 			std::cout << "port : " << port << std::endl;
-			server_socket = setup_server(stringToInt(port), SERVER_BACKLOG);
-			FD_SET(server_socket, &current_sockets);
+			server_socket.push_back(setup_server(stringToInt(port), SERVER_BACKLOG));
+			//server_socket = 0;
 			it++;
 		}
-		std::cout << "end" << std::endl;*/
+		for (int i = 0; i < server_socket.size(); i++)
+		{
+			FD_SET(server_socket[i], &current_sockets);
+		}
+
+		std::cout << "end" << std::endl;
 		
-		server_socket = setup_server(SERVER_PORT, SERVER_BACKLOG);
+		/*server_socket = setup_server(SERVER_PORT, SERVER_BACKLOG);
 
 
 		FD_ZERO(&current_sockets);
-		FD_SET(server_socket, &current_sockets);
+		FD_SET(server_socket, &current_sockets);*/ 
 		
 		while (true)
 		{
@@ -181,10 +187,10 @@ int		main(int argc, char *argv[])
 			{
 				if (FD_ISSET(i, &ready_sockets))
 				{
-					if (i == server_socket)
+					if (std::find(server_socket.begin(), server_socket.end(), i) != server_socket.end())
 					{
 						//new connection
-						int client_socket = accept_new_connection(server_socket);
+						int client_socket = accept_new_connection(i);
 						FD_SET(client_socket, &current_sockets);
 					}
 					else

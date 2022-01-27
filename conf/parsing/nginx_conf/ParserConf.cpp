@@ -70,7 +70,10 @@ static int find_location_block(std::vector<std::string>::iterator it, std::vecto
 
 static void put_listen(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &serv_info) {
     if (it != ite)
+    {
+        std::cout << "listen: " << *it << std::endl;
         serv_info.set_listen(*it);
+    }
     else
         throw ParserConf::ParsingConfigFileException(LISTEN_EMPTY);
 }
