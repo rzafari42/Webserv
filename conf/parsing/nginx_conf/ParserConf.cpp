@@ -210,7 +210,7 @@ static int find_element_location_block(std::vector<std::string>::iterator it, st
         return 1; // FAILURE
     if ((ite - 1)->compare(";"))
         throw ParserConf::ParsingConfigFileException(MISSING_SEMICOLON);
-    return 0;
+   return 0;
 }
 
 static void fill_struct(std::vector<std::vector<std::string> > v, std::vector<ServerInfo> *serv_info) {
@@ -284,7 +284,7 @@ void ParserConf::parse(std::string file, std::vector<ServerInfo> *serv_info) {
 
     if (flux)
     {
-        std::vector<std::vector<std::string>> values;
+        std::vector<std::vector<std::string> > values;
         std::vector<std::string> tmp;
         std::string line;
 

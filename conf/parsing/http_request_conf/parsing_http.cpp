@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/21 12:19:15 by rzafari           #+#    #+#             */
-/*   Updated: 2022/01/25 13:50:16 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/01/27 13:02:24 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,43 @@ int check_format_rqfield(std::string s, Request *req)
     return error(REQUEST_FIELD_FORMAT, 1, req);
 }
 
-int catch_request_line(const std::string s, Request *req) //Format: Method Request-URI HTTP-Version CRLF
+int check_cgi(Request *req, std::map<std::string, std::string> &mp)
+{
+    std::string url = req->get_url();
+    std::size_t pos = 0;
+    std::string key;
+    std::string value;
+
+    pos = url.find(CGI_EXTENSION);
+    if (pos != std::string::npos)
+    {
+        while (url[pos] != '?' && pos != url.size())
+            pos++;
+        if (pos == url.size())
+            return -1;
+        while (pos != url.size())
+        {
+            pos++;
+            key.clear();
+            value.clear();
+            while (pos != url.size() && url.at(pos) != '=')
+            {
+                key.push_back(url[pos]);
+                pos++;
+            }
+            pos++;
+            while (pos < url.size() && url.at(pos) != '&') 
+            {
+                value.push_back(url[pos]);
+                pos++;
+            }
+            mp.insert(std::pair<std::string, std::string>(key, value));
+        }
+    }
+    return 0;
+}
+
+int catch_request_line(const std::string s, Request *req, std::map<std::string, std::string> &mp) //Format: Method Request-URI HTTP-Version CRLF
 {
     int i = 0;
     std::string tmp;
@@ -97,6 +133,8 @@ int catch_request_line(const std::string s, Request *req) //Format: Method Reque
         i++;
     }
     req->set_version(tmp);
+    if (check_cgi(req, mp))
+       return error(BAD_CGI_VALUES, 1, req);
     return 0;
 }
 
@@ -151,6 +189,7 @@ void parsing(std::string file, Request *request)
     if (flux)
     {
         std::map<std::string, std::string> values;
+        std::map<std::string, std::string> cgi;
         std::vector<std::string> body;
         std::string line;
 
@@ -161,7 +200,7 @@ void parsing(std::string file, Request *request)
         if (!check_format_rqline(line, request))
         {
             line.erase(line.size() - 2);
-            if (!catch_request_line(line, request))
+            if (!catch_request_line(line, request, cgi))
             {
                 line.clear();
                 while (1)
@@ -208,6 +247,7 @@ void parsing(std::string file, Request *request)
             return;
         }
         request->set_fields(values);
+        request->set_cgi(cgi);
         request->set_body(body);
         //print_map(request->get_fields(), request->get_body());
         parsingClear(flux, values, body, line);
@@ -230,6 +270,7 @@ Request req_parsing(std::string av)
     if (ac < 2)
         return error(EMPTY, 0, &request);
     parsing(av[1], &request);
+    printCGI(request.get_cgi());
     print_map(request.get_fields(), request.get_body());
     //check if there's an CLRF at the end of each lines and if there's empty line before the body
     return 0;
