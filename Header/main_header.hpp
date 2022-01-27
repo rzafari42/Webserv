@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main_header.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
+/*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/14 21:13:24 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/24 14:48:24 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/01/26 15:01:18 by simbarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@
 #include "../conf/parsing/http_request_conf/parsing_http.hpp"
 #include "../conf/parsing/nginx_conf/ParserConf.hpp"
 #include "HttpResponse.hpp"
+#include "CGI_Handler.hpp"
 /*#include "conf/parsing/http_request_conf/utils.hpp"
 #include "conf/parsing/nginx_conf/utils.hpp"*/
 

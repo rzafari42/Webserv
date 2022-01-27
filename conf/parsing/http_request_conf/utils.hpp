@@ -15,6 +15,7 @@
 # define METHOD_HOST_MISSING "400 Bad Request"
 # define PROTOCOL_VERSION "HTTP/1.1"
 # define DEFINED_TWICE "Error: Header Element Defined Twice"
+# define BAD_CGI_VALUES "Error: CGI values are incorrect or missing"
 # define CRLF "\r\n"
 # define CR '\r'
 # define LF '\n'
@@ -34,6 +35,13 @@ void parsingClear(std::ifstream &flux, std::map<std::string, std::string> values
     values.clear();
     body.clear();
     flux.close();
+}
+
+void printCGI(std::map<std::string, std::string> cgi)
+{
+    std::map<std::string,std::string>::iterator it;
+    for (it = cgi.begin(); it != cgi.end(); ++it)
+        std::cout << it->first << ": " << it->second << '\n';
 }
 
 void print_map(std::map<std::string, std::string> mymap, std::vector<std::string> vec)
