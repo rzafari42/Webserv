@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 22:01:31 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/26 19:00:47 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/01/27 13:11:17 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ void	*handle_connection(int client_socket)
 	std::string cont = res.getResponse();
 	char *buff = new char[cont.length()];
 	strcpy(buff, cont.c_str());
-	
+
 	write(client_socket , buff, cont.length()); //Envoie de la reponse au client
 	delete [] buff;
 	close(client_socket);
@@ -124,19 +124,19 @@ void get_port(std::string *port, std::string address)
 	}
 }
 
-static int stringToInt(std::string s ) 
+static int stringToInt(std::string s )
 {
     int i;
     std::istringstream(s) >> i;
     return i;
 }
 
-//nc -c localhost 8080 
+//nc -c localhost 8080
 int		main(int argc, char *argv[])
 {
 	if (argc > 1)
 	{
-		std::vector<ServerInfo> conf; 
+		std::vector<ServerInfo> conf;
 		ParserConf parser;
 		int		server_socket = 0;
 		std::string address;
@@ -152,7 +152,7 @@ int		main(int argc, char *argv[])
 		/*FD_ZERO(&current_sockets);
 		std::cout << "hi there" << std::endl;
 		while (it != ite)
-		{	
+		{
 			port.clear();
 			address.clear();
 			address = it->get_listen();
