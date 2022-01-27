@@ -80,10 +80,10 @@ void HttpResponse::initValues()
 {
     _statusCode = 0;
     _reasonPhrase = "";
-    _contentLength = 0; 
-    _content = ""; 
+    _contentLength = 0;
+    _content = "";
     _contentType = "text/html";
-    _response = ""; 
+    _response = "";
 }
 
 void HttpResponse::initErrorMap()
@@ -97,7 +97,7 @@ void HttpResponse::initErrorMap()
     _error.insert(std::pair<int, std::string>(404,"Not Found")); //done
     _error.insert(std::pair<int, std::string>(405,"Method Not Allowed")); //done
     _error.insert(std::pair<int, std::string>(411,"Length Required"));
-    _error.insert(std::pair<int, std::string>(413,"Payload Too Large")); 
+    _error.insert(std::pair<int, std::string>(413,"Payload Too Large"));
     _error.insert(std::pair<int, std::string>(501,"Not Implemented")); //done
     _error.insert(std::pair<int, std::string>(505," HTTP Version Not Supported")); //done
 }
@@ -150,7 +150,7 @@ void HttpResponse::requestParsingError(int code)
 
 
 
-void HttpResponse::handle_get_method(Request *req)
+void HttpResponse::handle_get_method(Request *req)  //add ParserConf here
 {
     if (req->get_url() == "www/")
         req->set_url(HOME_PAGE_PATH);
@@ -262,7 +262,7 @@ void HttpResponse::handle_delete_method(Request *req)
 
 void HttpResponse::redirection(Request *req)
 {
-    
+
 }
 
 
