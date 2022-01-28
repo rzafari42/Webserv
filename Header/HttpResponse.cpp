@@ -45,7 +45,7 @@ bool HttpResponse::check_basic_error(Request *req)
     return true;
 }
 
-HttpResponse::HttpResponse(Request *req, std::vector<ServerInfo> *conf)
+HttpResponse::HttpResponse(Request *req, ServerInfo *conf)
 {
     initValues();
     initErrorMap();

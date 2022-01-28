@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 22:01:31 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/28 14:49:49 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/01/28 17:35:52 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int		check(int exp, const char *msg)
 
 //pour l'instant cette fonction affiche juste la requette qu'elle recoit
 //ajouter parsing de la requette et tt le reste
-void	*handle_connection(int client_socket, std::vector<ServerInfo> conf)
+void	*handle_connection(int client_socket, ServerInfo conf)
 {
 	char	buffer[BUFF_SIZE];
 	size_t	bytes_read;
@@ -39,6 +39,8 @@ void	*handle_connection(int client_socket, std::vector<ServerInfo> conf)
 	char	actual_path[PATH_MAX + 1];
 	static int i = 0;
 
+	std::cout << "SERVER: " << std::endl;
+	std::cout << "port: " << conf.get_listen() << std::endl;
 	while ((bytes_read = read(client_socket, buffer + msg_size, sizeof(buffer) - msg_size - 1)))
 	{
 		msg_size += bytes_read;
@@ -139,6 +141,7 @@ int		main(int argc, char *argv[])
 		std::vector<ServerInfo> conf;
 		ParserConf parser;
 		std::map<std::vector<ServerInfo>::iterator, int> server_socket;
+		std::map<int, std::vector<ServerInfo>::iterator> client_socket;
 		std::string address;
 		std::string port;
 		fd_set	current_sockets, ready_sockets;
@@ -180,15 +183,20 @@ int		main(int argc, char *argv[])
 					{
 						if (i == it_m->second)
 						{
-							int client_socket = accept_new_connection(i);
-							FD_SET(client_socket, &current_sockets);
+							int new_client_socket = accept_new_connection(i);
+							FD_SET(new_client_socket, &current_sockets);
+							client_socket.insert(std::pair<int, std::vector<ServerInfo>::iterator>(new_client_socket, it_m->first));
+							std::cout << "LISTEN00: " << std::endl;
+							std::cout << client_socket.at(i)->get_listen() << std::endl;
 							break;
 						}
 						it_m++;
 					}
 					if (it_m == it_me)
 					{
-						handle_connection(i, conf);
+						std::cout << "LISTEN01: " << std::endl;
+						std::cout << client_socket.at(i)->get_listen() << std::endl;
+						handle_connection(i, *(client_socket.at(i)));
 						FD_CLR(i, &current_sockets);
 					}
 				}
