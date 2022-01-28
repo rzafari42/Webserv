@@ -21,7 +21,7 @@ class HttpResponse
 {
     public:
         HttpResponse();
-        HttpResponse(Request *req);
+        HttpResponse(Request *req, std::vector<ServerInfo> *conf);
         ~HttpResponse();
         
         void set_status_code(int code) { _statusCode = code; };

@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 22:01:31 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/27 15:32:34 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/01/28 14:49:49 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int		check(int exp, const char *msg)
 
 //pour l'instant cette fonction affiche juste la requette qu'elle recoit
 //ajouter parsing de la requette et tt le reste
-void	*handle_connection(int client_socket)
+void	*handle_connection(int client_socket, std::vector<ServerInfo> conf)
 {
 	char	buffer[BUFF_SIZE];
 	size_t	bytes_read;
@@ -65,7 +65,7 @@ void	*handle_connection(int client_socket)
 	Request req = req_parsing(namefile); //Parsing
 	std::remove(namefile.c_str());
 
-	HttpResponse res(&req);
+	HttpResponse res(&req, &conf);
 	std::string cont = res.getResponse();
 	char *buff = new char[cont.length()];
 	strcpy(buff, cont.c_str());
@@ -138,7 +138,7 @@ int		main(int argc, char *argv[])
 	{
 		std::vector<ServerInfo> conf;
 		ParserConf parser;
-		std::vector<int> server_socket;
+		std::map<std::vector<ServerInfo>::iterator, int> server_socket;
 		std::string address;
 		std::string port;
 		fd_set	current_sockets, ready_sockets;
@@ -148,7 +148,6 @@ int		main(int argc, char *argv[])
 
 		std::vector<ServerInfo>::iterator it = conf.begin();
 		std::vector<ServerInfo>::iterator ite = conf.end();
-		
 		FD_ZERO(&current_sockets);
 		while (it != ite)
 		{
@@ -156,32 +155,40 @@ int		main(int argc, char *argv[])
 			address.clear();
 			address = it->get_listen();
 			get_port(&port, address);
-			server_socket.push_back(setup_server(stringToInt(port), SERVER_BACKLOG));
+			server_socket.insert(std::pair<std::vector<ServerInfo>::iterator, int>(it, setup_server(stringToInt(port), SERVER_BACKLOG)));
 			it++;
 		}
-		for (int i = 0; i < server_socket.size(); i++)
+		std::map<std::vector<ServerInfo>::iterator, int>::iterator it_m = server_socket.begin();
+		std::map<std::vector<ServerInfo>::iterator, int>::iterator it_me = server_socket.end();
+		while (it_m != it_me)
 		{
-			FD_SET(server_socket[i], &current_sockets);
+			FD_SET(server_socket.at(it_m->first), &current_sockets);
+			it_m++;
 		}
 		while (true)
 		{
 			ready_sockets = current_sockets;
-
 			check(select(FD_SETSIZE, &ready_sockets, NULL, NULL, NULL), "Failed to select");
 
 			for (int i = 0; i < FD_SETSIZE; i++)
 			{
+				it_m = server_socket.begin();
+				it_me = server_socket.end();
 				if (FD_ISSET(i, &ready_sockets))
 				{
-					if (std::find(server_socket.begin(), server_socket.end(), i) != server_socket.end())
+					while (it_m != it_me)
 					{
-						//new connection
-						int client_socket = accept_new_connection(i);
-						FD_SET(client_socket, &current_sockets);
+						if (i == it_m->second)
+						{
+							int client_socket = accept_new_connection(i);
+							FD_SET(client_socket, &current_sockets);
+							break;
+						}
+						it_m++;
 					}
-					else
+					if (it_m == it_me)
 					{
-						handle_connection(i);
+						handle_connection(i, conf);
 						FD_CLR(i, &current_sockets);
 					}
 				}
