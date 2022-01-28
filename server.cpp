@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 22:01:31 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/28 17:35:52 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/01/28 19:39:59 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,6 @@ void	*handle_connection(int client_socket, ServerInfo conf)
 	char	actual_path[PATH_MAX + 1];
 	static int i = 0;
 
-	std::cout << "SERVER: " << std::endl;
-	std::cout << "port: " << conf.get_listen() << std::endl;
 	while ((bytes_read = read(client_socket, buffer + msg_size, sizeof(buffer) - msg_size - 1)))
 	{
 		msg_size += bytes_read;
@@ -132,7 +130,7 @@ static int stringToInt(std::string s )
     std::istringstream(s) >> i;
     return i;
 }
-
+	
 //nc -c localhost 8080
 int		main(int argc, char *argv[])
 {
@@ -140,8 +138,8 @@ int		main(int argc, char *argv[])
 	{
 		std::vector<ServerInfo> conf;
 		ParserConf parser;
-		std::map<std::vector<ServerInfo>::iterator, int> server_socket;
-		std::map<int, std::vector<ServerInfo>::iterator> client_socket;
+		std::map<ServerInfo, int> server_socket;
+		std::map<int, ServerInfo> client_socket;
 		std::string address;
 		std::string port;
 		fd_set	current_sockets, ready_sockets;
@@ -149,8 +147,8 @@ int		main(int argc, char *argv[])
 
 		parser.parse(argv[1], &conf);
 
-		std::vector<ServerInfo>::iterator it = conf.begin();
-		std::vector<ServerInfo>::iterator ite = conf.end();
+		std::vector<ServerInfo>::const_iterator it = conf.begin();
+		std::vector<ServerInfo>::const_iterator ite = conf.end();
 		FD_ZERO(&current_sockets);
 		while (it != ite)
 		{
@@ -158,14 +156,14 @@ int		main(int argc, char *argv[])
 			address.clear();
 			address = it->get_listen();
 			get_port(&port, address);
-			server_socket.insert(std::pair<std::vector<ServerInfo>::iterator, int>(it, setup_server(stringToInt(port), SERVER_BACKLOG)));
+			server_socket.insert(std::make_pair(*it, setup_server(stringToInt(port), SERVER_BACKLOG)));
 			it++;
 		}
-		std::map<std::vector<ServerInfo>::iterator, int>::iterator it_m = server_socket.begin();
-		std::map<std::vector<ServerInfo>::iterator, int>::iterator it_me = server_socket.end();
+		std::map<ServerInfo, int>::iterator it_m = server_socket.begin();
+		std::map<ServerInfo, int>::iterator it_me = server_socket.end();
 		while (it_m != it_me)
 		{
-			FD_SET(server_socket.at(it_m->first), &current_sockets);
+			FD_SET(it_m->second, &current_sockets);
 			it_m++;
 		}
 		while (true)
@@ -185,19 +183,16 @@ int		main(int argc, char *argv[])
 						{
 							int new_client_socket = accept_new_connection(i);
 							FD_SET(new_client_socket, &current_sockets);
-							client_socket.insert(std::pair<int, std::vector<ServerInfo>::iterator>(new_client_socket, it_m->first));
-							std::cout << "LISTEN00: " << std::endl;
-							std::cout << client_socket.at(i)->get_listen() << std::endl;
+							client_socket.insert(std::pair<int, ServerInfo>(new_client_socket, it_m->first));
 							break;
 						}
 						it_m++;
 					}
 					if (it_m == it_me)
 					{
-						std::cout << "LISTEN01: " << std::endl;
-						std::cout << client_socket.at(i)->get_listen() << std::endl;
-						handle_connection(i, *(client_socket.at(i)));
+						handle_connection(i, (client_socket.at(i)));
 						FD_CLR(i, &current_sockets);
+						client_socket.erase(i);
 					}
 				}
 			}

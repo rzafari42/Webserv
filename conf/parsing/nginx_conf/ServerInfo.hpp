@@ -25,7 +25,7 @@ public:
         return locations;
     }
 
-    std::string get_listen( void ) {
+    std::string get_listen( void ) const {
         if (!listen.empty())
             return listen;
         return (NULL);
@@ -72,8 +72,11 @@ public:
     void add_location( Location l ) {
         locations.push_back(l);
     }
+
+    friend bool operator<(const ServerInfo& t1, const ServerInfo& t2)
+    {
+        return (t1.get_listen() < t2.get_listen());
+    }
 };
-
-
 
 #endif
