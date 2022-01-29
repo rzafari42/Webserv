@@ -6,7 +6,7 @@
 /*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 22:01:31 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/29 02:41:00 by simbarre         ###   ########.fr       */
+/*   Updated: 2022/01/29 06:55:28 by simbarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,6 @@ int		check(int exp, const char *msg)
 	return (exp);
 }
 
-//pour l'instant cette fonction affiche juste la requette qu'elle recoit
-//ajouter parsing de la requette et tt le reste
 void	*handle_connection(int client_socket)
 {
 	char	buffer[BUFF_SIZE];
@@ -60,9 +58,9 @@ void	*handle_connection(int client_socket)
 	std::ofstream myfile;
 	myfile.open(namefile, std::ofstream::app);		//not viable in c++98
 	std::string str(buffer);
-	myfile << str; //Write the request in a file
+	myfile << str;									//Write the request in a file
 	myfile.close();
-	Request req = req_parsing(namefile); //Parsing
+	Request req = req_parsing(namefile);			//Parsing
 	std::remove(namefile.c_str());
 
 	HttpResponse res(&req);
@@ -70,7 +68,7 @@ void	*handle_connection(int client_socket)
 	char *buff = new char[cont.length()];
 	strcpy(buff, cont.c_str());
 
-	write(client_socket , buff, cont.length()); //Envoie de la reponse au client
+	write(client_socket , buff, cont.length());
 	delete [] buff;
 	close(client_socket);
 	printf("closing connection\n");
@@ -81,9 +79,11 @@ int		accept_new_connection(int server_socket)
 {
 	int		addr_size = sizeof(SA_IN);
 	int		client_socket;
-	SA_IN	client_addr;			//unused variable
+	SA_IN	client_addr;
 
 	check(client_socket = accept(server_socket, (SA*)&client_socket, (socklen_t*)&addr_size), "Accept!");
+
+	(void)client_addr;					//added to remove -Werror compilation error
 
 	return (client_socket);
 }
@@ -105,6 +105,9 @@ int		setup_server(short port, int backlog)
 
 	check(bind(server_socket, (SA*)&server_addr, sizeof(server_addr)), "Bind failed!");
 	check(listen(server_socket, backlog), "Listen failed!");
+
+	(void)client_socket;				//added to remove -Werror compilation error
+	(void)addr_size;					//added to remove -Werror compilation error
 
 	return (server_socket);
 }
@@ -175,7 +178,6 @@ int		main(int argc, char *argv[])
 				{
 					if (std::find(server_socket.begin(), server_socket.end(), i) != server_socket.end())
 					{
-						//new connection
 						int client_socket = accept_new_connection(i);
 						FD_SET(client_socket, &current_sockets);
 					}

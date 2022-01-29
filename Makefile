@@ -6,7 +6,7 @@
 #    By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/01/29 02:31:17 by simbarre          #+#    #+#              #
-#    Updated: 2022/01/29 02:46:39 by simbarre         ###   ########.fr        #
+#    Updated: 2022/01/29 06:30:33 by simbarre         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -40,4 +40,4 @@ fclean:			clean
 re:				fclean $(NAME)
 
 test: re
-				./$(NAME) conf/default00.conf
+				./$(NAME) conf/conf_files/default00.conf

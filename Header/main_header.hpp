@@ -6,7 +6,7 @@
 /*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/14 21:13:24 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/29 02:48:23 by simbarre         ###   ########.fr       */
+/*   Updated: 2022/01/29 06:31:50 by simbarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,9 +45,9 @@
 
 #include "../conf/parsing/http_request_conf/parsing_http.hpp"
 #include "../conf/parsing/http_request_conf/utils.hpp"
-#include "../conf/parsing/nginx_conf/ParserConf.hpp"
 #include "../conf/parsing/nginx_conf/Location.hpp"
 #include "../conf/parsing/nginx_conf/ServerInfo.hpp"
+#include "../conf/parsing/nginx_conf/ParserConf.hpp"
 #include "HttpResponse.hpp"
 #include "CGI_Handler.hpp"
 
