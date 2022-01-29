@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
+/*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 22:01:31 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/27 15:32:34 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/01/29 02:41:00 by simbarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,12 +53,12 @@ void	*handle_connection(int client_socket)
 
 	//Name file creation
 	std::string namefile = "Request_";
-	namefile.append(std::to_string(i));
+	namefile.append(std::to_string(i));				//not viable in c++98
 	namefile.append(".txt");
 	i++;
 
 	std::ofstream myfile;
-	myfile.open(namefile, std::ofstream::app);
+	myfile.open(namefile, std::ofstream::app);		//not viable in c++98
 	std::string str(buffer);
 	myfile << str; //Write the request in a file
 	myfile.close();
@@ -81,7 +81,7 @@ int		accept_new_connection(int server_socket)
 {
 	int		addr_size = sizeof(SA_IN);
 	int		client_socket;
-	SA_IN	client_addr;
+	SA_IN	client_addr;			//unused variable
 
 	check(client_socket = accept(server_socket, (SA*)&client_socket, (socklen_t*)&addr_size), "Accept!");
 
@@ -148,7 +148,7 @@ int		main(int argc, char *argv[])
 
 		std::vector<ServerInfo>::iterator it = conf.begin();
 		std::vector<ServerInfo>::iterator ite = conf.end();
-		
+
 		FD_ZERO(&current_sockets);
 		while (it != ite)
 		{
@@ -159,7 +159,7 @@ int		main(int argc, char *argv[])
 			server_socket.push_back(setup_server(stringToInt(port), SERVER_BACKLOG));
 			it++;
 		}
-		for (int i = 0; i < server_socket.size(); i++)
+		for (unsigned long i = 0; i < server_socket.size(); i++)
 		{
 			FD_SET(server_socket[i], &current_sockets);
 		}

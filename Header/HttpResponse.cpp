@@ -45,7 +45,7 @@ bool HttpResponse::check_basic_error(Request *req)
     return true;
 }
 
-HttpResponse::HttpResponse(Request *req)
+HttpResponse::HttpResponse(Request *req) //add ParserConf here
 {
     initValues();
     initErrorMap();
@@ -150,7 +150,7 @@ void HttpResponse::requestParsingError(int code)
 
 
 
-void HttpResponse::handle_get_method(Request *req)  //add ParserConf here
+void HttpResponse::handle_get_method(Request *req)  //add Location and ParserConf here
 {
     if (req->get_url() == "www/")
         req->set_url(HOME_PAGE_PATH);
@@ -189,7 +189,15 @@ void HttpResponse::handle_get_method(Request *req)  //add ParserConf here
     }
     else
     {
-        //call to cgi here
+        ParserConf  conf;   //to remove
+        Location    loc;    //same
+
+        CGI_Handler local_cgi(*req, conf);
+
+        _content = local_cgi.run_CGI(loc.get_cgi_path());
+        _statusCode = 200;
+        _contentLength = _content.size();
+        //we'll see what more is needed here, but its a good starting point to test at least
     }
     constructResponse();
 }

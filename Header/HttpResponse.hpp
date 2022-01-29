@@ -15,15 +15,13 @@
 
 # define FILE_DELETED "/file_deleted.html"
 
-
-
 class HttpResponse
 {
     public:
         HttpResponse();
         HttpResponse(Request *req);
         ~HttpResponse();
-        
+
         void set_status_code(int code) { _statusCode = code; };
         void set_reasonPhrase(std::string phrase) { _reasonPhrase = phrase; };
         void set_contentLength(int length) { _contentLength = length; };

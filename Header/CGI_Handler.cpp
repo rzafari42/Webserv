@@ -6,7 +6,7 @@
 /*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/17 14:12:53 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/26 14:45:36 by simbarre         ###   ########.fr       */
+/*   Updated: 2022/01/29 02:27:26 by simbarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,15 +25,13 @@ CGI_Handler::CGI_Handler(Request &request, ParserConf &conf) : _req(request), _c
 	_env["PATH_TRANSLATED"]		= "";					//Maps the script's virtual path to the physical path used to call the script
 	_env["QUERY_STRING"]		= "";					//The query string that is contained in the request URL after the path.
 	_env["REDIRECT_STATUS"]		= "200";
-	_env["REMOTE_ADDR"]			= "";					//Returns the IP address of the client that sent the request
-	_env["REMOTE_USER"]			= "";					//Returns the login of the user making this request if the user has been authenticated (optional)
 	_env["REQUEST_METHOD"]		= "";					//request.get_method();
 	_env["SCRIPT_NAME"]			= "";					//conf.script_name;
 	_env["SERVER_NAME"]			= "webserv";			//conf.server_name;
 	_env["SERVER_PORT"]			= 8080;
 	_env["SERVER_PROTOCOL"]		= "HTTP/1.1";
 	_env["SERVER_SOFTWARE"]		= "webserv/1.1";
-}
+}														//we'll see if we need more env var
 
 CGI_Handler::CGI_Handler(CGI_Handler const &src) : _env(src._env)
 {}
@@ -84,7 +82,8 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 	fd_saver[0] = dup(STDIN_FILENO);
 	fd_saver[1] = dup(STDOUT_FILENO);
 
-	pipe(pipe_fd); //add error check
+	if (pipe(pipe_fd))
+		exit(EXIT_FAILURE);								//add more error management
 
 	pid = fork();
 	if (pid == -1)
@@ -92,22 +91,26 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 	else if (pid == 0)
 	{
 		char	**env = env_to_double_char();
-		char	*args[] = { NULL };						//maybe change it ? is it usefull ?
+		char	*args[2];
+
+		args[0] = strdup(script.c_str());				//modified this, should work as expected
+		args[1] = NULL;
 
 		close(pipe_fd[1]);
 		dup2(pipe_fd[0], 0);
 
 		int	fd_tmp = open("/tmp/cgi_output", O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
-														//add lots more things here + error check, this is the file where the output is going to be stored then read
-														//create if not exists, and all that stuff
+
 		dup2(fd_tmp, 1);
 		dup2(fd_tmp, 2);
-		execve(script.c_str(), args, env);				//add error check + maybe do something else with args ?
+		if (execve(args[0], args, env) == -1)
+			exit(EXIT_FAILURE);							//add more error management
 		close(0);
 		close(fd_tmp);
 		close(pipe_fd[0]);
 		exit(0);
 
+		free(args[0]);
 		delete [] env;									//see if this deletes all
 	}
 	else
@@ -115,7 +118,7 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 		close(pipe_fd[0]);
 		write(pipe_fd[1], _body.c_str(), _body.length());
 		close(pipe_fd[1]);
-		waitpid(pid, NULL, 0);							//everyone uses -1 insted of pid
+		waitpid(pid, NULL, 0);							//everyone uses -1 instead of pid, maybe move it at the top ?
 	}
 
 	dup2(fd_saver[0], STDIN_FILENO);

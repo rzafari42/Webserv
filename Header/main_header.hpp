@@ -6,7 +6,7 @@
 /*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/14 21:13:24 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/26 15:01:18 by simbarre         ###   ########.fr       */
+/*   Updated: 2022/01/29 02:35:47 by simbarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,10 +34,11 @@
 # define HOME_PAGE_PATH  "/index.html"
 
 #include "../conf/parsing/http_request_conf/parsing_http.hpp"
+#include "../conf/parsing/http_request_conf/utils.hpp"
 #include "../conf/parsing/nginx_conf/ParserConf.hpp"
+#include "../conf/parsing/nginx_conf/Location.hpp"
+#include "../conf/parsing/nginx_conf/ServerInfo.hpp"
 #include "HttpResponse.hpp"
 #include "CGI_Handler.hpp"
-/*#include "conf/parsing/http_request_conf/utils.hpp"
-#include "conf/parsing/nginx_conf/utils.hpp"*/
 
 #endif
