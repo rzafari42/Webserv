@@ -1,9 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utils.hpp                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/01/29 02:50:51 by simbarre          #+#    #+#             */
+/*   Updated: 2022/01/29 02:54:32 by simbarre         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef UTILS_HPP
 # define UTILS_HPP
-# include <iostream>
-# include <fstream>
-# include <vector>
-# include <map>
+
+# include "../../../Header/main_header.hpp"
+
 # define EMPTY "Error: Not enough arguments"
 # define OPENING_FAILURE "Error: File is not accessible in reading mode"
 # define REQUEST_LINE_FORMAT "Error: Header Request-Line bad format."
@@ -19,7 +30,6 @@
 # define CRLF "\r\n"
 # define CR '\r'
 # define LF '\n'
-# include "parsing_http.hpp"
 
 int error(std::string str, int i, Request *request)
 {
@@ -53,7 +63,7 @@ void print_map(std::map<std::string, std::string> mymap, std::vector<std::string
 
     std::vector<std::string>::iterator it_vec = vec.begin();
     std::vector<std::string>::iterator ite_vec = vec.end();
-    
+
     while(it_vec != ite_vec)
     {
         std::cout << *it_vec << std::endl;

@@ -6,7 +6,7 @@
 #    By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/01/29 02:31:17 by simbarre          #+#    #+#              #
-#    Updated: 2022/01/29 02:38:44 by simbarre         ###   ########.fr        #
+#    Updated: 2022/01/29 02:46:39 by simbarre         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,15 +16,15 @@ SRCS			=	server.cpp \
 					Header/CGI_Handler.cpp \
 					Header/HttpResponse.cpp
 
-OBJS			= $(SRCS:.cpp=.o)
+OBJS			=	$(SRCS:.cpp=.o)
 
 HEADERS			=	Header/main_header.hpp
 
-CXX				= clang++
-RM				= rm -f
-CXXFLAGS		= -Wall -Wextra -Werror -I $(HEADERS) -std=c++98
+CXX				=	clang++
+RM				=	rm -f
+CXXFLAGS		=	-Wall -Wextra -Werror -I $(HEADERS) -std=c++98
 
-NAME			= webserv
+NAME			=	webserv
 
 all:			$(NAME)
 

@@ -3,16 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   parsing_http.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
+/*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/21 12:19:15 by rzafari           #+#    #+#             */
-/*   Updated: 2022/01/27 13:02:24 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/01/29 02:51:45 by simbarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "parsing_http.hpp"
-#include "utils.hpp"
-#include <fstream>
+#include "../../Header/main_header.hpp"
 
 int check_format_rqline(std::string s, Request *req)
 {
@@ -42,7 +40,7 @@ int check_format_rqfield(std::string s, Request *req)
     int i = 0;
     int semi_colon = 0;
     int nb_arg = 0;
-    
+
     if (s.find("\r\n") == std::string::npos)
         return error(REQUEST_FIELD_FORMAT_CRLF, 1, req);
     s.erase(s.size() - 2);
@@ -93,7 +91,7 @@ int check_cgi(Request *req, std::map<std::string, std::string> &mp)
                 pos++;
             }
             pos++;
-            while (pos < url.size() && url.at(pos) != '&') 
+            while (pos < url.size() && url.at(pos) != '&')
             {
                 value.push_back(url[pos]);
                 pos++;

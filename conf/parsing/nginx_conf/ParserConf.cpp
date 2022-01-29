@@ -1,6 +1,16 @@
-#include "ParserConf.hpp"
-#include "ServerInfo.hpp"
-#include "Location.hpp"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ParserConf.cpp                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/01/29 02:51:23 by simbarre          #+#    #+#             */
+/*   Updated: 2022/01/29 02:51:24 by simbarre         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+# include "../../Header/main_header.hpp"
 
 ParserConf::ParserConf( void ) {}
 ParserConf::~ParserConf() {}

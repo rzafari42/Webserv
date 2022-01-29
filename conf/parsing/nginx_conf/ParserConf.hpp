@@ -1,5 +1,19 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ParserConf.hpp                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/01/29 02:52:13 by simbarre          #+#    #+#             */
+/*   Updated: 2022/01/29 02:54:41 by simbarre         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef PARSER_CONF_HPP
 # define PARSER_CONF_HPP
+
+# include "../../../Header/main_header.hpp"
 
 # define EMPTY "Error: Not enough arguments"
 # define OPENING_FAILURE "Error: File is not accessible in reading mode"
@@ -21,11 +35,6 @@
 # define LOCATION_METHODS_EMPTY "Error: In Location: 'methods' directive exists but has no value"
 # define UNCLOSED_BRACKET "Error: '}' missing"
 # define MISSING_SEMICOLON "Error: ';' missing"
-# include <iostream>
-# include <fstream>
-# include <vector>
-# include "ServerInfo.hpp"
-# include "Location.hpp"
 
 class ParserConf
 {

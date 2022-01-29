@@ -1,7 +1,19 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Location.hpp                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/01/29 02:48:51 by simbarre          #+#    #+#             */
+/*   Updated: 2022/01/29 02:54:45 by simbarre         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef LOCATION_HPP
 # define LOCATION_HPP
-# include <iostream>
-# include <vector>
+
+# include "../../../Header/main_header.hpp"
 
 class Location
 {

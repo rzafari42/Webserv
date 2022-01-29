@@ -1,19 +1,19 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   HttpResponse.hpp                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/01/29 02:47:10 by simbarre          #+#    #+#             */
+/*   Updated: 2022/01/29 02:48:04 by simbarre         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef HTTPRESPONSE_HPP
 # define HTTPRESPONSE_HPP
-# include <iostream>
-# include <fstream>
-# include <sstream>
+
 # include "main_header.hpp"
-# include "../conf/parsing/http_request_conf/parsing_http.hpp"
-# include <algorithm>
-# define HOME_PAGE_PATH "/index.html"
-# define ERROR_400_PATH "/error400.html"
-# define ERROR_404_PATH "/error404.html"
-# define ERROR_411_PATH "/error411.html"
-# define ERROR_505_PATH "/error505.html"
-
-
-# define FILE_DELETED "/file_deleted.html"
 
 class HttpResponse
 {
