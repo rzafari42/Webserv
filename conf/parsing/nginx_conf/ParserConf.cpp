@@ -242,6 +242,14 @@ static void fill_struct(std::vector<std::vector<std::string> > v, std::vector<Se
                 }
                 if (!it_s->compare("location")) {
                     loc_tmp = Location();
+                    if (it_s != ite_s && (++it_s)->compare("{"))
+                        loc_tmp.set_uri(*(it_s));
+                    else
+                    {
+                        throw ParserConf::ParsingConfigFileException(LOCATION_URI_EMPTY);
+                        serv_info->clear();
+                        return;
+                    }
                     brackets++;
                     it++;
                     it_s = it->begin();

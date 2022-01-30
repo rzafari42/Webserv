@@ -59,7 +59,7 @@ HttpResponse::HttpResponse(Request *req, ServerInfo *conf)
     if (does_method_exist == 0)
     {
         if (!method.compare("GET"))
-            handle_get_method(req);
+            handle_get_method(req, conf);
         else if (!method.compare("POST"))
             handle_post_method(req);
         else
@@ -84,6 +84,7 @@ void HttpResponse::initValues()
     _content = "";
     _contentType = "text/html";
     _response = "";
+    _redirectLoop = false;
 }
 
 void HttpResponse::initErrorMap()
@@ -93,13 +94,15 @@ void HttpResponse::initErrorMap()
     _error.insert(std::pair<int, std::string>(201,"Created")); //for post method
     _error.insert(std::pair<int, std::string>(204,"No Content")); //for post method
     _error.insert(std::pair<int, std::string>(301,"Moved Permanently"));
+    _error.insert(std::pair<int, std::string>(310,"Too many Redirects")); //done
     _error.insert(std::pair<int, std::string>(400,"Bad Request"));
     _error.insert(std::pair<int, std::string>(404,"Not Found")); //done
     _error.insert(std::pair<int, std::string>(405,"Method Not Allowed")); //done
     _error.insert(std::pair<int, std::string>(411,"Length Required"));
     _error.insert(std::pair<int, std::string>(413,"Payload Too Large"));
     _error.insert(std::pair<int, std::string>(501,"Not Implemented")); //done
-    _error.insert(std::pair<int, std::string>(505," HTTP Version Not Supported")); //done
+    _error.insert(std::pair<int, std::string>(505,"HTTP Version Not Supported")); //done
+
 }
 
 void HttpResponse::initMethods()
@@ -147,14 +150,61 @@ void HttpResponse::requestParsingError(int code)
     constructResponse();
 }
 
-
-
-
-void HttpResponse::handle_get_method(Request *req)  //add ParserConf here
+bool HttpResponse::CountLocRedirect(std::string loc)
 {
+    
+}
+
+void HttpResponse::check_redirection(Request *req, ServerInfo *conf)
+{
+    //check if the url is present in one of the location bloc URI
+    std::vector<Location> loc = conf->get_locations();
+    std::vector<Location>::iterator it = loc.begin();
+    std::vector<Location>::iterator ite = loc.end();
+
+    while (it != ite)
+    {
+        std::string tmp_url = req->get_url().erase(0, 3);
+        if (!it->get_uri().compare(tmp_url))
+        {
+            if (it->get_return_code() != 0)
+            {
+                CountLocRedirect(it->get_uri());
+                req->set_url(it->get_return_path());
+                std::string tmp_old_path = req->get_url();
+                if (!it->get_uri().compare(req->get_url().erase(0, 3)) || )
+                {
+                    set_redirectLoop();
+                    return;
+                }
+                _statusCode = 301;
+                check_redirection(req, conf);
+            }
+            //checkIfRoot ...
+        }
+            it++;
+    }
+}
+
+void HttpResponse::handle_get_method(Request *req, ServerInfo *conf)  //add ParserConf here
+{
+    check_redirection(req, conf);
     if (req->get_url() == "www/")
         req->set_url(HOME_PAGE_PATH);
-
+    if (get_redirectLoop() == true)
+    {
+        req->set_url(ERROR_310_PATH);
+        std::ifstream sourceFile(req->get_url(), std::ifstream::in);
+        if (sourceFile.good())
+        {
+            std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
+            _content = ans;
+            _statusCode = 310;
+            _reasonPhrase = _error[_statusCode];
+            _contentLength = _content.size();
+        }
+        constructResponse();
+    }
     std::map<std::string, std::string> cgi = req->get_cgi();
     if (cgi.empty())
     {
@@ -164,7 +214,8 @@ void HttpResponse::handle_get_method(Request *req)  //add ParserConf here
         {
             std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
             _content = ans;
-            _statusCode = 200;
+            if (_statusCode == 0)
+                _statusCode = 200;
             _reasonPhrase = _error[_statusCode];
             _contentLength = _content.size();
             if (!req->get_url().compare(req->get_url().size() - 3, 3, "css"))

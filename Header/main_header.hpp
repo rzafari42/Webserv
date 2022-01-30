@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main_header.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/14 21:13:24 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/26 15:01:18 by simbarre         ###   ########.fr       */
+/*   Updated: 2022/01/30 14:58:57 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,8 @@
 # include <fstream>
 # include <map>
 # include <vector>
+
 # define HTTP_VERSION "HTTP/1.1"
-# define HOME_PAGE_PATH  "/index.html"
 
 #include "../conf/parsing/http_request_conf/parsing_http.hpp"
 #include "../conf/parsing/nginx_conf/ParserConf.hpp"

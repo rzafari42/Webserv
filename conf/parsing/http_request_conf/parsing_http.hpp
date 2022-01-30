@@ -5,12 +5,10 @@
 # include <sstream>
 # include <map>
 # include <vector>
-//# include "../Header/HttpResponse.hpp"
 # define WEBFILE_PATH "www"
 # define CGI_EXTENSION ".php"
 
 class Request{
-
     public:
         Request() {_method.clear(); _url.clear(); _version.clear(); _cgi.clear(); _fields.clear(); _body.clear(); _isErrorSyntax = false;};
         Request(const Request& src) : _method(src._method), _url(src._url), _version(src._version), _cgi(src._cgi), _fields(src._fields), _body(src._body), _isErrorSyntax(src._isErrorSyntax){};
