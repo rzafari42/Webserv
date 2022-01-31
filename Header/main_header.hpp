@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main_header.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/14 21:13:24 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/31 04:29:42 by simbarre         ###   ########.fr       */
+/*   Updated: 2022/01/31 21:14:02 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@
 # include <vector>
 # include <sstream>
 # include <algorithm>
+# include <dirent.h>
 
 # define HTTP_VERSION "HTTP/1.1"
 
@@ -40,6 +41,7 @@
 # define ERROR_404_PATH "/error404.html"
 # define ERROR_411_PATH "/error411.html"
 # define ERROR_505_PATH "/error505.html"
+# define ERROR_310_PATH "/error310.html"
 
 # define FILE_DELETED "/file_deleted.html"
 

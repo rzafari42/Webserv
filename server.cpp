@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 22:01:31 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/31 03:56:16 by simbarre         ###   ########.fr       */
+/*   Updated: 2022/01/31 21:15:53 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,12 +29,17 @@ int		check(int exp, const char *msg)
 	return (exp);
 }
 
-void	*handle_connection(int client_socket)
+//pour l'instant cette fonction affiche juste la requette qu'elle recoit
+//ajouter parsing de la requette et tt le reste
+void	*handle_connection(int client_socket, ServerInfo conf)
 {
 	char	buffer[BUFF_SIZE];
 	size_t	bytes_read;
 	int		msg_size = 0;
 	static int i = 0;
+	std::vector<Location> loc;
+
+	loc = conf.get_locations();
 
 	while ((bytes_read = read(client_socket, buffer + msg_size, sizeof(buffer) - msg_size - 1)))
 	{
@@ -64,12 +69,12 @@ void	*handle_connection(int client_socket)
 	Request req = req_parsing(namefile);			//Parsing
 	std::remove(namefile.c_str());
 
-	HttpResponse res(&req);
+	HttpResponse res(&req, &conf);
 	std::string cont = res.getResponse();
 	char *buff = new char[cont.length()];
 	strcpy(buff, cont.c_str());
 
-	write(client_socket , buff, cont.length());
+	write(client_socket , buff, cont.length()); //Envoie de la reponse au client
 	delete [] buff;
 	close(client_socket);
 	printf("closing connection\n");
@@ -128,13 +133,6 @@ void get_port(std::string *port, std::string address)
 	}
 }
 
-static int stringToInt(std::string s )
-{
-    int i;
-    std::istringstream(s) >> i;
-    return i;
-}
-
 //nc -c localhost 8080
 int		main(int argc, char *argv[])
 {
@@ -142,7 +140,8 @@ int		main(int argc, char *argv[])
 	{
 		std::vector<ServerInfo> conf;
 		ParserConf parser;
-		std::vector<int> server_socket;
+		std::map<ServerInfo, int> server_socket;
+		std::map<int, ServerInfo> client_socket;
 		std::string address;
 		std::string port;
 		fd_set	current_sockets, ready_sockets;
@@ -150,22 +149,20 @@ int		main(int argc, char *argv[])
 
 		parser.parse(argv[1], &conf);
 
-		std::vector<ServerInfo>::iterator it = conf.begin();
-		std::vector<ServerInfo>::iterator ite = conf.end();
-
+		std::vector<ServerInfo>::const_iterator it = conf.begin();
+		std::vector<ServerInfo>::const_iterator ite = conf.end();
 		FD_ZERO(&current_sockets);
 		while (it != ite)
 		{
-			port.clear();
-			address.clear();
-			address = it->get_listen();
-			get_port(&port, address);
-			server_socket.push_back(setup_server(stringToInt(port), SERVER_BACKLOG));
+			server_socket.insert(std::make_pair(*it, setup_server(it->get_listen(), SERVER_BACKLOG)));
 			it++;
 		}
-		for (unsigned long i = 0; i < server_socket.size(); i++)
+		std::map<ServerInfo, int>::iterator it_m = server_socket.begin();
+		std::map<ServerInfo, int>::iterator it_me = server_socket.end();
+		while (it_m != it_me)
 		{
-			FD_SET(server_socket[i], &current_sockets);
+			FD_SET(it_m->second, &current_sockets);
+			it_m++;
 		}
 		while (true)
 		{
@@ -177,15 +174,24 @@ int		main(int argc, char *argv[])
 			{
 				if (FD_ISSET(i, &ready_sockets))
 				{
-					if (std::find(server_socket.begin(), server_socket.end(), i) != server_socket.end())
+					it_m = server_socket.begin();
+					it_me = server_socket.end();
+					while (it_m != it_me)
 					{
-						int client_socket = accept_new_connection(i);
-						FD_SET(client_socket, &current_sockets);
+						if (i == it_m->second)
+						{
+							int new_client_socket = accept_new_connection(i);
+							FD_SET(new_client_socket, &current_sockets);
+							client_socket.insert(std::pair<int, ServerInfo>(new_client_socket, it_m->first));
+							break;
+						}
+						it_m++;
 					}
-					else
+					if (it_m == it_me)
 					{
-						handle_connection(i);
+						handle_connection(i, (client_socket.at(i)));
 						FD_CLR(i, &current_sockets);
+						client_socket.erase(i);
 					}
 				}
 			}

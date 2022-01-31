@@ -22,6 +22,7 @@
 # define ROOT_EMPTY "Error: In Server: 'root' directive exists but has no value"
 # define INDEX_EMPTY "Error: In Server: 'index' directive exists but has no value"
 # define ERROR_PAGE_EMPTY "Error: In Server: 'error_page' directive exists but has no value"
+# define ERROR_PAGE_PATH_MISSING "Error: In Server: 'error_page' directive exists but path is missing"
 # define SERVER_NAME_EMPTY "Error: In Server: 'server_name' directive exists but has no value"
 # define CLIENT_MAX_BODY_SIZE_EMPTY "Error: In Server: 'client_max_body_size' directive exists but has no value"
 # define AUTOINDEX_EMPTY "Error: In Server: 'autoindex' directive exists but has no value"

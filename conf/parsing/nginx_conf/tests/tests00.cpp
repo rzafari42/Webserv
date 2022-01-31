@@ -49,7 +49,22 @@ void print_conf_struct(std::vector<ServerInfo> conf)
         std::cout << "Client_max_body_size: " << it->get_client_max_body_size() << std::endl;
         std::cout << "Listen: " << it->get_listen() << std::endl;
         std::cout << "Server_name: " << it->get_server_name() << std::endl;
-        std::cout << "Error_page: " << it->get_error_page() << std::endl;
+        
+        std::vector<std::size_t> ec_loc = it->get_error_code();
+        std::vector<std::string> ep_loc = it->get_error_path();
+        std::vector<std::string>::iterator it_ep = ep_loc.begin();
+        std::vector<std::string>::iterator ite_ep = ep_loc.end();
+        std::vector<std::size_t>::iterator it_ec = ec_loc.begin();
+        std::vector<std::size_t>::iterator ite_ec = ec_loc.end();
+
+
+        while (it_ec != ite_ec)
+        {
+            std::cout << "Error_page: " << *it_ec << " " << *it_ep << std::endl;
+            it_ec++;
+            it_ep++;
+        }
+
         std::cout << "Root: " << it->get_root() << std::endl;
 
         std::vector<Location> vec_loc = it->get_locations();
@@ -81,7 +96,9 @@ int main(int ac, char **av)
     }
     std::vector<ServerInfo> serv_info;
     ParserConf parser;
-    parser.parse(av[1], &serv_info);
+    
+    try { parser.parse(av[1], &serv_info); } catch (const std::exception& e) { std::cout << e.what() << std::endl; return 1; }
+    
     print_conf_struct(serv_info);
     return 0;
 }

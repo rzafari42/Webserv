@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing_http.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/21 12:19:15 by rzafari           #+#    #+#             */
-/*   Updated: 2022/01/31 04:00:43 by simbarre         ###   ########.fr       */
+/*   Updated: 2022/01/31 21:11:49 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ int check_cgi(Request *req, std::map<std::string, std::string> &mp)
                 pos++;
             }
             pos++;
-            while (pos < url.size() && url.at(pos) != '&')
+            while (pos < url.size() && url.at(pos) != '&') 
             {
                 value.push_back(url[pos]);
                 pos++;
