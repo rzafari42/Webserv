@@ -6,6 +6,7 @@
 class Location
 {
 private:
+    std::string uri;
     std::string root;
     std::string index;
     std::string autoindex;
@@ -17,6 +18,7 @@ private:
 public:
     // constructor/ destructor
     Location( void ) : return_code(0) {
+        uri.clear();
         methods.clear();
         root.clear();
         index.clear();
@@ -31,6 +33,8 @@ public:
     std::vector<std::string> get_methods( void ) { return methods; }
 
     std::vector<std::string> *get_ptr_methods( void ) { return &methods; }
+
+    std::string get_uri( void ) { return uri; }
 
     std::string get_root( void ) { return root; }
 
@@ -47,6 +51,8 @@ public:
     std::string get_cgi_path( void ) { return cgi_path; }
 
     // setters
+    void set_uri( std::string str ) { uri = str; }
+
     void set_root( std::string str ) { root = str; }
 
     void set_index( std::string str ) { index = str; }
