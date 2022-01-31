@@ -12,7 +12,7 @@ bool HttpResponse::check_basic_error(Request *req)
     if (req->get_isErrorSyntax() == true)
     {
         req->set_url(ERROR_400_PATH);
-        std::ifstream sourceFile(req->get_url(), std::ifstream::in);
+        std::ifstream sourceFile(req->get_url().c_str(), std::ifstream::in);
         if (sourceFile.good())
         {
             std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
@@ -28,7 +28,7 @@ bool HttpResponse::check_basic_error(Request *req)
     if (req->get_version().compare("HTTP/1.1") != 0)
     {
         req->set_url(ERROR_505_PATH);
-        std::ifstream sourceFile(req->get_url(), std::ifstream::in);
+        std::ifstream sourceFile(req->get_url().c_str(), std::ifstream::in);
         if (sourceFile.good())
         {
             std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
@@ -141,6 +141,7 @@ HttpResponse::~HttpResponse(void)
 
 void HttpResponse::requestParsingError(int code)
 {
+    (void)code;                                 //just to fix compil error
     _statusCode = 501;
     _reasonPhrase = _error[_statusCode];
     _contentType = "text/html";
@@ -158,7 +159,7 @@ void HttpResponse::handle_get_method(Request *req)  //add Location and ParserCon
     std::map<std::string, std::string> cgi = req->get_cgi();
     if (cgi.empty())
     {
-        std::ifstream sourceFile(req->get_url(), std::ifstream::in);
+        std::ifstream sourceFile(req->get_url().c_str(), std::ifstream::in);
 
         if (sourceFile.good())
         {
@@ -175,7 +176,7 @@ void HttpResponse::handle_get_method(Request *req)  //add Location and ParserCon
         else
         {
             req->set_url(ERROR_404_PATH);
-            std::ifstream sourceFile(req->get_url(), std::ifstream::in);
+            std::ifstream sourceFile(req->get_url().c_str(), std::ifstream::in);
             if (sourceFile.good())
             {
                 std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
@@ -208,6 +209,7 @@ void HttpResponse::handle_get_method(Request *req)  //add Location and ParserCon
 
 void HttpResponse::handle_post_method(Request *req)
 {
+    (void)req;
     constructResponse();
 }
 
@@ -217,14 +219,14 @@ void HttpResponse::handle_post_method(Request *req)
 
 void HttpResponse::handle_delete_method(Request *req)
 {
-    std::ifstream fileToDelete(req->get_url(), std::ifstream::in);
+    std::ifstream fileToDelete(req->get_url().c_str(), std::ifstream::in);
 
     if (fileToDelete.good())
     {
         if (!remove(req->get_url().c_str()))
         {
             req->set_url(FILE_DELETED);
-            std::ifstream sourceFile(req->get_url(), std::ifstream::in);
+            std::ifstream sourceFile(req->get_url().c_str(), std::ifstream::in);
             if (sourceFile.good())
             {
                 std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
@@ -238,7 +240,7 @@ void HttpResponse::handle_delete_method(Request *req)
         else
         {
             req->set_url(ERROR_404_PATH);
-            std::ifstream sourceFile(req->get_url(), std::ifstream::in);
+            std::ifstream sourceFile(req->get_url().c_str(), std::ifstream::in);
             if (sourceFile.good())
             {
                 std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
@@ -253,7 +255,7 @@ void HttpResponse::handle_delete_method(Request *req)
     else
     {
             req->set_url(ERROR_404_PATH);
-            std::ifstream sourceFile(req->get_url(), std::ifstream::in);
+            std::ifstream sourceFile(req->get_url().c_str(), std::ifstream::in);
             if (sourceFile.good())
             {
                 std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
@@ -270,7 +272,7 @@ void HttpResponse::handle_delete_method(Request *req)
 
 void HttpResponse::redirection(Request *req)
 {
-
+    (void)req;
 }
 
 

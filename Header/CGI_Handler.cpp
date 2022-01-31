@@ -6,7 +6,7 @@
 /*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/17 14:12:53 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/29 02:27:26 by simbarre         ###   ########.fr       */
+/*   Updated: 2022/01/31 04:14:07 by simbarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,14 @@
 
 CGI_Handler::CGI_Handler(Request &request, ParserConf &conf) : _req(request), _conf(conf)
 {
-	std::string tmp_body(request.get_body().begin(), request.get_body().end());
-	_body = tmp_body;
+	std::vector<std::string> tmp = request.get_body();
+
+	for (std::vector<std::string>::const_iterator i = tmp.begin();
+		i != tmp.end(); ++i)
+		_body += *i;
 
 	_env["AUTH_TYPE"]			= "";					//no security
-	_env["CONTENT_LENGTH"]		= tmp_body.length();
+	_env["CONTENT_LENGTH"]		= _body.length();
 	_env["CONTENT_TYPE"]		= "";					//MIME type of the body of the request
 	_env["GATEWAY_INTERFACE"]	= "CGI/1.1";
 	_env["PATH_INFO"]			= "";					//identifies the resource or sub-resource to be returned by the CGI script, and it is derived from the portion of the URI path following the script name but preceding any query data
@@ -28,7 +31,7 @@ CGI_Handler::CGI_Handler(Request &request, ParserConf &conf) : _req(request), _c
 	_env["REQUEST_METHOD"]		= "";					//request.get_method();
 	_env["SCRIPT_NAME"]			= "";					//conf.script_name;
 	_env["SERVER_NAME"]			= "webserv";			//conf.server_name;
-	_env["SERVER_PORT"]			= 8080;
+	_env["SERVER_PORT"]			= "8080";
 	_env["SERVER_PROTOCOL"]		= "HTTP/1.1";
 	_env["SERVER_SOFTWARE"]		= "webserv/1.1";
 }														//we'll see if we need more env var
@@ -40,13 +43,14 @@ CGI_Handler	&CGI_Handler::operator=(CGI_Handler const &src)
 {
 	if (this != &src)
 	{
-		_env = this->_env;
+		_env = src._env;
 	}
+	return (*this);
 }
 
 std::string	file_to_str(std::string in)
 {
-	std::ifstream		t(in);
+	std::ifstream		t(in.c_str());
 	std::stringstream	buffer;
 
 	buffer << t.rdbuf();

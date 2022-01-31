@@ -6,15 +6,15 @@
 /*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/21 12:19:15 by rzafari           #+#    #+#             */
-/*   Updated: 2022/01/29 02:51:45 by simbarre         ###   ########.fr       */
+/*   Updated: 2022/01/31 04:00:43 by simbarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../Header/main_header.hpp"
+#include "../../../Header/main_header.hpp"
 
 int check_format_rqline(std::string s, Request *req)
 {
-    int i = 0;
+    unsigned long i = 0;
     int nb_space = 0;
     int nb_arg = 0;
 
@@ -37,7 +37,7 @@ int check_format_rqline(std::string s, Request *req)
 
 int check_format_rqfield(std::string s, Request *req)
 {
-    int i = 0;
+    unsigned long i = 0;
     int semi_colon = 0;
     int nb_arg = 0;
 
@@ -104,7 +104,7 @@ int check_cgi(Request *req, std::map<std::string, std::string> &mp)
 
 int catch_request_line(const std::string s, Request *req, std::map<std::string, std::string> &mp) //Format: Method Request-URI HTTP-Version CRLF
 {
-    int i = 0;
+    unsigned long i = 0;
     std::string tmp;
 
     while (!isspace(s[i]) && i < s.length())
@@ -140,7 +140,7 @@ int catchvalues(const std::string s, std::map<std::string, std::string> &mp, Req
 {
     std::string name;
     std::string value;
-    int i = 0;
+    unsigned long i = 0;
 
     std::map<std::string, std::string>::iterator it = mp.begin();
     std::map<std::string, std::string>::iterator ite = mp.end();
@@ -182,7 +182,7 @@ void check_errors(Request *req)
 
 void parsing(std::string file, Request *request)
 {
-    std::ifstream flux(file);
+    std::ifstream flux(file.c_str());
 
     if (flux)
     {

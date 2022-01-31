@@ -6,7 +6,7 @@
 /*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 22:01:31 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/29 06:55:28 by simbarre         ###   ########.fr       */
+/*   Updated: 2022/01/31 03:56:16 by simbarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,6 @@ void	*handle_connection(int client_socket)
 	char	buffer[BUFF_SIZE];
 	size_t	bytes_read;
 	int		msg_size = 0;
-	char	actual_path[PATH_MAX + 1];
 	static int i = 0;
 
 	while ((bytes_read = read(client_socket, buffer + msg_size, sizeof(buffer) - msg_size - 1)))
@@ -51,12 +50,14 @@ void	*handle_connection(int client_socket)
 
 	//Name file creation
 	std::string namefile = "Request_";
-	namefile.append(std::to_string(i));				//not viable in c++98
+	std::ostringstream s;
+	s << i;
+	namefile.append(s.str());
 	namefile.append(".txt");
 	i++;
 
 	std::ofstream myfile;
-	myfile.open(namefile, std::ofstream::app);		//not viable in c++98
+	myfile.open(namefile.c_str(), std::ofstream::app);		//not viable in c++98
 	std::string str(buffer);
 	myfile << str;									//Write the request in a file
 	myfile.close();

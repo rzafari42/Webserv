@@ -6,13 +6,12 @@
 #    By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/01/29 02:31:17 by simbarre          #+#    #+#              #
-#    Updated: 2022/01/29 06:30:33 by simbarre         ###   ########.fr        #
+#    Updated: 2022/01/31 04:08:11 by simbarre         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 SRCS			=	server.cpp \
 					conf/parsing/http_request_conf/parsing_http.cpp \
-					conf/parsing/nginx_conf/ParserConf.hpp \
 					Header/CGI_Handler.cpp \
 					Header/HttpResponse.cpp
 
