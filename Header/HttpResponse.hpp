@@ -5,8 +5,11 @@
 # include <sstream>
 # include <dirent.h>
 # include <cstring>
-#include "../conf/parsing/http_request_conf/parsing_http.hpp"
-#include "../conf/parsing/nginx_conf/ServerInfo.hpp"
+# include <sys/types.h>
+# include <sys/stat.h>
+# include <unistd.h>
+# include "../conf/parsing/http_request_conf/parsing_http.hpp"
+# include "../conf/parsing/nginx_conf/ServerInfo.hpp"
 # include <algorithm>
 # define HOME_PAGE_PATH "www/index.html"
 # define ERROR_400_PATH "www/error400.html"
@@ -45,7 +48,7 @@ class HttpResponse
         bool CountLocRedirect(std::map<std::string, int> *mp, std::string uri);
 
         void requestParsingError(int code);
-        int check_redirection(Request *req, ServerInfo *conf);
+        bool check_redirection(Request *req, Location loc);
 
         void handle_get_method(Request *req, ServerInfo *conf, size_t redirects = 0);
         void handle_post_method(Request *req);

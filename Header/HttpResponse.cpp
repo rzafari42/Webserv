@@ -162,27 +162,52 @@ bool HttpResponse::CountLocRedirect(std::map<std::string, int> *mp, std::string 
     return false;
 }
 
-int HttpResponse::check_redirection(Request *req, ServerInfo *conf)
-{
+bool HttpResponse::check_redirection(Request *req, Location loc) {
     //check if the url is present in one of the location bloc URI
-    std::vector<Location> loc = conf->get_locations();
-    std::vector<Location>::iterator it = loc.begin();
-    std::vector<Location>::iterator ite = loc.end();
-
-    while (it != ite) {
-        std::cout << it->get_uri() << std::endl;
-        std::cout << req->get_url() << std::endl;
-        it++;
+    if (loc.get_return_code() != 0 && !loc.get_return_path().empty()) {
+        return true;
     }
-    return 0;
+    return false;
+}
+
+static Location *which_location(std::vector<Location> *loc, std::string url) {
+    std::vector<Location>::iterator it = loc->begin();
+    std::vector<Location>::iterator ite = loc->end();
+
+    std::string tmp = url;
+
+    while(tmp.compare("")) {
+        it = loc->begin();
+        while (it != ite) {
+            if (!(tmp.compare(it->get_uri())))
+                return &(*it);
+            it++;
+        }
+        size_t found = tmp.rfind('/');
+        if (found!=std::string::npos)
+            tmp.replace(found, tmp.length() - found, "");
+        else {
+            // IF WE HERE WE F*CKED
+        }
+    }
+    return NULL;
+}
+
+static bool ft_is_directory(std::string path){
+    struct stat s;
+    
+    stat(path.c_str(), &s);
+    if(s.st_mode & S_IFDIR)
+        return true;
+    return false;
 }
 
 void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redirects)  //add ParserConf here
 {
-    std::vector<Location> loc = conf->get_locations();
+    std::cout << std::endl << req->get_url() << std::endl;
+    std::vector<Location> locations = conf->get_locations();
 
-    std::vector<Location>::iterator it = loc.begin();
-    std::vector<Location>::iterator ite = loc.end();
+    Location *loc = which_location(&locations, req->get_url());
 
     if (redirects > 20)
     {
@@ -200,11 +225,27 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
         return ;
     }
 
-    check_redirection(req, conf);
+    if (loc) {
+        if (check_redirection(req, *loc)) {
+            std::string st = req->get_url();
+            _statusCode = loc->get_return_code();
+            st.replace(0, loc->get_uri().length(), loc->get_return_path());
+            req->set_url(st);
+            this->handle_get_method(req, conf, redirects + 1);
+        }
+    }
 
-    if (req->get_url() == "/")
-        req->set_url(HOME_PAGE_PATH);
-    
+    std::string path_tofile = req->get_url();
+    if (loc)
+        path_tofile = loc->get_root() + path_tofile;
+    path_tofile = conf->get_root() + path_tofile;
+    if (loc)
+        if (ft_is_directory(path_tofile))
+            path_tofile = path_tofile + loc->get_index();
+
+    req->set_url(path_tofile);
+    std::cout << std::endl << req->get_url() << std::endl;
+
     std::map<std::string, std::string> cgi = req->get_cgi();
     if (cgi.empty())
     {
