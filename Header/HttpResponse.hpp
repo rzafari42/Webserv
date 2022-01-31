@@ -40,10 +40,10 @@ class HttpResponse
         std::string getResponse() { return _response; };
         bool get_redirectLoop() { return _redirectLoop; };
 
-        bool CountLocRedirect(std::string loc);
+        bool CountLocRedirect(std::map<std::string, int> *mp, std::string uri);
 
         void requestParsingError(int code);
-        void check_redirection(Request *req, ServerInfo *conf);
+        int check_redirection(Request *req, ServerInfo *conf);
 
         void handle_get_method(Request *req, ServerInfo *conf);
         void handle_post_method(Request *req);

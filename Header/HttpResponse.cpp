@@ -150,12 +150,19 @@ void HttpResponse::requestParsingError(int code)
     constructResponse();
 }
 
-bool HttpResponse::CountLocRedirect(std::string loc)
+bool HttpResponse::CountLocRedirect(std::map<std::string, int> *mp, std::string uri)
 {
-    
+    std::map<std::string ,int >::iterator it = mp->find(uri);
+    if (it != mp->end())
+    {
+        it->second = it->second + 1;
+        if (it->second == 2)    
+            return true;
+    }
+    return false;
 }
 
-void HttpResponse::check_redirection(Request *req, ServerInfo *conf)
+int HttpResponse::check_redirection(Request *req, ServerInfo *conf)
 {
     //check if the url is present in one of the location bloc URI
     std::vector<Location> loc = conf->get_locations();
@@ -169,26 +176,42 @@ void HttpResponse::check_redirection(Request *req, ServerInfo *conf)
         {
             if (it->get_return_code() != 0)
             {
-                CountLocRedirect(it->get_uri());
                 req->set_url(it->get_return_path());
-                std::string tmp_old_path = req->get_url();
-                if (!it->get_uri().compare(req->get_url().erase(0, 3)) || )
+                if (!it->get_uri().compare(req->get_url().erase(0, 3)))
                 {
                     set_redirectLoop();
-                    return;
+                    return -1;
                 }
                 _statusCode = 301;
-                check_redirection(req, conf);
+                return 0;
             }
             //checkIfRoot ...
         }
-            it++;
+        it++;
     }
+    return 1;
 }
 
 void HttpResponse::handle_get_method(Request *req, ServerInfo *conf)  //add ParserConf here
 {
-    check_redirection(req, conf);
+    std::vector<Location> loc = conf->get_locations();
+    std::map<std::string, int> loc_count;
+    std::vector<Location>::iterator it = loc.begin();
+    std::vector<Location>::iterator ite = loc.end();
+
+    while (it != ite)
+    {
+        loc_count.insert(std::pair<std::string, int>(it->get_uri(), 0));
+        it++;
+    }
+    while (!check_redirection(req, conf))
+    {
+        if (CountLocRedirect(&loc_count, req->get_url().erase(0, 3)) == true)
+        {
+            set_redirectLoop();
+            break;
+        }
+    }
     if (req->get_url() == "www/")
         req->set_url(HOME_PAGE_PATH);
     if (get_redirectLoop() == true)
@@ -209,7 +232,6 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf)  //add Pars
     if (cgi.empty())
     {
         std::ifstream sourceFile(req->get_url(), std::ifstream::in);
-
         if (sourceFile.good())
         {
             std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
