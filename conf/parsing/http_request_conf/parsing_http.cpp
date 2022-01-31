@@ -6,17 +6,15 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/21 12:19:15 by rzafari           #+#    #+#             */
-/*   Updated: 2022/01/31 18:52:25 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/01/31 21:11:49 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "parsing_http.hpp"
-#include "utils.hpp"
-#include <fstream>
+#include "../../../Header/main_header.hpp"
 
 int check_format_rqline(std::string s, Request *req)
 {
-    int i = 0;
+    unsigned long i = 0;
     int nb_space = 0;
     int nb_arg = 0;
 
@@ -39,10 +37,10 @@ int check_format_rqline(std::string s, Request *req)
 
 int check_format_rqfield(std::string s, Request *req)
 {
-    int i = 0;
+    unsigned long i = 0;
     int semi_colon = 0;
     int nb_arg = 0;
-    
+
     if (s.find("\r\n") == std::string::npos)
         return error(REQUEST_FIELD_FORMAT_CRLF, 1, req);
     s.erase(s.size() - 2);
@@ -106,7 +104,7 @@ int check_cgi(Request *req, std::map<std::string, std::string> &mp)
 
 int catch_request_line(const std::string s, Request *req, std::map<std::string, std::string> &mp) //Format: Method Request-URI HTTP-Version CRLF
 {
-    int i = 0;
+    unsigned long i = 0;
     std::string tmp;
 
     while (!isspace(s[i]) && i < s.length())
@@ -142,7 +140,7 @@ int catchvalues(const std::string s, std::map<std::string, std::string> &mp, Req
 {
     std::string name;
     std::string value;
-    int i = 0;
+    unsigned long i = 0;
 
     std::map<std::string, std::string>::iterator it = mp.begin();
     std::map<std::string, std::string>::iterator ite = mp.end();
@@ -184,7 +182,7 @@ void check_errors(Request *req)
 
 void parsing(std::string file, Request *request)
 {
-    std::ifstream flux(file);
+    std::ifstream flux(file.c_str());
 
     if (flux)
     {
@@ -270,6 +268,7 @@ Request req_parsing(std::string av)
     if (ac < 2)
         return error(EMPTY, 0, &request);
     parsing(av[1], &request);
+    printCGI(request.get_cgi());
     print_map(request.get_fields(), request.get_body());
     //check if there's an CLRF at the end of each lines and if there's empty line before the body
     return 0;

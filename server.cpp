@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 22:01:31 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/31 19:09:56 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/01/31 21:15:53 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,14 +36,10 @@ void	*handle_connection(int client_socket, ServerInfo conf)
 	char	buffer[BUFF_SIZE];
 	size_t	bytes_read;
 	int		msg_size = 0;
-	char	actual_path[PATH_MAX + 1];
 	static int i = 0;
 	std::vector<Location> loc;
 
 	loc = conf.get_locations();
-
-	std::vector<Location>::iterator it = loc.begin();
-	std::vector<Location>::iterator ite = loc.end();
 
 	while ((bytes_read = read(client_socket, buffer + msg_size, sizeof(buffer) - msg_size - 1)))
 	{
@@ -59,16 +55,18 @@ void	*handle_connection(int client_socket, ServerInfo conf)
 
 	//Name file creation
 	std::string namefile = "Request_";
-	namefile.append(std::to_string(i));
+	std::ostringstream s;
+	s << i;
+	namefile.append(s.str());
 	namefile.append(".txt");
 	i++;
 
 	std::ofstream myfile;
-	myfile.open(namefile, std::ofstream::app);
+	myfile.open(namefile.c_str(), std::ofstream::app);		//not viable in c++98
 	std::string str(buffer);
-	myfile << str; //Write the request in a file
+	myfile << str;									//Write the request in a file
 	myfile.close();
-	Request req = req_parsing(namefile); //Parsing
+	Request req = req_parsing(namefile);			//Parsing
 	std::remove(namefile.c_str());
 
 	HttpResponse res(&req, &conf);
@@ -91,6 +89,8 @@ int		accept_new_connection(int server_socket)
 
 	check(client_socket = accept(server_socket, (SA*)&client_socket, (socklen_t*)&addr_size), "Accept!");
 
+	(void)client_addr;					//added to remove -Werror compilation error
+
 	return (client_socket);
 }
 
@@ -112,11 +112,28 @@ int		setup_server(short port, int backlog)
 	check(bind(server_socket, (SA*)&server_addr, sizeof(server_addr)), "Bind failed!");
 	check(listen(server_socket, backlog), "Listen failed!");
 
+	(void)client_socket;				//added to remove -Werror compilation error
+	(void)addr_size;					//added to remove -Werror compilation error
+
 	return (server_socket);
 }
 
+void get_port(std::string *port, std::string address)
+{
+	std::string::iterator it = address.begin();
+	std::string::iterator ite = address.end();
 
-//nc -c localhost 8080 
+	while (*it != ':')
+		it++;
+	it++;
+	while (it != ite)
+	{
+		port->push_back(*it);
+		it++;
+	}
+}
+
+//nc -c localhost 8080
 int		main(int argc, char *argv[])
 {
 	if (argc > 1)

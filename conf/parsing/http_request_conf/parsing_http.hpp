@@ -1,25 +1,36 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parsing_http.hpp                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/01/29 02:50:20 by simbarre          #+#    #+#             */
+/*   Updated: 2022/01/31 21:11:20 by rzafari          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef PARSING_HTTP_HPP
 # define PARSING_HTTP_HPP
-# include <iostream>
-# include <fstream>
-# include <sstream>
-# include <map>
-# include <vector>
-//# include "../Header/HttpResponse.hpp"
+
+# include "../../../Header/main_header.hpp"
+
 # define WEBFILE_PATH "www"
 # define CGI_EXTENSION ".php"
-
 
 class Request{
 
     public:
-        Request() {_method.clear(); _url.clear(); _version.clear(); _body.clear(); _isErrorSyntax = false;};
-        Request(const Request& src) : _method(src._method), _url(src._url), _version(src._version) {};
+        Request() {_method.clear(); _url.clear(); _version.clear(); _cgi.clear(); _fields.clear(); _body.clear(); _isErrorSyntax = false;};
+        Request(const Request& src) : _method(src._method), _url(src._url), _version(src._version), _cgi(src._cgi), _fields(src._fields), _body(src._body), _isErrorSyntax(src._isErrorSyntax){};
         Request &operator=(const Request& rhs) {
             _method = rhs._method;
             _url = rhs._url;
             _version = rhs._version;
+            _cgi = rhs._cgi;
             _fields = rhs._fields;
+            _body = rhs._body;
+            _isErrorSyntax = rhs._isErrorSyntax;
             return *this;
         }
         ~Request() {_fields.clear(); _body.clear(); return;}

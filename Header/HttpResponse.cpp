@@ -12,7 +12,7 @@ bool HttpResponse::check_basic_error(Request *req)
     if (req->get_isErrorSyntax() == true)
     {
         req->set_url(ERROR_400_PATH);
-        std::ifstream sourceFile(req->get_url(), std::ifstream::in);
+        std::ifstream sourceFile(req->get_url().c_str(), std::ifstream::in);
         if (sourceFile.good())
         {
             std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
@@ -28,7 +28,7 @@ bool HttpResponse::check_basic_error(Request *req)
     if (req->get_version().compare("HTTP/1.1") != 0)
     {
         req->set_url(ERROR_505_PATH);
-        std::ifstream sourceFile(req->get_url(), std::ifstream::in);
+        std::ifstream sourceFile(req->get_url().c_str(), std::ifstream::in);
         if (sourceFile.good())
         {
             std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
@@ -80,10 +80,10 @@ void HttpResponse::initValues()
 {
     _statusCode = 0;
     _reasonPhrase = "";
-    _contentLength = 0; 
-    _content = ""; 
+    _contentLength = 0;
+    _content = "";
     _contentType = "text/html";
-    _response = ""; 
+    _response = "";
 }
 
 void HttpResponse::initErrorMap()
@@ -97,7 +97,7 @@ void HttpResponse::initErrorMap()
     _error.insert(std::pair<int, std::string>(404,"Not Found")); //done
     _error.insert(std::pair<int, std::string>(405,"Method Not Allowed")); //done
     _error.insert(std::pair<int, std::string>(411,"Length Required"));
-    _error.insert(std::pair<int, std::string>(413,"Payload Too Large")); 
+    _error.insert(std::pair<int, std::string>(413,"Payload Too Large"));
     _error.insert(std::pair<int, std::string>(501,"Not Implemented")); //done
     _error.insert(std::pair<int, std::string>(505," HTTP Version Not Supported")); //done
 }
@@ -141,6 +141,7 @@ HttpResponse::~HttpResponse(void)
 
 void HttpResponse::requestParsingError(int code)
 {
+    (void)code;                                 //just to fix compil error
     _statusCode = 501;
     _reasonPhrase = _error[_statusCode];
     _contentType = "text/html";
@@ -168,7 +169,6 @@ int HttpResponse::check_redirection(Request *req, ServerInfo *conf)
 
     while (it != ite)
     {
-        std::cout << "UR: " << req->get_url() << std::endl;
         std::string tmp_url = req->get_url().erase(0, 3);
         if (!it->get_uri().compare(tmp_url)) // OU find tm
         {
@@ -227,6 +227,23 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf)
             _statusCode = 310;
             _reasonPhrase = _error[_statusCode];
             _contentLength = _content.size();
+            if (!req->get_url().compare(req->get_url().size() - 3, 3, "css"))
+                _contentType = "text/css";
+            else
+                _contentType = "text/html";
+        }
+        else
+        {
+            req->set_url(ERROR_404_PATH);
+            std::ifstream sourceFile(req->get_url().c_str(), std::ifstream::in);
+            if (sourceFile.good())
+            {
+                std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
+                _content = ans;
+                _statusCode = 404;
+                _reasonPhrase = _error[_statusCode];
+                _contentLength = _content.size();
+            }
         }
         constructResponse();
     }
@@ -275,28 +292,23 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf)
 }
 
 
-
-
-
 void HttpResponse::handle_post_method(Request *req)
 {
+    (void)req;
     constructResponse();
 }
 
 
-
-
-
 void HttpResponse::handle_delete_method(Request *req)
 {
-    std::ifstream fileToDelete(req->get_url(), std::ifstream::in);
+    std::ifstream fileToDelete(req->get_url().c_str(), std::ifstream::in);
 
     if (fileToDelete.good())
     {
         if (!remove(req->get_url().c_str()))
         {
             req->set_url(FILE_DELETED);
-            std::ifstream sourceFile(req->get_url(), std::ifstream::in);
+            std::ifstream sourceFile(req->get_url().c_str(), std::ifstream::in);
             if (sourceFile.good())
             {
                 std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
@@ -310,7 +322,7 @@ void HttpResponse::handle_delete_method(Request *req)
         else
         {
             req->set_url(ERROR_404_PATH);
-            std::ifstream sourceFile(req->get_url(), std::ifstream::in);
+            std::ifstream sourceFile(req->get_url().c_str(), std::ifstream::in);
             if (sourceFile.good())
             {
                 std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
@@ -325,7 +337,7 @@ void HttpResponse::handle_delete_method(Request *req)
     else
     {
             req->set_url(ERROR_404_PATH);
-            std::ifstream sourceFile(req->get_url(), std::ifstream::in);
+            std::ifstream sourceFile(req->get_url().c_str(), std::ifstream::in);
             if (sourceFile.good())
             {
                 std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
@@ -342,7 +354,7 @@ void HttpResponse::handle_delete_method(Request *req)
 
 void HttpResponse::redirection(Request *req)
 {
-    
+    (void)req;
 }
 
 
