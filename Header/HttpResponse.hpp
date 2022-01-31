@@ -3,6 +3,7 @@
 # include <iostream>
 # include <fstream>
 # include <sstream>
+# include <dirent.h>
 #include "../conf/parsing/http_request_conf/parsing_http.hpp"
 #include "../conf/parsing/nginx_conf/ServerInfo.hpp"
 # include <algorithm>

@@ -16,7 +16,7 @@ private:
 
 public:
     // constructor/destructor
-    ServerInfo( void ) : client_max_body_size(0) {
+    ServerInfo( void ) : listen("0.0.0.0:8080"), client_max_body_size(0) {
     }
     ~ServerInfo() {}
 

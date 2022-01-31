@@ -232,20 +232,12 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf)  //add Pars
     if (cgi.empty())
     {
         std::ifstream sourceFile(req->get_url(), std::ifstream::in);
-        if (sourceFile.good())
-        {
-            std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
-            _content = ans;
-            if (_statusCode == 0)
-                _statusCode = 200;
-            _reasonPhrase = _error[_statusCode];
-            _contentLength = _content.size();
-            if (!req->get_url().compare(req->get_url().size() - 3, 3, "css"))
-                _contentType = "text/css";
-            else
-                _contentType = "text/html";
-        }
-        else
+
+        DIR *d;
+        char* dir = new char[req->get_url().length() + 1];
+        strcpy(dir, req->get_url().c_str());
+        d = opendir(dir);
+        if (d || !sourceFile.good())
         {
             req->set_url(ERROR_404_PATH);
             std::ifstream sourceFile(req->get_url(), std::ifstream::in);
@@ -257,6 +249,19 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf)  //add Pars
                 _reasonPhrase = _error[_statusCode];
                 _contentLength = _content.size();
             }
+        }
+        else
+        {
+            std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
+            _content = ans;
+            if (_statusCode == 0)
+                _statusCode = 200;
+            _reasonPhrase = _error[_statusCode];
+            _contentLength = _content.size();
+            if (!req->get_url().compare(req->get_url().size() - 3, 3, "css"))
+                _contentType = "text/css";
+            else
+                _contentType = "text/html";
         }
         sourceFile.close();
     }
