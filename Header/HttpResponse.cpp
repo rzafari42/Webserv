@@ -45,7 +45,7 @@ bool HttpResponse::check_basic_error(Request *req)
     return true;
 }
 
-HttpResponse::HttpResponse(Request *req)
+HttpResponse::HttpResponse(Request *req, ServerInfo *conf)
 {
     initValues();
     initErrorMap();
@@ -59,7 +59,7 @@ HttpResponse::HttpResponse(Request *req)
     if (does_method_exist == 0)
     {
         if (!method.compare("GET"))
-            handle_get_method(req);
+            handle_get_method(req, conf);
         else if (!method.compare("POST"))
             handle_post_method(req);
         else
@@ -147,42 +147,130 @@ void HttpResponse::requestParsingError(int code)
     constructResponse();
 }
 
-
-
-
-void HttpResponse::handle_get_method(Request *req)
+bool HttpResponse::CountLocRedirect(std::map<std::string, int> *mp, std::string uri)
 {
+    std::map<std::string ,int >::iterator it = mp->find(uri);
+    if (it != mp->end())
+    {
+        it->second = it->second + 1;
+        if (it->second == 2)    
+            return true;
+    }
+    return false;
+}
+
+int HttpResponse::check_redirection(Request *req, ServerInfo *conf)
+{
+    //check if the url is present in one of the location bloc URI
+    std::vector<Location> loc = conf->get_locations();
+    std::vector<Location>::iterator it = loc.begin();
+    std::vector<Location>::iterator ite = loc.end();
+
+    while (it != ite)
+    {
+        std::cout << "UR: " << req->get_url() << std::endl;
+        std::string tmp_url = req->get_url().erase(0, 3);
+        if (!it->get_uri().compare(tmp_url)) // OU find tm
+        {
+            if (!it->get_return_path().empty() )
+            {
+                req->set_url(it->get_return_path());
+                if (!it->get_uri().compare(req->get_url().erase(0, 3)))
+                {
+                    set_redirectLoop();
+                    return -1;
+                }
+                _statusCode = 301;
+                return 0;
+            }
+            else
+            {
+                
+            }
+            //checkIfRoot ...
+        }
+        it++;
+    }
+    return 1;
+}
+
+void HttpResponse::handle_get_method(Request *req, ServerInfo *conf)
+{
+    std::vector<Location> loc = conf->get_locations();
+    std::map<std::string, int> loc_count;
+    std::vector<Location>::iterator it = loc.begin();
+    std::vector<Location>::iterator ite = loc.end();
+
+    while (it != ite)
+    {
+        loc_count.insert(std::pair<std::string, int>(it->get_uri(), 0));
+        it++;
+    }
+    while (!check_redirection(req, conf))
+    {
+        if (CountLocRedirect(&loc_count, req->get_url().erase(0, 3)) == true)
+        {
+            set_redirectLoop();
+            break;
+        }
+    }
     if (req->get_url() == "www/")
         req->set_url(HOME_PAGE_PATH);
-
-    std::ifstream sourceFile(req->get_url(), std::ifstream::in);
-
-    if (sourceFile.good())
+    if (get_redirectLoop() == true)
     {
-        std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
-        _content = ans;
-        _statusCode = 200;
-        _reasonPhrase = _error[_statusCode];
-        _contentLength = _content.size();
-        if (!req->get_url().compare(req->get_url().size() - 3, 3, "css"))
-            _contentType = "text/css";
-        else
-            _contentType = "text/html";
-    }
-    else
-    {
-        req->set_url(ERROR_404_PATH);
+        req->set_url(ERROR_310_PATH);
         std::ifstream sourceFile(req->get_url(), std::ifstream::in);
         if (sourceFile.good())
         {
             std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
             _content = ans;
-            _statusCode = 404;
+            _statusCode = 310;
             _reasonPhrase = _error[_statusCode];
             _contentLength = _content.size();
         }
+        constructResponse();
     }
-    sourceFile.close();
+    std::map<std::string, std::string> cgi = req->get_cgi();
+    if (cgi.empty())
+    {
+        std::ifstream sourceFile(req->get_url(), std::ifstream::in);
+
+        DIR *d;
+        char* dir = new char[req->get_url().length() + 1];
+        strcpy(dir, req->get_url().c_str());
+        d = opendir(dir);
+        if (d || !sourceFile.good())
+        {
+            req->set_url(ERROR_404_PATH);
+            std::ifstream sourceFile(req->get_url(), std::ifstream::in);
+            if (sourceFile.good())
+            {
+                std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
+                _content = ans;
+                _statusCode = 404;
+                _reasonPhrase = _error[_statusCode];
+                _contentLength = _content.size();
+            }
+        }
+        else
+        {
+            std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
+            _content = ans;
+            if (_statusCode == 0)
+                _statusCode = 200;
+            _reasonPhrase = _error[_statusCode];
+            _contentLength = _content.size();
+            if (!req->get_url().compare(req->get_url().size() - 3, 3, "css"))
+                _contentType = "text/css";
+            else
+                _contentType = "text/html";
+        }
+        sourceFile.close();
+    }
+    else
+    {
+        //call to cgi here
+    }
     constructResponse();
 }
 

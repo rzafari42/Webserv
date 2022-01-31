@@ -15,6 +15,7 @@
 # define METHOD_HOST_MISSING "400 Bad Request"
 # define PROTOCOL_VERSION "HTTP/1.1"
 # define DEFINED_TWICE "Error: Header Element Defined Twice"
+# define BAD_CGI_VALUES "Error: CGI values are incorrect or missing"
 # define CRLF "\r\n"
 # define CR '\r'
 # define LF '\n'

@@ -29,7 +29,7 @@ public:
     //getters
     std::vector<Location> get_locations( void ) { return locations; }
 
-    std::size_t get_listen( void ) { return listen; }
+    std::size_t get_listen( void ) const { return listen; }
 
     std::string get_root( void ) { return root; }
 
@@ -56,6 +56,11 @@ public:
     void set_client_max_body_size( size_t n ) { client_max_body_size = n; }
 
     void add_location( Location l ) { locations.push_back(l); }
+
+    friend bool operator<(const ServerInfo& t1, const ServerInfo& t2)
+    {
+        return (t1.get_listen() < t2.get_listen());
+    }
 };
 
 
