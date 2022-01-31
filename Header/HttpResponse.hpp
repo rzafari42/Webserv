@@ -4,19 +4,20 @@
 # include <fstream>
 # include <sstream>
 # include <dirent.h>
+# include <cstring>
 #include "../conf/parsing/http_request_conf/parsing_http.hpp"
 #include "../conf/parsing/nginx_conf/ServerInfo.hpp"
 # include <algorithm>
-# define HOME_PAGE_PATH "/index.html"
-# define ERROR_400_PATH "/error400.html"
-# define ERROR_404_PATH "/error404.html"
-# define ERROR_411_PATH "/error411.html"
-# define ERROR_505_PATH "/error505.html"
-# define ERROR_310_PATH "/error310.html"
+# define HOME_PAGE_PATH "www/index.html"
+# define ERROR_400_PATH "www/error400.html"
+# define ERROR_404_PATH "www/error404.html"
+# define ERROR_411_PATH "www/error411.html"
+# define ERROR_505_PATH "www/error505.html"
+# define ERROR_310_PATH "www/error310.html"
 
 # define HTTP_VERSION "HTTP/1.1"
 
-# define FILE_DELETED "/file_deleted.html"
+# define FILE_DELETED "www/file_deleted.html"
 
 
 
@@ -46,7 +47,7 @@ class HttpResponse
         void requestParsingError(int code);
         int check_redirection(Request *req, ServerInfo *conf);
 
-        void handle_get_method(Request *req, ServerInfo *conf);
+        void handle_get_method(Request *req, ServerInfo *conf, size_t redirects = 0);
         void handle_post_method(Request *req);
         void handle_delete_method(Request *req);
 

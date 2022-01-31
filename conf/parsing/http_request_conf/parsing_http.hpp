@@ -5,7 +5,6 @@
 # include <sstream>
 # include <map>
 # include <vector>
-# define WEBFILE_PATH "www"
 # define CGI_EXTENSION ".php"
 
 class Request{
@@ -24,7 +23,7 @@ class Request{
         }
         ~Request() {_fields.clear(); _body.clear(); return;}
         void set_method(std::string str) {_method = str;}
-        void set_url(std::string str) {_url = WEBFILE_PATH + str;}
+        void set_url(std::string str) {_url = str;}
         void set_version(std::string str) {_version = str;}
         void set_cgi(std::map<std::string, std::string> mp){_cgi = mp;}
         void set_fields(std::map<std::string, std::string> mp){_fields = mp;}
