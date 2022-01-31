@@ -6,11 +6,11 @@
 /*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/29 02:51:23 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/29 02:51:24 by simbarre         ###   ########.fr       */
+/*   Updated: 2022/01/31 04:20:39 by simbarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "../../Header/main_header.hpp"
+# include "../../../Header/main_header.hpp"
 
 ParserConf::ParserConf( void ) {}
 ParserConf::~ParserConf() {}
@@ -24,7 +24,7 @@ static std::vector<std::string> catchvalues(const std::string s)
 {
     std::vector<std::string> v;
     std::string cpy;
-    int i = 0;
+    unsigned long i = 0;
 
     if (s.empty() == false)
     {
@@ -62,7 +62,7 @@ static int find_server_block(std::vector<std::string>::iterator it, std::vector<
     return 0;
 }
 
-static int find_location_block(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite)
+/*static int find_location_block(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite)
 {
     if (!it->compare("location"))
     {
@@ -76,7 +76,7 @@ static int find_location_block(std::vector<std::string>::iterator it, std::vecto
         }
     }
     return 0;
-}
+}*/                                                     //not used ?
 
 static void put_listen(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &serv_info) {
     if (it != ite)
@@ -290,7 +290,7 @@ static void fill_struct(std::vector<std::vector<std::string> > v, std::vector<Se
 }
 
 void ParserConf::parse(std::string file, std::vector<ServerInfo> *serv_info) {
-    std::ifstream flux(file);
+    std::ifstream flux(file.c_str());
 
     if (flux)
     {
