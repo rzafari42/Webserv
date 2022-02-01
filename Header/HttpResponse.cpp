@@ -186,6 +186,8 @@ static Location *which_location(std::vector<Location> *loc, std::string url) {
         size_t found = tmp.rfind('/');
         if (found!=std::string::npos)
             tmp.replace(found, tmp.length() - found, "");
+        if (tmp.empty())
+            tmp = "/";
         else {
             // IF WE HERE WE F*CKED
         }
@@ -208,6 +210,8 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
     std::vector<Location> locations = conf->get_locations();
 
     Location *loc = which_location(&locations, req->get_url());
+
+    std::string base_url = req->get_url();
 
     if (redirects > 20)
     {
@@ -249,24 +253,18 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
 
     if (ft_is_directory(req->get_url()))
     {
-        if (!loc->get_autoindex().compare("on"))
+        if (loc && !loc->get_autoindex().compare("on"))
         {
             std::string path(req->get_url());
             std::string script = "./autoindex.sh ";
             std::string file = " > autoindex.html";
-            std::string command = script + path.c_str() + file;
+            std::string command = script + path.c_str() + " " + base_url + file;
             system(command.c_str());
             req->set_url("./autoindex.html");
         }
         else
             _statusCode = 403;
     }
-    
-    // SI DOSSIER
-        // SI AUTOINDEX ON
-            // FOMCTION AUTOINDEX
-        // SINON
-            // ERROR 403
 
     std::map<std::string, std::string> cgi = req->get_cgi();
     if (cgi.empty())
