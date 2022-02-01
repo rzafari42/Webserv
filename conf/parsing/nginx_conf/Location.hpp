@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/29 02:48:51 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/29 02:54:45 by simbarre         ###   ########.fr       */
+/*   Updated: 2022/02/01 10:31:12 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ public:
     std::vector<std::string> *get_ptr_methods( void ) { return &methods; }
 
     std::string get_uri( void ) { return uri; }
+    
     std::string get_root( void ) { return root; }
 
     std::string get_index( void ) { return index; }
@@ -75,9 +76,6 @@ public:
     void set_return_path( std::string str ) { return_path = str; }
 
     void set_cgi_extension( std::string str ) { cgi_extension = str; }
-
-    void set_cgi_path( std::string str ) { cgi_path = str; }
-};
 
     void set_cgi_path( std::string str ) { cgi_path = str; }
 };

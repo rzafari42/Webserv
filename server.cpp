@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 22:01:31 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/01 09:20:00 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/01 10:23:46 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,11 +37,6 @@ void	*handle_connection(int client_socket, ServerInfo conf)
 	size_t	bytes_read;
 	int		msg_size = 0;
 	static int i = 0;
-	std::vector<Location> loc;
-
-	loc = conf.get_locations();
-	std::vector<Location>::iterator it = loc.begin();
-	std::vector<Location>::iterator ite = loc.end();
 
 	while ((bytes_read = read(client_socket, buffer + msg_size, sizeof(buffer) - msg_size - 1)))
 	{

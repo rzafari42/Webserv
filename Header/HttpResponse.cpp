@@ -241,30 +241,6 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf)  //add Pars
         if (d || !sourceFile.good())
         {
             req->set_url(ERROR_404_PATH);
-            std::ifstream sourceFile(req->get_url().c_str(), std::ifstream::in);
-            if (sourceFile.good())
-            {
-                std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
-                _content = ans;
-                _statusCode = 404;
-                _reasonPhrase = _error[_statusCode];
-                _contentLength = _content.size();
-            }
-        }
-        constructResponse();
-    }
-    std::map<std::string, std::string> cgi = req->get_cgi();
-    if (cgi.empty())
-    {
-        std::ifstream sourceFile(req->get_url(), std::ifstream::in);
-
-        DIR *d;
-        char* dir = new char[req->get_url().length() + 1];
-        strcpy(dir, req->get_url().c_str());
-        d = opendir(dir);
-        if (d || !sourceFile.good())
-        {
-            req->set_url(ERROR_404_PATH);
             std::ifstream sourceFile(req->get_url(), std::ifstream::in);
             if (sourceFile.good())
             {

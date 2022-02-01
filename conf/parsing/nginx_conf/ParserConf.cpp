@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ParserConf.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/29 02:51:23 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/31 04:20:39 by simbarre         ###   ########.fr       */
+/*   Updated: 2022/02/01 10:31:01 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,21 +62,6 @@ static int find_server_block(std::vector<std::string>::iterator it, std::vector<
     return 0;
 }
 
-/*static int find_location_block(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite)
-{
-    if (!it->compare("location"))
-    {
-        while (it != ite)
-        {
-            if (!it->compare("{"))
-            {
-                return 1;
-            }
-            it++;
-        }
-    }
-    return 0;
-}*/                                                     //not used ?
 
 static void put_listen(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &serv_info) {
     if (it != ite)
