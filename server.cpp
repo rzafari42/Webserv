@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 22:01:31 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/31 21:15:53 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/01 09:20:00 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,8 @@ void	*handle_connection(int client_socket, ServerInfo conf)
 	std::vector<Location> loc;
 
 	loc = conf.get_locations();
+	std::vector<Location>::iterator it = loc.begin();
+	std::vector<Location>::iterator ite = loc.end();
 
 	while ((bytes_read = read(client_socket, buffer + msg_size, sizeof(buffer) - msg_size - 1)))
 	{
@@ -118,21 +120,6 @@ int		setup_server(short port, int backlog)
 	return (server_socket);
 }
 
-void get_port(std::string *port, std::string address)
-{
-	std::string::iterator it = address.begin();
-	std::string::iterator ite = address.end();
-
-	while (*it != ':')
-		it++;
-	it++;
-	while (it != ite)
-	{
-		port->push_back(*it);
-		it++;
-	}
-}
-
 //nc -c localhost 8080
 int		main(int argc, char *argv[])
 {
@@ -142,10 +129,7 @@ int		main(int argc, char *argv[])
 		ParserConf parser;
 		std::map<ServerInfo, int> server_socket;
 		std::map<int, ServerInfo> client_socket;
-		std::string address;
-		std::string port;
 		fd_set	current_sockets, ready_sockets;
-
 
 		parser.parse(argv[1], &conf);
 
@@ -167,15 +151,15 @@ int		main(int argc, char *argv[])
 		while (true)
 		{
 			ready_sockets = current_sockets;
-
 			check(select(FD_SETSIZE, &ready_sockets, NULL, NULL, NULL), "Failed to select");
 
 			for (int i = 0; i < FD_SETSIZE; i++)
 			{
+				it_m = server_socket.begin();
+				it_me = server_socket.end();
 				if (FD_ISSET(i, &ready_sockets))
 				{
-					it_m = server_socket.begin();
-					it_me = server_socket.end();
+
 					while (it_m != it_me)
 					{
 						if (i == it_m->second)

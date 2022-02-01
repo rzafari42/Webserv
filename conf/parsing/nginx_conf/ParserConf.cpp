@@ -215,7 +215,7 @@ static int find_element_location_block(std::vector<std::string>::iterator it, st
         return 1; // FAILURE
     if ((ite - 1)->compare(";"))
         throw ParserConf::ParsingConfigFileException(MISSING_SEMICOLON);
-   return 0;
+    return 0;
 }
 
 static void fill_struct(std::vector<std::vector<std::string> > v, std::vector<ServerInfo> *serv_info) {
@@ -245,6 +245,10 @@ static void fill_struct(std::vector<std::vector<std::string> > v, std::vector<Se
                     throw ParserConf::ParsingConfigFileException("Error: In Server: invalid keyword");
                 if (!it_s->compare("location")) {
                     loc_tmp = Location();
+                    if (it_s != ite_s && (++it_s)->compare("{"))
+                        loc_tmp.set_uri(*(it_s));
+                    else
+                        throw ParserConf::ParsingConfigFileException("Error: In Location, 'URI' is missing");
                     brackets++;
                     it++;
                     it_s = it->begin();

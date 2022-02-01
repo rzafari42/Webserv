@@ -12,7 +12,6 @@
 
 #ifndef HTTPRESPONSE_HPP
 # define HTTPRESPONSE_HPP
-
 # include "main_header.hpp"
 
 class HttpResponse

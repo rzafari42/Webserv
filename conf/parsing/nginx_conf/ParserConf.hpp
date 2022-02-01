@@ -26,6 +26,7 @@
 # define SERVER_NAME_EMPTY "Error: In Server: 'server_name' directive exists but has no value"
 # define CLIENT_MAX_BODY_SIZE_EMPTY "Error: In Server: 'client_max_body_size' directive exists but has no value"
 # define AUTOINDEX_EMPTY "Error: In Server: 'autoindex' directive exists but has no value"
+# define LOCATION_URI_EMPTY "Error: In Location, 'URI' is missing"
 # define LOCATION_ROOT_EMPTY "Error: In Location: 'root' directive exists but has no value"
 # define LOCATION_INDEX_EMPTY "Error: In Location: 'index' directive exists but has no value"
 # define LOCATION_AUTOINDEX_EMPTY "Error: In Location: 'autoindex' directive exists but has no value"

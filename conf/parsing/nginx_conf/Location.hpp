@@ -47,7 +47,6 @@ public:
     std::vector<std::string> *get_ptr_methods( void ) { return &methods; }
 
     std::string get_uri( void ) { return uri; }
-
     std::string get_root( void ) { return root; }
 
     std::string get_index( void ) { return index; }
@@ -80,5 +79,7 @@ public:
     void set_cgi_path( std::string str ) { cgi_path = str; }
 };
 
+    void set_cgi_path( std::string str ) { cgi_path = str; }
+};
 
 #endif

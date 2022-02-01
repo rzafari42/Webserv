@@ -84,6 +84,7 @@ void HttpResponse::initValues()
     _content = "";
     _contentType = "text/html";
     _response = "";
+    _redirectLoop = false;
 }
 
 void HttpResponse::initErrorMap()
@@ -93,13 +94,15 @@ void HttpResponse::initErrorMap()
     _error.insert(std::pair<int, std::string>(201,"Created")); //for post method
     _error.insert(std::pair<int, std::string>(204,"No Content")); //for post method
     _error.insert(std::pair<int, std::string>(301,"Moved Permanently"));
+    _error.insert(std::pair<int, std::string>(310,"Too many Redirects")); //done
     _error.insert(std::pair<int, std::string>(400,"Bad Request"));
     _error.insert(std::pair<int, std::string>(404,"Not Found")); //done
     _error.insert(std::pair<int, std::string>(405,"Method Not Allowed")); //done
     _error.insert(std::pair<int, std::string>(411,"Length Required"));
     _error.insert(std::pair<int, std::string>(413,"Payload Too Large"));
     _error.insert(std::pair<int, std::string>(501,"Not Implemented")); //done
-    _error.insert(std::pair<int, std::string>(505," HTTP Version Not Supported")); //done
+    _error.insert(std::pair<int, std::string>(505,"HTTP Version Not Supported")); //done
+
 }
 
 void HttpResponse::initMethods()
@@ -170,9 +173,9 @@ int HttpResponse::check_redirection(Request *req, ServerInfo *conf)
     while (it != ite)
     {
         std::string tmp_url = req->get_url().erase(0, 3);
-        if (!it->get_uri().compare(tmp_url)) // OU find tm
+        if (!it->get_uri().compare(tmp_url))
         {
-            if (!it->get_return_path().empty() )
+            if (it->get_return_code() != 0)
             {
                 req->set_url(it->get_return_path());
                 if (!it->get_uri().compare(req->get_url().erase(0, 3)))
@@ -183,10 +186,6 @@ int HttpResponse::check_redirection(Request *req, ServerInfo *conf)
                 _statusCode = 301;
                 return 0;
             }
-            else
-            {
-                
-            }
             //checkIfRoot ...
         }
         it++;
@@ -194,7 +193,7 @@ int HttpResponse::check_redirection(Request *req, ServerInfo *conf)
     return 1;
 }
 
-void HttpResponse::handle_get_method(Request *req, ServerInfo *conf)
+void HttpResponse::handle_get_method(Request *req, ServerInfo *conf)  //add ParserConf here
 {
     std::vector<Location> loc = conf->get_locations();
     std::map<std::string, int> loc_count;
@@ -227,12 +226,19 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf)
             _statusCode = 310;
             _reasonPhrase = _error[_statusCode];
             _contentLength = _content.size();
-            if (!req->get_url().compare(req->get_url().size() - 3, 3, "css"))
-                _contentType = "text/css";
-            else
-                _contentType = "text/html";
         }
-        else
+        constructResponse();
+    }
+    std::map<std::string, std::string> cgi = req->get_cgi();
+    if (cgi.empty())
+    {
+        std::ifstream sourceFile(req->get_url(), std::ifstream::in);
+
+        DIR *d;
+        char* dir = new char[req->get_url().length() + 1];
+        strcpy(dir, req->get_url().c_str());
+        d = opendir(dir);
+        if (d || !sourceFile.good())
         {
             req->set_url(ERROR_404_PATH);
             std::ifstream sourceFile(req->get_url().c_str(), std::ifstream::in);
