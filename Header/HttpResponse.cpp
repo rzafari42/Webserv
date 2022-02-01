@@ -247,6 +247,21 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
     req->set_url(path_tofile);
     std::cout << std::endl << req->get_url() << std::endl;
 
+    if (ft_is_directory(req->get_url()))
+    {
+        if (!loc->get_autoindex().compare("on"))
+        {
+            std::string path(req->get_url());
+            std::string script = "./autoindex.sh ";
+            std::string file = " > autoindex.html";
+            std::string command = script + path.c_str() + file;
+            system(command.c_str());
+            req->set_url("./autoindex.html");
+        }
+        else
+            _statusCode = 403;
+    }
+    
     // SI DOSSIER
         // SI AUTOINDEX ON
             // FOMCTION AUTOINDEX
