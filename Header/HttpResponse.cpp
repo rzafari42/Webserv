@@ -151,6 +151,23 @@ void HttpResponse::requestParsingError(int code)
     constructResponse();
 }
 
+/*void HttpResponse::autoindex(std::string path)
+{
+    DIR *directory = opendir(path.c_str());;
+    if (directory == NULL)
+    {
+        _statusCode = 404;
+        _reasonPhrase = _error[_statusCode];
+        _contentType = "text/html";
+
+        return;
+    }
+    else 
+    {
+            //create a shell script which generate an html file and a directory listing and use system("scritp_name + folder path") call to use the script 
+    }
+}*/
+
 bool HttpResponse::CountLocRedirect(std::map<std::string, int> *mp, std::string uri)
 {
     std::map<std::string ,int >::iterator it = mp->find(uri);
@@ -238,6 +255,7 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf)  //add Pars
         char* dir = new char[req->get_url().length() + 1];
         strcpy(dir, req->get_url().c_str());
         d = opendir(dir);
+        delete [] dir;
         if (d || !sourceFile.good())
         {
             req->set_url(ERROR_404_PATH);

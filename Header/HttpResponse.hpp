@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/29 02:47:10 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/31 21:07:08 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/01 11:13:48 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ class HttpResponse
         void handle_delete_method(Request *req);
 
         void redirection(Request *req);
+        void autoindex(std::string path);
         void constructResponse();
 
     private:
