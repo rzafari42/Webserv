@@ -232,6 +232,7 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
             st.replace(0, loc->get_uri().length(), loc->get_return_path());
             req->set_url(st);
             this->handle_get_method(req, conf, redirects + 1);
+            return ;
         }
     }
 
