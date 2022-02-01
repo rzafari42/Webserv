@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 22:01:31 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/30 12:56:39 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/01 09:20:00 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,28 +114,6 @@ int		setup_server(short port, int backlog)
 
 	return (server_socket);
 }
-
-void get_port(std::string *port, std::string address)
-{
-	std::string::iterator it = address.begin();
-	std::string::iterator ite = address.end();
-
-	while (*it != ':')
-		it++;
-	it++;
-	while (it != ite)
-	{
-		port->push_back(*it);
-		it++;
-	}
-}
-
-static int stringToInt(std::string s )
-{
-    int i;
-    std::istringstream(s) >> i;
-    return i;
-}
 	
 //nc -c localhost 8080
 int		main(int argc, char *argv[])
@@ -146,9 +124,8 @@ int		main(int argc, char *argv[])
 		ParserConf parser;
 		std::map<ServerInfo, int> server_socket;
 		std::map<int, ServerInfo> client_socket;
-		std::string address;
-		std::string port;
 		fd_set	current_sockets, ready_sockets;
+    	std::cout << "URL: " << std::endl;
 
 
 		parser.parse(argv[1], &conf);
@@ -158,11 +135,7 @@ int		main(int argc, char *argv[])
 		FD_ZERO(&current_sockets);
 		while (it != ite)
 		{
-			port.clear();
-			address.clear();
-			address = it->get_listen();
-			get_port(&port, address);
-			server_socket.insert(std::make_pair(*it, setup_server(stringToInt(port), SERVER_BACKLOG)));
+			server_socket.insert(std::make_pair(*it, setup_server(it->get_listen(), SERVER_BACKLOG)));
 			it++;
 		}
 		std::map<ServerInfo, int>::iterator it_m = server_socket.begin();

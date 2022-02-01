@@ -70,7 +70,7 @@ static int find_location_block(std::vector<std::string>::iterator it, std::vecto
 
 static void put_listen(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &serv_info) {
     if (it != ite)
-        serv_info.set_listen(*it);
+        serv_info.set_listen(std::atoi((*it).c_str()));
     else
         throw ParserConf::ParsingConfigFileException(LISTEN_EMPTY);
 }
@@ -84,20 +84,15 @@ static void put_root(std::vector<std::string>::iterator it, std::vector<std::str
 }
 
 static void put_error_page(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &serv_info) {
-    std::string tmp;
-    if (it != ite) {
-        tmp = *it;
-        it++;
-        while (it != ite && it->compare(";")) {
-            if (it != ite)
-                tmp += ' ';
-            tmp += *it;
-            it++;
-        }
-        serv_info.set_error_page(tmp);
-    }
+    if (it != ite)
+        serv_info.add_error_code(std::atoi((*it).c_str()));
     else
         throw ParserConf::ParsingConfigFileException(ERROR_PAGE_EMPTY);
+    it++;
+    if (it != ite)
+        serv_info.add_error_path(*it);
+    else
+        throw ParserConf::ParsingConfigFileException(ERROR_PAGE_PATH_MISSING);
 }
 
 static void put_server_name(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, ServerInfo &serv_info) {
@@ -210,7 +205,7 @@ static int find_element_location_block(std::vector<std::string>::iterator it, st
         return 1; // FAILURE
     if ((ite - 1)->compare(";"))
         throw ParserConf::ParsingConfigFileException(MISSING_SEMICOLON);
-   return 0;
+    return 0;
 }
 
 static void fill_struct(std::vector<std::vector<std::string> > v, std::vector<ServerInfo> *serv_info) {
@@ -236,37 +231,29 @@ static void fill_struct(std::vector<std::vector<std::string> > v, std::vector<Se
             ite_s = it->end();
             while (it != ite && it_s->compare("}")) {
                 // ELEMENTS IN SERVER BLOCK
-                if (find_element_server_block(it_s, ite_s, conf_tmp)) {
-                    serv_info->clear();
-                    return;
-                }
+                if (find_element_server_block(it_s, ite_s, conf_tmp))
+                    throw ParserConf::ParsingConfigFileException("Error: In Server: invalid keyword");
                 if (!it_s->compare("location")) {
                     loc_tmp = Location();
                     if (it_s != ite_s && (++it_s)->compare("{"))
                         loc_tmp.set_uri(*(it_s));
                     else
-                    {
-                        throw ParserConf::ParsingConfigFileException(LOCATION_URI_EMPTY);
-                        serv_info->clear();
-                        return;
-                    }
+                        throw ParserConf::ParsingConfigFileException("Error: In Location, 'URI' is missing");
                     brackets++;
                     it++;
                     it_s = it->begin();
                     ite_s = it->end();
                     while (it != ite && it_s->compare("}")) {
                         // ELEMENTS IN LOCATION BLOCK
-                        if (find_element_location_block(it_s, ite_s, loc_tmp)) {
-                            serv_info->clear();
-                            return;
-                        }
+                        if (find_element_location_block(it_s, ite_s, loc_tmp))
+                            throw ParserConf::ParsingConfigFileException("Error: In Location: invalid keyword");
                         it++;
                         it_s = it->begin();
                         ite_s = it->end();
                     }
                     brackets--;
                     conf_tmp.add_location(loc_tmp);
-                }
+                }   
                 if (it != ite) {
                     it++;
                     it_s = it->begin();
