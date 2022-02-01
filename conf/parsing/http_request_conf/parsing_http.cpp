@@ -10,13 +10,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "parsing_http.hpp"
-#include "utils.hpp"
-#include <fstream>
+#include "../../../Header/main_header.hpp"
 
 int check_format_rqline(std::string s, Request *req)
 {
-    int i = 0;
+    unsigned long i = 0;
     int nb_space = 0;
     int nb_arg = 0;
 
@@ -39,10 +37,10 @@ int check_format_rqline(std::string s, Request *req)
 
 int check_format_rqfield(std::string s, Request *req)
 {
-    int i = 0;
+    unsigned long i = 0;
     int semi_colon = 0;
     int nb_arg = 0;
-    
+
     if (s.find("\r\n") == std::string::npos)
         return error(REQUEST_FIELD_FORMAT_CRLF, 1, req);
     s.erase(s.size() - 2);
@@ -106,7 +104,7 @@ int check_cgi(Request *req, std::map<std::string, std::string> &mp)
 
 int catch_request_line(const std::string s, Request *req, std::map<std::string, std::string> &mp) //Format: Method Request-URI HTTP-Version CRLF
 {
-    int i = 0;
+    unsigned long i = 0;
     std::string tmp;
 
     while (!isspace(s[i]) && i < s.length())
@@ -142,7 +140,7 @@ int catchvalues(const std::string s, std::map<std::string, std::string> &mp, Req
 {
     std::string name;
     std::string value;
-    int i = 0;
+    unsigned long i = 0;
 
     std::map<std::string, std::string>::iterator it = mp.begin();
     std::map<std::string, std::string>::iterator ite = mp.end();
@@ -184,7 +182,7 @@ void check_errors(Request *req)
 
 void parsing(std::string file, Request *request)
 {
-    std::ifstream flux(file);
+    std::ifstream flux(file.c_str());
 
     if (flux)
     {

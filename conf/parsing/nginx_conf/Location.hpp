@@ -1,7 +1,19 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Location.hpp                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/01/29 02:48:51 by simbarre          #+#    #+#             */
+/*   Updated: 2022/01/29 02:54:45 by simbarre         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef LOCATION_HPP
 # define LOCATION_HPP
-# include <iostream>
-# include <vector>
+
+# include "../../../Header/main_header.hpp"
 
 class Location
 {
@@ -63,6 +75,9 @@ public:
     void set_return_path( std::string str ) { return_path = str; }
 
     void set_cgi_extension( std::string str ) { cgi_extension = str; }
+
+    void set_cgi_path( std::string str ) { cgi_path = str; }
+};
 
     void set_cgi_path( std::string str ) { cgi_path = str; }
 };

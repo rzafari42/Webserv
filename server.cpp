@@ -36,12 +36,10 @@ void	*handle_connection(int client_socket, ServerInfo conf)
 	char	buffer[BUFF_SIZE];
 	size_t	bytes_read;
 	int		msg_size = 0;
-	char	actual_path[PATH_MAX + 1];
 	static int i = 0;
 	std::vector<Location> loc;
 
 	loc = conf.get_locations();
-
 	std::vector<Location>::iterator it = loc.begin();
 	std::vector<Location>::iterator ite = loc.end();
 
@@ -59,16 +57,18 @@ void	*handle_connection(int client_socket, ServerInfo conf)
 
 	//Name file creation
 	std::string namefile = "Request_";
-	namefile.append(std::to_string(i));
+	std::ostringstream s;
+	s << i;
+	namefile.append(s.str());
 	namefile.append(".txt");
 	i++;
 
 	std::ofstream myfile;
-	myfile.open(namefile, std::ofstream::app);
+	myfile.open(namefile.c_str(), std::ofstream::app);		//not viable in c++98
 	std::string str(buffer);
-	myfile << str; //Write the request in a file
+	myfile << str;									//Write the request in a file
 	myfile.close();
-	Request req = req_parsing(namefile); //Parsing
+	Request req = req_parsing(namefile);			//Parsing
 	std::remove(namefile.c_str());
 
 	HttpResponse res(&req, &conf);
@@ -91,6 +91,8 @@ int		accept_new_connection(int server_socket)
 
 	check(client_socket = accept(server_socket, (SA*)&client_socket, (socklen_t*)&addr_size), "Accept!");
 
+	(void)client_addr;					//added to remove -Werror compilation error
+
 	return (client_socket);
 }
 
@@ -112,9 +114,12 @@ int		setup_server(short port, int backlog)
 	check(bind(server_socket, (SA*)&server_addr, sizeof(server_addr)), "Bind failed!");
 	check(listen(server_socket, backlog), "Listen failed!");
 
+	(void)client_socket;				//added to remove -Werror compilation error
+	(void)addr_size;					//added to remove -Werror compilation error
+
 	return (server_socket);
 }
-	
+
 //nc -c localhost 8080
 int		main(int argc, char *argv[])
 {
@@ -125,8 +130,6 @@ int		main(int argc, char *argv[])
 		std::map<ServerInfo, int> server_socket;
 		std::map<int, ServerInfo> client_socket;
 		fd_set	current_sockets, ready_sockets;
-    	std::cout << "URL: " << std::endl;
-
 
 		parser.parse(argv[1], &conf);
 
@@ -156,6 +159,7 @@ int		main(int argc, char *argv[])
 				it_me = server_socket.end();
 				if (FD_ISSET(i, &ready_sockets))
 				{
+
 					while (it_m != it_me)
 					{
 						if (i == it_m->second)

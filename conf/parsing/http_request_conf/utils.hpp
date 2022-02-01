@@ -37,13 +37,6 @@ void parsingClear(std::ifstream &flux, std::map<std::string, std::string> values
     flux.close();
 }
 
-void printCGI(std::map<std::string, std::string> cgi)
-{
-    std::map<std::string,std::string>::iterator it;
-    for (it = cgi.begin(); it != cgi.end(); ++it)
-        std::cout << it->first << ": " << it->second << '\n';
-}
-
 void print_map(std::map<std::string, std::string> mymap, std::vector<std::string> vec)
 {
     std::map<std::string,std::string>::iterator it;

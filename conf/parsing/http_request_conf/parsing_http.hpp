@@ -1,10 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parsing_http.hpp                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/01/29 02:50:20 by simbarre          #+#    #+#             */
+/*   Updated: 2022/01/31 21:11:20 by rzafari          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef PARSING_HTTP_HPP
 # define PARSING_HTTP_HPP
-# include <iostream>
-# include <fstream>
-# include <sstream>
-# include <map>
-# include <vector>
+
+# include "../../../Header/main_header.hpp"
+
 # define WEBFILE_PATH "www"
 # define CGI_EXTENSION ".php"
 

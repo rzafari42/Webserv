@@ -1,8 +1,19 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ServerInfo.hpp                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/01/29 02:52:32 by simbarre          #+#    #+#             */
+/*   Updated: 2022/01/31 21:06:17 by rzafari          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef SERVER_INFO_HPP
 # define SERVER_INFO_HPP
-# include <iostream>
-# include <vector>
-# include "Location.hpp"
+
+# include "../../../Header/main_header.hpp"
 
 class ServerInfo
 {
