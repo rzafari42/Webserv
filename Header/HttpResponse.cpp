@@ -157,7 +157,7 @@ bool HttpResponse::CountLocRedirect(std::map<std::string, int> *mp, std::string 
     if (it != mp->end())
     {
         it->second = it->second + 1;
-        if (it->second == 2)    
+        if (it->second == 2)
             return true;
     }
     return false;
@@ -218,7 +218,7 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf)  //add Pars
     if (get_redirectLoop() == true)
     {
         req->set_url(ERROR_310_PATH);
-        std::ifstream sourceFile(req->get_url(), std::ifstream::in);
+        std::ifstream sourceFile(req->get_url().c_str(), std::ifstream::in);
         if (sourceFile.good())
         {
             std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
@@ -232,7 +232,7 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf)  //add Pars
     std::map<std::string, std::string> cgi = req->get_cgi();
     if (cgi.empty())
     {
-        std::ifstream sourceFile(req->get_url(), std::ifstream::in);
+        std::ifstream sourceFile(req->get_url().c_str(), std::ifstream::in);
 
         DIR *d;
         char* dir = new char[req->get_url().length() + 1];
@@ -241,7 +241,7 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf)  //add Pars
         if (d || !sourceFile.good())
         {
             req->set_url(ERROR_404_PATH);
-            std::ifstream sourceFile(req->get_url(), std::ifstream::in);
+            std::ifstream sourceFile(req->get_url().c_str(), std::ifstream::in);
             if (sourceFile.good())
             {
                 std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
