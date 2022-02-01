@@ -247,6 +247,12 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
     req->set_url(path_tofile);
     std::cout << std::endl << req->get_url() << std::endl;
 
+    // SI DOSSIER
+        // SI AUTOINDEX ON
+            // FOMCTION AUTOINDEX
+        // SINON
+            // ERROR 403
+
     std::map<std::string, std::string> cgi = req->get_cgi();
     if (cgi.empty())
     {
