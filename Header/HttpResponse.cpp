@@ -148,7 +148,7 @@ void HttpResponse::requestParsingError(int code)
 
 void HttpResponse::createHeader(std::string url, int code, ServerInfo *conf)
 {
-    if (_statusCode >= 400 && _statusCode <= 600) {
+    if (code >= 400 && code <= 600) {
         if (conf) {
             std::vector<std::size_t> ec = conf->get_error_code();
             std::vector<std::size_t>::iterator it = ec.begin();
@@ -157,7 +157,7 @@ void HttpResponse::createHeader(std::string url, int code, ServerInfo *conf)
             std::vector<std::string>::iterator itp = ep.begin();
 
             while (it != ite) {
-                if (!((int)*it == _statusCode)) {
+                if (((int)*it == _statusCode)) {
                     url = *itp;
                     break;
                 }
@@ -295,6 +295,7 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
 
     if (ft_is_directory(req->get_url()))
     {
+        printf("bite\n");
         if (loc && !loc->get_autoindex().compare("on"))
         {
             std::string path(req->get_url());
@@ -305,6 +306,7 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
             req->set_url("./autoindex.html");
         }
         else {
+            printf("another bite\n");
             _statusCode = 403;
             req->set_url(ERROR_403_PATH);
             createHeader(req->get_url(), 403, conf);

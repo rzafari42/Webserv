@@ -38,14 +38,13 @@
 
 # define HTTP_VERSION "HTTP/1.1"
 
-# define HOME_PAGE_PATH "/index.html"
-# define ERROR_400_PATH "/error400.html"
-# define ERROR_403_PATH "/error403.html"
-# define ERROR_404_PATH "/error404.html"
-# define ERROR_405_PATH "/error405.html"
-# define ERROR_411_PATH "/error411.html"
-# define ERROR_505_PATH "/error505.html"
-# define ERROR_310_PATH "/error310.html"
+# define ERROR_400_PATH "www/error400.html"
+# define ERROR_403_PATH "www/error403.html"
+# define ERROR_404_PATH "www/error404.html"
+# define ERROR_405_PATH "www/error405.html"
+# define ERROR_411_PATH "www/error411.html"
+# define ERROR_505_PATH "www/error505.html"
+# define ERROR_310_PATH "www/error310.html"
 
 # define FILE_DELETED "/file_deleted.html"
 

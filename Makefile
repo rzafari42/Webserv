@@ -21,7 +21,7 @@ OBJS			=	$(SRCS:.cpp=.o)
 
 HEADERS			=	Header/
 
-CXX				=	clang++
+CXX				=	g++
 RM				=	rm -f
 CXXFLAGS		=	-Wall -Wextra -Werror -I $(HEADERS) -std=c++98
 
