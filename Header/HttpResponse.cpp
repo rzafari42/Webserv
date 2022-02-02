@@ -226,9 +226,7 @@ static bool ft_is_directory(std::string path){
     struct stat s;
     
     stat(path.c_str(), &s);
-    if(s.st_mode && S_IFDIR)
-        return true;
-    return false;
+    return S_ISDIR(s.st_mode);
 }
 
 static bool ft_is_there_get(Location loc) {
