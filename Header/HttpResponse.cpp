@@ -135,12 +135,7 @@ int  HttpResponse::check_method_existence(std::string method)
     return -1;
 }
 
-HttpResponse::~HttpResponse(void)
-{
-    _error.clear();
-    _implementedMethods.clear();
-    _notImplementedMethods.clear();
-}
+HttpResponse::~HttpResponse(void){}
 
 void HttpResponse::requestParsingError(int code)
 {
