@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/14 21:13:24 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/02 14:18:04 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/02 17:05:38 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 # include <sys/select.h>
 # include <netinet/in.h>
 # include <stdlib.h>
-# include <string.h>
+# include <cstring>
 # include <sys/socket.h>
 # include <arpa/inet.h>
 # include <stdbool.h>
