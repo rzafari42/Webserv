@@ -338,6 +338,10 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
             _contentLength = _content.size();*/
             if (!req->get_url().compare(req->get_url().size() - 3, 3, "css"))
                 _contentType = "text/css";
+            else if (!req->get_url().compare(req->get_url().size() - 3, 3, "png"))
+                _contentType = "image/png";
+            else if (!req->get_url().compare(req->get_url().size() - 3, 3, "jpg"))
+                _contentType = "image/jpg";
             else
                 _contentType = "text/html";
         }
