@@ -1,7 +1,7 @@
 #!/bin/bash
 ARG=$(echo "$2" | sed 's/\//\\\//g')
 
-INDEX=`ls "$1" -1p | sed "s/^.*/      <li\>\<a\ href=\"$ARG&\"\>&\<\\/a\>\<\\/li\>/"`
+INDEX=`ls -1p "$1"  | sed "s/^.*/      <li\>\<a\ href=\"$ARG&\"\>&\<\\/a\>\<\\/li\>/"`
 
 echo "<html>
     <head>
