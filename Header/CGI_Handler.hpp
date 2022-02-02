@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CGI_Handler.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
+/*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/17 14:13:00 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/30 14:52:36 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/02 23:40:54 by simbarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 class	CGI_Handler
 {
 	public:
-		CGI_Handler(Request &request, ParserConf &conf);
+		CGI_Handler(Request &request, ServerInfo &conf);
 		CGI_Handler(CGI_Handler const &src);
 		virtual	~CGI_Handler() {}
 
@@ -33,7 +33,7 @@ class	CGI_Handler
 	private:
 		std::map<std::string, std::string>	_env;
 		Request								_req;
-		ParserConf							_conf;
+		ServerInfo							_conf;
 		std::string							_body;
 };
 

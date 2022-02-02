@@ -6,13 +6,13 @@
 /*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/17 14:12:53 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/31 04:14:07 by simbarre         ###   ########.fr       */
+/*   Updated: 2022/02/02 23:40:25 by simbarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "CGI_Handler.hpp"
 
-CGI_Handler::CGI_Handler(Request &request, ParserConf &conf) : _req(request), _conf(conf)
+CGI_Handler::CGI_Handler(Request &request, ServerInfo &conf) : _req(request), _conf(conf)
 {
 	std::vector<std::string> tmp = request.get_body();
 

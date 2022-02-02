@@ -224,14 +224,14 @@ static Location *which_location(std::vector<Location> *loc, std::string url) {
 
 static bool ft_is_directory(std::string path){
     struct stat s;
-    
+
     stat(path.c_str(), &s);
     return S_ISDIR(s.st_mode);
 }
 
 static bool ft_is_there_get(Location loc) {
     std::vector<std::string> methods = loc.get_methods();
-    std::vector<std::string>::iterator it = methods.begin(); 
+    std::vector<std::string>::iterator it = methods.begin();
     std::vector<std::string>::iterator ite = methods.end();
 
     while (it != ite) {
@@ -242,7 +242,7 @@ static bool ft_is_there_get(Location loc) {
     return false;
 }
 
-void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redirects)  //add ParserConf here
+void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redirects)
 {
     std::cout << std::endl << req->get_url() << std::endl;
     std::vector<Location> locations = conf->get_locations();
@@ -349,7 +349,10 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
     }
     else
     {
-        //call to cgi here
+        CGI_Handler tmp_cgi(*req, *conf);
+
+        //tmp_cgi.run_CGI();        run with script ?
+        //createHeader();//         see what to input here and we're good I guess
     }
     constructResponse();
 }
