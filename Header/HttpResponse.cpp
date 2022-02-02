@@ -135,12 +135,7 @@ int  HttpResponse::check_method_existence(std::string method)
     return -1;
 }
 
-HttpResponse::~HttpResponse(void)
-{
-    _error.clear();
-    _implementedMethods.clear();
-    _notImplementedMethods.clear();
-}
+HttpResponse::~HttpResponse(void){}
 
 void HttpResponse::requestParsingError(int code)
 {
@@ -163,59 +158,58 @@ bool HttpResponse::CountLocRedirect(std::map<std::string, int> *mp, std::string 
     return false;
 }
 
-int HttpResponse::check_redirection(Request *req, ServerInfo *conf)
-{
+bool HttpResponse::check_redirection(Request *req, Location loc) {
     //check if the url is present in one of the location bloc URI
-    std::vector<Location> loc = conf->get_locations();
-    std::vector<Location>::iterator it = loc.begin();
-    std::vector<Location>::iterator ite = loc.end();
-
-    while (it != ite)
-    {
-        std::string tmp_url = req->get_url().erase(0, 3);
-        if (!it->get_uri().compare(tmp_url))
-        {
-            if (it->get_return_code() != 0)
-            {
-                req->set_url(it->get_return_path());
-                if (!it->get_uri().compare(req->get_url().erase(0, 3)))
-                {
-                    set_redirectLoop();
-                    return -1;
-                }
-                _statusCode = 301;
-                return 0;
-            }
-            //checkIfRoot ...
-        }
-        it++;
+    if (loc.get_return_code() != 0 && !loc.get_return_path().empty()) {
+        return true;
     }
-    return 1;
+    return false;
 }
 
-void HttpResponse::handle_get_method(Request *req, ServerInfo *conf)  //add ParserConf here
-{
-    std::vector<Location> loc = conf->get_locations();
-    std::map<std::string, int> loc_count;
-    std::vector<Location>::iterator it = loc.begin();
-    std::vector<Location>::iterator ite = loc.end();
+static Location *which_location(std::vector<Location> *loc, std::string url) {
+    std::vector<Location>::iterator it = loc->begin();
+    std::vector<Location>::iterator ite = loc->end();
 
-    while (it != ite)
-    {
-        loc_count.insert(std::pair<std::string, int>(it->get_uri(), 0));
-        it++;
-    }
-    while (!check_redirection(req, conf))
-    {
-        if (CountLocRedirect(&loc_count, req->get_url().erase(0, 3)) == true)
-        {
-            set_redirectLoop();
-            break;
+    std::string tmp = url;
+
+    while(tmp.compare("")) {
+        it = loc->begin();
+        while (it != ite) {
+            if (!(tmp.compare(it->get_uri())))
+                return &(*it);
+            it++;
+        }
+        size_t found = tmp.rfind('/');
+        if (found!=std::string::npos)
+            tmp.replace(found, tmp.length() - found, "");
+        if (tmp.empty())
+            tmp = "/";
+        else {
+            // IF WE HERE WE F*CKED
         }
     }
-    if (req->get_url() == "www/")
-        req->set_url(HOME_PAGE_PATH);
-    if (get_redirectLoop() == true)
+    return NULL;
+}
+
+static bool ft_is_directory(std::string path){
+    struct stat s;
+    
+    stat(path.c_str(), &s);
+    if(s.st_mode & S_IFDIR)
+        return true;
+    return false;
+}
+
+void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redirects)  //add ParserConf here
+{
+    std::cout << std::endl << req->get_url() << std::endl;
+    std::vector<Location> locations = conf->get_locations();
+
+    Location *loc = which_location(&locations, req->get_url());
+
+    std::string base_url = req->get_url();
+
+    if (redirects > 20)
     {
         req->set_url(ERROR_310_PATH);
         std::ifstream sourceFile(req->get_url().c_str(), std::ifstream::in);
@@ -228,7 +222,46 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf)  //add Pars
             _contentLength = _content.size();
         }
         constructResponse();
+        return ;
     }
+
+    if (loc) {
+        if (check_redirection(req, *loc)) {
+            std::string st = req->get_url();
+            _statusCode = loc->get_return_code();
+            st.replace(0, loc->get_uri().length(), loc->get_return_path());
+            req->set_url(st);
+            this->handle_get_method(req, conf, redirects + 1);
+            return ;
+        }
+    }
+
+    std::string path_tofile = req->get_url();
+    if (loc)
+        path_tofile = loc->get_root() + path_tofile;
+    path_tofile = conf->get_root() + path_tofile;
+    if (loc)
+        if (ft_is_directory(path_tofile))
+            path_tofile = path_tofile + loc->get_index();
+
+    req->set_url(path_tofile);
+    std::cout << std::endl << req->get_url() << std::endl;
+
+    if (ft_is_directory(req->get_url()))
+    {
+        if (loc && !loc->get_autoindex().compare("on"))
+        {
+            std::string path(req->get_url());
+            std::string script = "./autoindex.sh ";
+            std::string file = " > autoindex.html";
+            std::string command = script + path.c_str() + " " + base_url + file;
+            system(command.c_str());
+            req->set_url("./autoindex.html");
+        }
+        else
+            _statusCode = 403;
+    }
+
     std::map<std::string, std::string> cgi = req->get_cgi();
     if (cgi.empty())
     {
@@ -236,7 +269,7 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf)  //add Pars
 
         DIR *d;
         char* dir = new char[req->get_url().length() + 1];
-        strcpy(dir, req->get_url().c_str());
+        std::strcpy(dir, req->get_url().c_str());
         d = opendir(dir);
         if (d || !sourceFile.good())
         {

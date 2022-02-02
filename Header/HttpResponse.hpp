@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/29 02:47:10 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/31 21:07:08 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/02 13:45:46 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,9 +38,9 @@ class HttpResponse
         bool CountLocRedirect(std::map<std::string, int> *mp, std::string uri);
 
         void requestParsingError(int code);
-        int check_redirection(Request *req, ServerInfo *conf);
+        bool check_redirection(Request *req, Location loc);
 
-        void handle_get_method(Request *req, ServerInfo *conf);
+        void handle_get_method(Request *req, ServerInfo *conf, size_t redirects = 0);
         void handle_post_method(Request *req);
         void handle_delete_method(Request *req);
 

@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 22:01:31 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/01 10:23:46 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/02 13:45:51 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ void	*handle_connection(int client_socket, ServerInfo conf)
 			break;
 	}
 	check(bytes_read, "recv error");
-	buffer[msg_size - 1]  = 0;
+	//buffer[msg_size - 1]  = 0;
 
 	printf("REQUEST: \n%s\n", buffer);
 	fflush(stdout);
@@ -59,20 +59,17 @@ void	*handle_connection(int client_socket, ServerInfo conf)
 	i++;
 
 	std::ofstream myfile;
-	myfile.open(namefile.c_str(), std::ofstream::app);		//not viable in c++98
-	std::string str(buffer);
-	myfile << str;									//Write the request in a file
+	myfile.open(namefile, std::ofstream::app);
+	myfile << buffer; //Write the request in a file
 	myfile.close();
 	Request req = req_parsing(namefile);			//Parsing
 	std::remove(namefile.c_str());
 
 	HttpResponse res(&req, &conf);
 	std::string cont = res.getResponse();
-	char *buff = new char[cont.length()];
-	strcpy(buff, cont.c_str());
 
-	write(client_socket , buff, cont.length()); //Envoie de la reponse au client
-	delete [] buff;
+	write(client_socket , cont.c_str(), cont.length()); //Envoie de la reponse au client
+
 	close(client_socket);
 	printf("closing connection\n");
 	return (NULL);
@@ -82,9 +79,9 @@ int		accept_new_connection(int server_socket)
 {
 	int		addr_size = sizeof(SA_IN);
 	int		client_socket;
-	SA_IN	client_addr;
+	SA		client_addr;
 
-	check(client_socket = accept(server_socket, (SA*)&client_socket, (socklen_t*)&addr_size), "Accept!");
+	check(client_socket = accept(server_socket, &client_addr, (socklen_t*)&addr_size), "Accept!");
 
 	(void)client_addr;					//added to remove -Werror compilation error
 
