@@ -40,6 +40,7 @@
 
 # define HOME_PAGE_PATH "/index.html"
 # define ERROR_400_PATH "/error400.html"
+# define ERROR_403_PATH "/error403.html"
 # define ERROR_404_PATH "/error404.html"
 # define ERROR_405_PATH "/error405.html"
 # define ERROR_411_PATH "/error411.html"

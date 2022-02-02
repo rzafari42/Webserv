@@ -59,7 +59,7 @@ void	*handle_connection(int client_socket, ServerInfo conf)
 	i++;
 
 	std::ofstream myfile;
-	myfile.open(namefile, std::ofstream::app);
+	myfile.open(namefile.c_str(), std::ofstream::app);
 	myfile << buffer; //Write the request in a file
 	myfile.close();
 	Request req = req_parsing(namefile);			//Parsing

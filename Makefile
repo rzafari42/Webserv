@@ -19,7 +19,7 @@ SRCS			=	server.cpp \
 
 OBJS			=	$(SRCS:.cpp=.o)
 
-HEADERS			=	Header/main_header.hpp
+HEADERS			=	Header/
 
 CXX				=	clang++
 RM				=	rm -f

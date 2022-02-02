@@ -304,8 +304,11 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
             system(command.c_str());
             req->set_url("./autoindex.html");
         }
-        else
+        else {
             _statusCode = 403;
+            req->set_url(ERROR_403_PATH);
+            createHeader(req->get_url(), 403, conf);
+        }
     }
 
     std::map<std::string, std::string> cgi = req->get_cgi();
@@ -315,7 +318,7 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
 
         DIR *d;
         char* dir = new char[req->get_url().length() + 1];
-        std::strcpy(dir, req->get_url().c_str());
+        strcpy(dir, req->get_url().c_str());
         d = opendir(dir);
         if (d || !sourceFile.good())
         {
