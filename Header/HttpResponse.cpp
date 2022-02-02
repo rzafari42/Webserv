@@ -226,7 +226,7 @@ static bool ft_is_directory(std::string path){
     struct stat s;
     
     stat(path.c_str(), &s);
-    if(s.st_mode & S_IFDIR)
+    if(s.st_mode && S_IFDIR)
         return true;
     return false;
 }
