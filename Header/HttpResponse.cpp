@@ -158,7 +158,7 @@ bool HttpResponse::CountLocRedirect(std::map<std::string, int> *mp, std::string 
     return false;
 }
 
-bool HttpResponse::check_redirection(Request *req, Location loc) {
+bool HttpResponse::check_redirection(Location loc) {
     //check if the url is present in one of the location bloc URI
     if (loc.get_return_code() != 0 && !loc.get_return_path().empty()) {
         return true;
@@ -226,7 +226,7 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
     }
 
     if (loc) {
-        if (check_redirection(req, *loc)) {
+        if (check_redirection(*loc)) {
             std::string st = req->get_url();
             _statusCode = loc->get_return_code();
             st.replace(0, loc->get_uri().length(), loc->get_return_path());

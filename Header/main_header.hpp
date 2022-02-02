@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/14 21:13:24 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/31 14:07:55 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/02 13:50:10 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,8 @@
 # include <sstream>
 # include <algorithm>
 # include <dirent.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 # define HTTP_VERSION "HTTP/1.1"
 
