@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/14 21:13:24 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/02 13:50:10 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/02 14:18:04 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@
 # define HOME_PAGE_PATH "/index.html"
 # define ERROR_400_PATH "/error400.html"
 # define ERROR_404_PATH "/error404.html"
+# define ERROR_405_PATH "/error405.html"
 # define ERROR_411_PATH "/error411.html"
 # define ERROR_505_PATH "/error505.html"
 # define ERROR_310_PATH "/error310.html"

@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/29 02:47:10 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/02 13:47:07 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/02 14:32:12 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ class HttpResponse
         HttpResponse(Request *req, ServerInfo *conf);
         ~HttpResponse();
 
+        void createHeader(std::string url, int code, ServerInfo *conf);
         void set_status_code(int code) { _statusCode = code; };
         void set_reasonPhrase(std::string phrase) { _reasonPhrase = phrase; };
         void set_contentLength(int length) { _contentLength = length; };

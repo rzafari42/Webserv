@@ -146,6 +146,37 @@ void HttpResponse::requestParsingError(int code)
     constructResponse();
 }
 
+void HttpResponse::createHeader(std::string url, int code, ServerInfo *conf)
+{
+    if (_statusCode >= 400 && _statusCode <= 600) {
+        if (conf) {
+            std::vector<std::size_t> ec = conf->get_error_code();
+            std::vector<std::size_t>::iterator it = ec.begin();
+            std::vector<std::size_t>::iterator ite = ec.end();
+            std::vector<std::string> ep = conf->get_error_path();
+            std::vector<std::string>::iterator itp = ep.begin();
+
+            while (it != ite) {
+                if (!((int)*it == _statusCode)) {
+                    url = *itp;
+                    break;
+                }
+                it++; itp++;
+            }
+        }
+    }
+
+    std::ifstream sourceFile(url.c_str(), std::ifstream::in);
+    if (sourceFile.good())
+    {
+        std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
+        _content = ans;
+        _statusCode = code;
+        _reasonPhrase = _error[_statusCode];
+        _contentLength = _content.size();
+    }
+}
+
 bool HttpResponse::CountLocRedirect(std::map<std::string, int> *mp, std::string uri)
 {
     std::map<std::string ,int >::iterator it = mp->find(uri);
@@ -200,6 +231,19 @@ static bool ft_is_directory(std::string path){
     return false;
 }
 
+static bool ft_is_there_get(Location loc) {
+    std::vector<std::string> methods = loc.get_methods();
+    std::vector<std::string>::iterator it = methods.begin(); 
+    std::vector<std::string>::iterator ite = methods.end();
+
+    while (it != ite) {
+        if (!(it->compare("GET")))
+            return true;
+        it++;
+    }
+    return false;
+}
+
 void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redirects)  //add ParserConf here
 {
     std::cout << std::endl << req->get_url() << std::endl;
@@ -212,15 +256,7 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
     if (redirects > 20)
     {
         req->set_url(ERROR_310_PATH);
-        std::ifstream sourceFile(req->get_url().c_str(), std::ifstream::in);
-        if (sourceFile.good())
-        {
-            std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
-            _content = ans;
-            _statusCode = 310;
-            _reasonPhrase = _error[_statusCode];
-            _contentLength = _content.size();
-        }
+        createHeader(req->get_url(), 310, conf);
         constructResponse();
         return ;
     }
@@ -232,6 +268,16 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
             st.replace(0, loc->get_uri().length(), loc->get_return_path());
             req->set_url(st);
             this->handle_get_method(req, conf, redirects + 1);
+            return ;
+        }
+    }
+
+
+    if (loc) {
+        if (!ft_is_there_get(*loc)) {
+            req->set_url(ERROR_405_PATH);
+            createHeader(req->get_url(), 405, conf);
+            constructResponse();
             return ;
         }
     }
@@ -274,24 +320,19 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
         if (d || !sourceFile.good())
         {
             req->set_url(ERROR_404_PATH);
-            std::ifstream sourceFile(req->get_url().c_str(), std::ifstream::in);
-            if (sourceFile.good())
-            {
-                std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
-                _content = ans;
-                _statusCode = 404;
-                _reasonPhrase = _error[_statusCode];
-                _contentLength = _content.size();
-            }
+            createHeader(req->get_url(), 404, conf);
         }
         else
         {
-            std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
+            if (_statusCode == 0)
+                _statusCode = 200;
+            createHeader(req->get_url(), _statusCode, NULL);
+            /*std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
             _content = ans;
             if (_statusCode == 0)
                 _statusCode = 200;
             _reasonPhrase = _error[_statusCode];
-            _contentLength = _content.size();
+            _contentLength = _content.size();*/
             if (!req->get_url().compare(req->get_url().size() - 3, 3, "css"))
                 _contentType = "text/css";
             else
@@ -323,45 +364,18 @@ void HttpResponse::handle_delete_method(Request *req)
         if (!remove(req->get_url().c_str()))
         {
             req->set_url(FILE_DELETED);
-            std::ifstream sourceFile(req->get_url().c_str(), std::ifstream::in);
-            if (sourceFile.good())
-            {
-                std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
-                _content = ans;
-                _statusCode = 200;
-                _reasonPhrase = _error[_statusCode];
-                _contentLength = _content.size();
-            }
-            sourceFile.close();
+            createHeader(req->get_url(), 200, NULL);
         }
         else
         {
             req->set_url(ERROR_404_PATH);
-            std::ifstream sourceFile(req->get_url().c_str(), std::ifstream::in);
-            if (sourceFile.good())
-            {
-                std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
-                _content = ans;
-                _statusCode = 404;
-                _reasonPhrase = _error[_statusCode];
-                _contentLength = _content.size();
-            }
-            sourceFile.close();
+            createHeader(req->get_url(), 404, NULL);
         }
     }
     else
     {
             req->set_url(ERROR_404_PATH);
-            std::ifstream sourceFile(req->get_url().c_str(), std::ifstream::in);
-            if (sourceFile.good())
-            {
-                std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
-                _content = ans;
-                _statusCode = 404;
-                _reasonPhrase = _error[_statusCode];
-                _contentLength = _content.size();
-            }
-            sourceFile.close();
+            createHeader(req->get_url(), 404, NULL);
     }
     fileToDelete.close();
     constructResponse();
