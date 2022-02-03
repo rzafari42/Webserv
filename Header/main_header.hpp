@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/14 21:13:24 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/03 07:30:41 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/03 16:57:20 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,7 @@
 # define REQUEST_FIELD_FORMAT_SPACE "Error: In Header fields. No space before field value."
 # define REQUEST_FIELD_FORMAT_CRLF "Error: Header fields bad format. CRLF Missing !"
 # define METHOD_LOWERCASE "Error: In Header Request-Line. Method is in lowercase."
+# define CGI_CONTENT_TYPE "Error: In Request. CGI is defined but Content-Type header is missing or has bad syntax!"
 # define METHOD_HOST_MISSING "400 Bad Request"
 # define PROTOCOL_VERSION "HTTP/1.1"
 # define DEFINED_TWICE "Error: Header Element Defined Twice"

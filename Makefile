@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+         #
+#    By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/01/29 02:31:17 by simbarre          #+#    #+#              #
-#    Updated: 2022/01/31 04:33:11 by simbarre         ###   ########.fr        #
+#    Updated: 2022/02/03 15:56:51 by rzafari          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,7 +33,7 @@ $(NAME):		$(OBJS)
 				$(CXX) $(CXXFLAGS) -o $(NAME) $(OBJS)
 
 clean:
-				$(RM) $(OBJS)
+				$(RM) $(OBJS) ./autoindex.html
 
 fclean:			clean
 				$(RM) $(NAME)

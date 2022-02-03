@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/29 02:50:51 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/03 07:37:42 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/03 15:59:41 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,8 @@ void parsingClear(std::ifstream &flux, std::map<std::string, std::string> values
 
 void printCGI(std::string cgi)
 {
-    std::cout << "CGI: " << cgi  << std::endl;
+    if (!cgi.empty())
+        std::cout << "CGI: " << cgi  << std::endl;
 }
 
 void print_map(std::map<std::string, std::string> mymap, std::vector<std::string> vec)

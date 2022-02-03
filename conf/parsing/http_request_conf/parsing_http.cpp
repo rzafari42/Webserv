@@ -6,11 +6,54 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/21 12:19:15 by rzafari           #+#    #+#             */
-/*   Updated: 2022/02/03 07:38:06 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/03 18:50:36 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../Header/main_header.hpp"
+
+Request::Request()
+{
+    _method.clear();
+    _url.clear();
+    _version.clear();
+    _cgi.clear();
+    _fields.clear();
+    _body.clear();
+    _isErrorSyntax = false;
+    _contentType.clear();
+    initContentType();
+}
+
+void Request::initContentType()
+{
+    _contentTypeArray.push_back("text/plain");
+    _contentTypeArray.push_back("text/html");
+    _contentTypeArray.push_back("text/css");
+    _contentTypeArray.push_back("text/javascript");
+
+    _contentTypeArray.push_back("image/gif");
+    _contentTypeArray.push_back("image/png");
+    _contentTypeArray.push_back("image/jpeg");
+    _contentTypeArray.push_back("image/bmp");
+    _contentTypeArray.push_back("image/webp");
+
+    _contentTypeArray.push_back("audio/midi");
+    _contentTypeArray.push_back("audio/mpeg");
+    _contentTypeArray.push_back("audio/webm");
+    _contentTypeArray.push_back("audio/ogg");
+    _contentTypeArray.push_back("audio/wav");
+
+    _contentTypeArray.push_back("video/webm");
+    _contentTypeArray.push_back("video/ogg");
+
+    _contentTypeArray.push_back("application/octet-stream");
+    _contentTypeArray.push_back("application/pkcs12");
+    _contentTypeArray.push_back("application/vnd.mspowerpoint");
+    _contentTypeArray.push_back("application/xhtml+xml");
+    _contentTypeArray.push_back("application/xml");
+    _contentTypeArray.push_back("application/pdf");
+}
 
 int check_format_rqline(std::string s, Request *req)
 {
@@ -143,6 +186,8 @@ int catchvalues(const std::string s, std::map<std::string, std::string> &mp, Req
     }
     if (s[i] == ':' && i < s.length())
         i++;
+    while (isspace(s[i]) && i < s.length())
+        i++;
     while (i < s.length())
     {
         value.push_back(s[i]);
@@ -222,6 +267,7 @@ void parsing(std::string file, Request *request)
             else
             {
                 parsingClear(flux, values, body, line);
+                error(CGI_CONTENT_TYPE, 1, request);
                 return;
             }
         }
@@ -229,6 +275,30 @@ void parsing(std::string file, Request *request)
         {
             parsingClear(flux, values, body, line);
             return;
+        }
+        if (!cgi.empty())
+        {
+            std::map<std::string ,std::string>::iterator it = values.find("Content-Type");
+            std::vector<std::string> content_type = request->get_contentTypeArray();
+            std::vector<std::string>::iterator it_c = content_type.begin();
+            std::vector<std::string>::iterator it_ce = content_type.end();
+            size_t found = 0;
+
+            while (it_c != it_ce )
+            {
+                found = it->second.find(*it_c);
+                if (found != std::string::npos)
+                    break;
+                it_c++;
+            }
+            if (it == values.end() || it_c == it_ce )
+            {
+                parsingClear(flux, values, body, line);
+                error(CGI_CONTENT_TYPE, 1, request);
+                return;
+            }
+            else
+                request->set_contentType(*it_c);
         }
         request->set_fields(values);
         request->set_cgi(cgi);
@@ -251,6 +321,7 @@ Request req_parsing(std::string av)
 /*int main(int ac, char **av)
 {
     Request request;
+    std::vector<std::string> vec = request.get_contentTypeArray();
     if (ac < 2)
         return error(EMPTY, 0, &request);
     parsing(av[1], &request);
