@@ -327,7 +327,7 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
         {
             if (_statusCode == 0)
                 _statusCode = 200;
-            createHeader(req->get_url(), _statusCode, NULL);
+            createHeader(req->get_url(), _statusCode, conf);
             /*std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
             _content = ans;
             if (_statusCode == 0)
@@ -351,8 +351,7 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
         std::string cgi_response;
 
         cgi_response = tmp_cgi.run_CGI(loc->get_cgi_path());
-        //createHeader(cgi_response, 200, NULL);
-        std::cout << "CGI: " << "\n" << cgi_response << std::endl;
+        //createHeader(url du fichier contenant le body de la réponse  , code de statut, conf);
     }
     constructResponse();
 }
