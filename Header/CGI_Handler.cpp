@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CGI_Handler.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/17 14:12:53 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/03 18:09:07 by simbarre         ###   ########.fr       */
+/*   Updated: 2022/02/03 19:33:55 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ CGI_Handler::CGI_Handler(Request &request, ServerInfo &conf, Location &loc) : _r
 		_body += *i;
 
 	_env["AUTH_TYPE"]			= "";					//no security
-	_env["CONTENT_TYPE"]		= "";					//_req.get_type(); -> parsing in request POST
+	_env["CONTENT_TYPE"]		= _req.get_contentType();					//_req.get_type(); -> parsing in request POST
 	_env["GATEWAY_INTERFACE"]	= "CGI/1.1";
 	_env["QUERY_STRING"]		= _req.get_cgi();
 	_env["REDIRECT_STATUS"]		= "200";

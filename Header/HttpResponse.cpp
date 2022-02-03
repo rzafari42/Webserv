@@ -353,7 +353,7 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
         std::string cgi_response;
 
         cgi_response = tmp_cgi.run_CGI(loc->get_cgi_path());
-        //createHeader();//         see what to input here and we're good I guess
+        //createHeader( cgi_response, 200, NULL);
     }
     constructResponse();
 }
