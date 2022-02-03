@@ -350,8 +350,9 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
     else
     {
         CGI_Handler tmp_cgi(*req, *conf, *loc);
+        std::string cgi_response;
 
-        tmp_cgi.run_CGI(loc->get_cgi_path());           //check if extension is correct
+        cgi_response = tmp_cgi.run_CGI(loc->get_cgi_path());           //check if extension is correct (asked by 42)
         //createHeader();//         see what to input here and we're good I guess
     }
     constructResponse();
