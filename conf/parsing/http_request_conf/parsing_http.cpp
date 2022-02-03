@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/21 12:19:15 by rzafari           #+#    #+#             */
-/*   Updated: 2022/02/03 19:23:04 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/03 22:00:48 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ int check_format_rqline(std::string s, Request *req)
     int nb_space = 0;
     int nb_arg = 0;
 
-    if (s.find("\r") == std::string::npos)
+    if (s.find('\r') == std::string::npos)
         return error(REQUEST_LINE_FORMAT_CRLF, 1, req);
     s.erase(s.size() - 2);
     while (i < s.length())

@@ -293,7 +293,6 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
 
     if (ft_is_directory(req->get_url()))
     {
-        printf("bite\n");
         if (loc && !loc->get_autoindex().compare("on"))
         {
             std::string path(req->get_url());
@@ -304,7 +303,6 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
             req->set_url("./autoindex.html");
         }
         else {
-            printf("another bite\n");
             _statusCode = 403;
             req->set_url(ERROR_403_PATH);
             createHeader(req->get_url(), 403, conf);
@@ -353,7 +351,8 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
         std::string cgi_response;
 
         cgi_response = tmp_cgi.run_CGI(loc->get_cgi_path());
-        //createHeader( cgi_response, 200, NULL);
+        //createHeader(cgi_response, 200, NULL);
+        std::cout << "CGI: " << "\n" << cgi_response << std::endl;
     }
     constructResponse();
 }
