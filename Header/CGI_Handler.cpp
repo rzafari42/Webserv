@@ -6,13 +6,13 @@
 /*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/17 14:12:53 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/02 23:40:25 by simbarre         ###   ########.fr       */
+/*   Updated: 2022/02/03 02:58:41 by simbarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "CGI_Handler.hpp"
 
-CGI_Handler::CGI_Handler(Request &request, ServerInfo &conf) : _req(request), _conf(conf)
+CGI_Handler::CGI_Handler(Request &request, ServerInfo &conf, Location &loc) : _req(request), _conf(conf), _loc(loc)
 {
 	std::vector<std::string> tmp = request.get_body();
 
@@ -21,17 +21,20 @@ CGI_Handler::CGI_Handler(Request &request, ServerInfo &conf) : _req(request), _c
 		_body += *i;
 
 	_env["AUTH_TYPE"]			= "";					//no security
-	_env["CONTENT_LENGTH"]		= _body.length();
-	_env["CONTENT_TYPE"]		= "";					//MIME type of the body of the request
+	//_env["CONTENT_TYPE"]		= "";					//MIME type of the body of the request
 	_env["GATEWAY_INTERFACE"]	= "CGI/1.1";
 	_env["PATH_INFO"]			= "";					//identifies the resource or sub-resource to be returned by the CGI script, and it is derived from the portion of the URI path following the script name but preceding any query data
-	_env["PATH_TRANSLATED"]		= "";					//Maps the script's virtual path to the physical path used to call the script
-	_env["QUERY_STRING"]		= "";					//The query string that is contained in the request URL after the path.
+	//_env["PATH_TRANSLATED"]		= "";				//Maps the script's virtual path to the physical path used to call the script
+	_env["QUERY_STRING"]		= "";					//The query string that is contained in the request URL after the path, max 1024
 	_env["REDIRECT_STATUS"]		= "200";
-	_env["REQUEST_METHOD"]		= "";					//request.get_method();
-	_env["SCRIPT_NAME"]			= "";					//conf.script_name;
-	_env["SERVER_NAME"]			= "webserv";			//conf.server_name;
-	_env["SERVER_PORT"]			= "8080";
+	_env["REQUEST_METHOD"]		= _req.get_method();
+	if (_req.get_method() == "GET")
+		_env["CONTENT_LENGTH"]		= "0";
+	else if (_req.get_method() == "POST")
+		_env["CONTENT_LENGTH"]		= _body.length();
+	_env["SCRIPT_NAME"]			= _loc.get_cgi_path();
+	_env["SERVER_NAME"]			= _conf.get_server_name();
+	_env["SERVER_PORT"]			= "8080";				//_conf.get_listen().to_string();	//CHANGE IT
 	_env["SERVER_PROTOCOL"]		= "HTTP/1.1";
 	_env["SERVER_SOFTWARE"]		= "webserv/1.1";
 }														//we'll see if we need more env var
@@ -44,6 +47,8 @@ CGI_Handler	&CGI_Handler::operator=(CGI_Handler const &src)
 	if (this != &src)
 	{
 		_env = src._env;
+		_loc = src._loc;
+		_conf = src._conf;
 	}
 	return (*this);
 }
@@ -78,7 +83,7 @@ char		**CGI_Handler::env_to_double_char(void)
 }
 
 std::string	CGI_Handler::run_CGI(const std::string &script)
-{														//add here the parsed request or add it as a member
+{
 	pid_t	pid;
 	int		fd_saver[2];
 	int		pipe_fd[2];									//not everybody uses pipes, but it makes more sense to me
@@ -103,7 +108,7 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 		close(pipe_fd[1]);
 		dup2(pipe_fd[0], 0);
 
-		int	fd_tmp = open("/tmp/cgi_output", O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
+		int	fd_tmp = open("/cgi_bin/cgi_output", O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
 
 		dup2(fd_tmp, 1);
 		dup2(fd_tmp, 2);
@@ -133,5 +138,5 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 	if (pid == 0)
 		exit(0);
 
-	return (file_to_str("/tmp/cgi_output"));
+	return (file_to_str("/cgi_bin/cgi_output"));
 }

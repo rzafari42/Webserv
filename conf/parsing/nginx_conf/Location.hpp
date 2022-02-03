@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
+/*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/29 02:48:51 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/01 10:31:12 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/03 02:10:00 by simbarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ private:
     std::string cgi_extension;
     std::string cgi_path;
     std::vector<std::string> methods;
+    //std::vector<std::string> cgi_methods;
 public:
     // constructor/ destructor
     Location( void ) : return_code(0) {
@@ -47,7 +48,7 @@ public:
     std::vector<std::string> *get_ptr_methods( void ) { return &methods; }
 
     std::string get_uri( void ) { return uri; }
-    
+
     std::string get_root( void ) { return root; }
 
     std::string get_index( void ) { return index; }

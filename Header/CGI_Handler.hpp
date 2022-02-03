@@ -6,7 +6,7 @@
 /*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/17 14:13:00 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/02 23:40:54 by simbarre         ###   ########.fr       */
+/*   Updated: 2022/02/03 02:07:23 by simbarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 class	CGI_Handler
 {
 	public:
-		CGI_Handler(Request &request, ServerInfo &conf);
+		CGI_Handler(Request &request, ServerInfo &conf, Location &loc);
 		CGI_Handler(CGI_Handler const &src);
 		virtual	~CGI_Handler() {}
 
@@ -34,6 +34,7 @@ class	CGI_Handler
 		std::map<std::string, std::string>	_env;
 		Request								_req;
 		ServerInfo							_conf;
+		Location							_loc;
 		std::string							_body;
 };
 

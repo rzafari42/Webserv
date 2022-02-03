@@ -349,9 +349,9 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
     }
     else
     {
-        CGI_Handler tmp_cgi(*req, *conf);
+        CGI_Handler tmp_cgi(*req, *conf, *loc);
 
-        //tmp_cgi.run_CGI();        run with script ?
+        tmp_cgi.run_CGI(loc->get_cgi_path());           //check if extension is correct
         //createHeader();//         see what to input here and we're good I guess
     }
     constructResponse();
