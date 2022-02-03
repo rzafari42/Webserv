@@ -61,7 +61,7 @@ HttpResponse::HttpResponse(Request *req, ServerInfo *conf)
         if (!method.compare("GET"))
             handle_get_method(req, conf);
         else if (!method.compare("POST"))
-            handle_post_method(req);
+            handle_post_method(req, conf);
         else
             handle_delete_method(req);
     }
@@ -348,18 +348,21 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
     else
     {
         CGI_Handler tmp_cgi(*req, *conf, *loc);
-        std::string cgi_response;
 
-        cgi_response = tmp_cgi.run_CGI(loc->get_cgi_path());
-        //createHeader(url du fichier contenant le body de la réponse  , code de statut, conf);
+        _content = tmp_cgi.run_CGI(loc->get_cgi_path());
     }
     constructResponse();
 }
 
 
-void HttpResponse::handle_post_method(Request *req)
+void HttpResponse::handle_post_method(Request *req, ServerInfo *conf)
 {
-    (void)req;
+    std::vector<Location> locations = conf->get_locations();
+    Location *loc = which_location(&locations, req->get_url());
+
+    CGI_Handler tmp_cgi(*req, *conf, *loc);
+
+    _content = tmp_cgi.run_CGI(loc->get_cgi_path());
     constructResponse();
 }
 

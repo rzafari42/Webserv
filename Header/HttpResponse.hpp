@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpResponse.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
+/*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/29 02:47:10 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/03 17:17:42 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/03 22:52:47 by simbarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ class HttpResponse
         bool check_redirection(Location loc);
 
         void handle_get_method(Request *req, ServerInfo *conf, size_t redirects = 0);
-        void handle_post_method(Request *req);
+        void handle_post_method(Request *req, ServerInfo *conf);
         void handle_delete_method(Request *req);
 
         void redirection(Request *req);
