@@ -24,6 +24,20 @@ void printlines(std::vector<std::vector<std::string> > s)
     }
 }
 
+void print_location_cgi_methods_struct(std::vector<std::string> conf)
+{
+    std::vector<std::string>::iterator it = conf.begin();
+    std::vector<std::string>::iterator ite = conf.end();
+
+    std::cout << "Location CGI Methods: " << std::endl;
+    while (it != ite)
+    {
+        std::cout << " -" << *it << std::endl;
+        it++;
+    }
+
+}
+
 void print_location_methods_struct(std::vector<std::string> conf)
 {
     std::vector<std::string>::iterator it = conf.begin();
@@ -79,6 +93,7 @@ void print_conf_struct(std::vector<ServerInfo> conf)
             std::cout << "Location/return: " << it_loc->get_return_code() << " " << it_loc->get_return_path() << std::endl;
             std::cout << "Location/cgi: " << it_loc->get_cgi_extension() << " " << it_loc->get_cgi_path() << std::endl;
             print_location_methods_struct(it_loc->get_methods());
+            print_location_cgi_methods_struct(it_loc->get_cgi_methods());
             it_loc++;
         }
         std::cout << std::endl;

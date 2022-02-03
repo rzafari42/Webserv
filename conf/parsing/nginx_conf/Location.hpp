@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/29 02:48:51 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/03 07:14:28 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/03 22:17:05 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,8 @@ private:
     std::string return_path;
     std::string cgi_extension;
     std::string cgi_path;
-    std::string cgi_methods;
     std::vector<std::string> methods;
-    //std::vector<std::string> cgi_methods;
+    std::vector<std::string> cgi_methods;
 public:
     // constructor/ destructor
     Location( void ) : return_code(0) {
@@ -40,13 +39,18 @@ public:
         return_path.clear();
         cgi_extension.clear();
         cgi_path.clear();
+        cgi_methods.clear();
     }
     ~Location() {}
 
     // getters
     std::vector<std::string> get_methods( void ) { return methods; }
 
+    std::vector<std::string> get_cgi_methods( void ) { return cgi_methods; }
+
     std::vector<std::string> *get_ptr_methods( void ) { return &methods; }
+
+    std::vector<std::string> *get_ptr_cgi_methods( void ) { return &cgi_methods; }
 
     std::string get_uri( void ) { return uri; }
 

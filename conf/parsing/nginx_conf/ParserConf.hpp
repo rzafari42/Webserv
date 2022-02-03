@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ParserConf.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/29 02:52:13 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/29 02:54:41 by simbarre         ###   ########.fr       */
+/*   Updated: 2022/02/03 22:07:12 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@
 # define LOCATION_CGI_EMPTY "Error: In Location: 'cgi' directive exists but has no value"
 # define LOCATION_CGI_MISSING_PATH "Error: In Location: 'cgi' directive exists but path is missing"
 # define LOCATION_METHODS_EMPTY "Error: In Location: 'methods' directive exists but has no value"
+# define LOCATION_CGI_METHODS_EMPTY "Error: In Location: 'cgi_methods' directive exists but has no value"
 # define UNCLOSED_BRACKET "Error: '}' missing"
 # define MISSING_SEMICOLON "Error: ';' missing"
 

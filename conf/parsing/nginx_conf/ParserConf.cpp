@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/29 02:51:23 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/01 10:31:01 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/03 22:08:46 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -183,6 +183,18 @@ static void put_location_methods(std::vector<std::string>::iterator it, std::vec
         throw ParserConf::ParsingConfigFileException(LOCATION_METHODS_EMPTY);
 }
 
+static void put_location_cgi_methods(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, Location &loc) {
+    std::vector<std::string> *cgi_methods = loc.get_ptr_cgi_methods();
+    if (it != ite) {
+        while (it != ite && it->compare(";")) {
+            cgi_methods->push_back(*it);
+            it++;
+        }
+    }
+    else
+        throw ParserConf::ParsingConfigFileException(LOCATION_CGI_METHODS_EMPTY);
+}
+
 static int find_element_location_block(std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite, Location &loc) {
     if (!it->compare("root"))
         put_location_root(++it, ite, loc);
@@ -196,6 +208,8 @@ static int find_element_location_block(std::vector<std::string>::iterator it, st
         put_location_cgi(++it, ite, loc);
     else if (!it->compare("methods"))
         put_location_methods(++it, ite, loc);
+    else if (!it->compare("cgi_methods"))
+        put_location_cgi_methods(++it, ite, loc);
     else
         return 1; // FAILURE
     if ((ite - 1)->compare(";"))
