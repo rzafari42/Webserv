@@ -311,7 +311,7 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
         }
     }
 
-    std::map<std::string, std::string> cgi = req->get_cgi();
+    std::string cgi = req->get_cgi();
     if (cgi.empty())
     {
         std::ifstream sourceFile(req->get_url().c_str(), std::ifstream::in);

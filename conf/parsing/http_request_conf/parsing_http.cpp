@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/21 12:19:15 by rzafari           #+#    #+#             */
-/*   Updated: 2022/01/30 14:33:54 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/03 07:38:06 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,12 +66,10 @@ int check_format_rqfield(std::string s, Request *req)
     return error(REQUEST_FIELD_FORMAT, 1, req);
 }
 
-int check_cgi(Request *req, std::map<std::string, std::string> &mp)
+int check_cgi(Request *req, std::string &cgi)
 {
     std::string url = req->get_url();
     std::size_t pos = 0;
-    std::string key;
-    std::string value;
 
     pos = url.find(CGI_EXTENSION);
     if (pos != std::string::npos)
@@ -80,29 +78,17 @@ int check_cgi(Request *req, std::map<std::string, std::string> &mp)
             pos++;
         if (pos == url.size())
             return -1;
+        pos++;
         while (pos != url.size())
         {
+            cgi.push_back(url[pos]);
             pos++;
-            key.clear();
-            value.clear();
-            while (pos != url.size() && url.at(pos) != '=')
-            {
-                key.push_back(url[pos]);
-                pos++;
-            }
-            pos++;
-            while (pos < url.size() && url.at(pos) != '&') 
-            {
-                value.push_back(url[pos]);
-                pos++;
-            }
-            mp.insert(std::pair<std::string, std::string>(key, value));
         }
     }
     return 0;
 }
 
-int catch_request_line(const std::string s, Request *req, std::map<std::string, std::string> &mp) //Format: Method Request-URI HTTP-Version CRLF
+int catch_request_line(const std::string s, Request *req, std::string &cgi) //Format: Method Request-URI HTTP-Version CRLF
 {
     unsigned long i = 0;
     std::string tmp;
@@ -131,7 +117,7 @@ int catch_request_line(const std::string s, Request *req, std::map<std::string, 
         i++;
     }
     req->set_version(tmp);
-    if (check_cgi(req, mp))
+    if (check_cgi(req, cgi))
        return error(BAD_CGI_VALUES, 1, req);
     return 0;
 }
@@ -187,7 +173,7 @@ void parsing(std::string file, Request *request)
     if (flux)
     {
         std::map<std::string, std::string> values;
-        std::map<std::string, std::string> cgi;
+        std::string cgi;
         std::vector<std::string> body;
         std::string line;
 

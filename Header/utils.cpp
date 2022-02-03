@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/29 02:50:51 by simbarre          #+#    #+#             */
-/*   Updated: 2022/01/31 04:31:46 by simbarre         ###   ########.fr       */
+/*   Updated: 2022/02/03 07:37:42 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,11 +28,9 @@ void parsingClear(std::ifstream &flux, std::map<std::string, std::string> values
     flux.close();
 }
 
-void printCGI(std::map<std::string, std::string> cgi)
+void printCGI(std::string cgi)
 {
-    std::map<std::string,std::string>::iterator it;
-    for (it = cgi.begin(); it != cgi.end(); ++it)
-        std::cout << it->first << ": " << it->second << '\n';
+    std::cout << "CGI: " << cgi  << std::endl;
 }
 
 void print_map(std::map<std::string, std::string> mymap, std::vector<std::string> vec)

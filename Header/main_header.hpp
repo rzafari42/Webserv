@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/14 21:13:24 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/02 17:05:38 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/03 07:30:41 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@
 
 int error(std::string str, int i, Request *request);
 void parsingClear(std::ifstream &flux, std::map<std::string, std::string> values, std::vector<std::string> body, std::string line);
-void printCGI(std::map<std::string, std::string> cgi);
+void printCGI(std::string cgi);
 void print_map(std::map<std::string, std::string> mymap, std::vector<std::string> vec);
 
 #endif

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/29 02:48:51 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/03 02:10:00 by simbarre         ###   ########.fr       */
+/*   Updated: 2022/02/03 07:14:28 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ private:
     std::string return_path;
     std::string cgi_extension;
     std::string cgi_path;
+    std::string cgi_methods;
     std::vector<std::string> methods;
     //std::vector<std::string> cgi_methods;
 public:
