@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/21 12:19:15 by rzafari           #+#    #+#             */
-/*   Updated: 2022/02/03 18:50:36 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/03 19:23:04 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -188,10 +188,15 @@ int catchvalues(const std::string s, std::map<std::string, std::string> &mp, Req
         i++;
     while (isspace(s[i]) && i < s.length())
         i++;
-    while (i < s.length())
+    while (s[i] != ';' && i < s.length())
     {
-        value.push_back(s[i]);
-        i++;
+        if (isspace(s[i]))
+            i++;
+        else
+        { 
+            value.push_back(s[i]);
+            i++;
+        }
     }
     mp.insert(std::pair<std::string, std::string>(name, value));
     name.clear();
@@ -282,12 +287,10 @@ void parsing(std::string file, Request *request)
             std::vector<std::string> content_type = request->get_contentTypeArray();
             std::vector<std::string>::iterator it_c = content_type.begin();
             std::vector<std::string>::iterator it_ce = content_type.end();
-            size_t found = 0;
 
             while (it_c != it_ce )
             {
-                found = it->second.find(*it_c);
-                if (found != std::string::npos)
+                if (!it->second.compare(*it_c))
                     break;
                 it_c++;
             }
