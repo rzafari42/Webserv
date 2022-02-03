@@ -350,6 +350,9 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
         CGI_Handler tmp_cgi(*req, *conf, *loc);
 
         _content = tmp_cgi.run_CGI(loc->get_cgi_path());
+        _contentLength = _content.size();
+        // _statusCode = ....; Add status code from the cgi here
+        _reasonPhrase = _error[_statusCode];
     }
     constructResponse();
 }
