@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/21 12:19:15 by rzafari           #+#    #+#             */
-/*   Updated: 2022/02/03 22:00:48 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/04 16:04:04 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -295,11 +295,7 @@ void parsing(std::string file, Request *request)
                 it_c++;
             }
             if (it == values.end() || it_c == it_ce )
-            {
-                parsingClear(flux, values, body, line);
-                error(CGI_CONTENT_TYPE, 1, request);
-                return;
-            }
+                request->set_contentType("text/html");
             else
                 request->set_contentType(*it_c);
         }

@@ -244,7 +244,6 @@ static bool ft_is_there_get(Location loc) {
 
 void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redirects)
 {
-    std::cout << std::endl << req->get_url() << std::endl;
     std::vector<Location> locations = conf->get_locations();
 
     Location *loc = which_location(&locations, req->get_url());
@@ -288,7 +287,6 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
             path_tofile = path_tofile + loc->get_index();
 
     req->set_url(path_tofile);
-    std::cout << std::endl << req->get_url() << std::endl;
 
     if (ft_is_directory(req->get_url()))
     {
@@ -346,7 +344,6 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
     }
     else
     {
-        std::cout << "loc URI:" << loc->get_uri() << std::endl;
         CGI_Handler tmp_cgi(*req, *conf, *loc);
 
         _content = tmp_cgi.run_CGI(loc->get_cgi_path());
