@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CGI_Handler.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
+/*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/17 14:12:53 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/04 20:18:56 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/04 21:03:37 by simbarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,12 +112,18 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 		close(pipe_fd[1]);
 		dup2(pipe_fd[0], 0);
 
-		int	fd_tmp = open("/cgi_bin/cgi_output", O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
+		int	fd_tmp = open("/tmp/cgi_output", O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
+
+		if (fd_tmp < 0)
+			fprintf(stderr, "this is an error\n");
 
 		dup2(fd_tmp, 1);
 		dup2(fd_tmp, 2);
-		if (execve(args[0], args, env) == -1)
+		if (execve("/bin/ls", args, env) == -1)
+		{
+			std::cout << "execve error : " <<  args[0] << std::endl;
 			exit(EXIT_FAILURE);							//add more error management
+		}
 		close(0);
 		close(fd_tmp);
 		close(pipe_fd[0]);
@@ -142,5 +148,5 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 	if (pid == 0)
 		exit(0);
 
-	return (file_to_str("/cgi_bin/cgi_output"));
+	return (file_to_str("/tmp/cgi_output"));
 }
