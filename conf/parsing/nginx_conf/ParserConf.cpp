@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/29 02:51:23 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/03 22:08:46 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/04 15:41:18 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -245,7 +245,16 @@ static void fill_struct(std::vector<std::vector<std::string> > v, std::vector<Se
                 if (!it_s->compare("location")) {
                     loc_tmp = Location();
                     if (it_s != ite_s && (++it_s)->compare("{"))
-                        loc_tmp.set_uri(*(it_s));
+                    {
+                        size_t i = 0;
+                        std::string tmp;
+                        while (i < it_s->length() && it_s->at(i) != '{')
+                        {
+                            tmp.push_back(it_s->at(i));
+                            i++;
+                        }
+                        loc_tmp.set_uri(tmp);
+                    }
                     else
                         throw ParserConf::ParsingConfigFileException("Error: In Location, 'URI' is missing");
                     brackets++;
@@ -261,6 +270,9 @@ static void fill_struct(std::vector<std::vector<std::string> > v, std::vector<Se
                         ite_s = it->end();
                     }
                     brackets--;
+                    if (!loc_tmp.get_cgi_extension().empty())
+                        if (loc_tmp.get_cgi_methods().empty())
+                            throw ParserConf::ParsingConfigFileException("Error: CGI is defined but has no methods");
                     conf_tmp.add_location(loc_tmp);
                 }   
                 if (it != ite) {

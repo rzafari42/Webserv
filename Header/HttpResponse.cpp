@@ -270,7 +270,6 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
         }
     }
 
-
     if (loc) {
         if (!ft_is_there_get(*loc) && !(loc->get_methods().empty())) {
             req->set_url(ERROR_405_PATH);
@@ -347,6 +346,7 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
     }
     else
     {
+        std::cout << "loc URI:" << loc->get_uri() << std::endl;
         CGI_Handler tmp_cgi(*req, *conf, *loc);
 
         _content = tmp_cgi.run_CGI(loc->get_cgi_path());
@@ -400,8 +400,6 @@ void HttpResponse::redirection(Request *req)
 {
     (void)req;
 }
-
-
 
 void HttpResponse::constructResponse()
 {
