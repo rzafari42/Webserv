@@ -272,7 +272,7 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
 
 
     if (loc) {
-        if (!ft_is_there_get(*loc)) {
+        if (!ft_is_there_get(*loc) && !(loc->get_methods().empty())) {
             req->set_url(ERROR_405_PATH);
             createHeader(req->get_url(), 405, conf);
             constructResponse();
