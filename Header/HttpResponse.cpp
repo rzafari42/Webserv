@@ -202,7 +202,6 @@ static Location *which_location(std::vector<Location> *loc, std::string url) {
     std::vector<Location>::iterator ite = loc->end();
 
     std::string tmp = url;
-
     while(tmp.compare("")) {
         it = loc->begin();
         while (it != ite) {
@@ -210,8 +209,11 @@ static Location *which_location(std::vector<Location> *loc, std::string url) {
                 return &(*it);
             it++;
         }
+        size_t found_cgi = tmp.rfind('?');
         size_t found = tmp.rfind('/');
-        if (found!=std::string::npos)
+        if (found_cgi!=std::string::npos)
+            tmp.replace(found_cgi, tmp.length() - found_cgi, "");
+        else if (found!=std::string::npos)
             tmp.replace(found, tmp.length() - found, "");
         if (tmp.empty())
             tmp = "/";
@@ -247,7 +249,6 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
     std::vector<Location> locations = conf->get_locations();
 
     Location *loc = which_location(&locations, req->get_url());
-
     std::string base_url = req->get_url();
 
     if (redirects > 20)
@@ -343,9 +344,8 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
         sourceFile.close();
     }
     else
-    {
+    {        
         CGI_Handler tmp_cgi(*req, *conf, *loc);
-
         _content = tmp_cgi.run_CGI(loc->get_cgi_path());
         _contentLength = _content.size();
         // _statusCode = ....; Add status code from the cgi here
