@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/29 02:51:23 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/04 16:35:51 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/05 22:19:09 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,7 +166,11 @@ static void put_location_cgi(std::vector<std::string>::iterator it, std::vector<
         throw ParserConf::ParsingConfigFileException(LOCATION_CGI_EMPTY);
     it++;
     if (it != ite)
+    {
+        if (it->at(0) == '/')            
+            it->erase(it->begin());
         loc.set_cgi_path(*it);
+    }
     else
         throw ParserConf::ParsingConfigFileException(LOCATION_CGI_MISSING_PATH);
 }
