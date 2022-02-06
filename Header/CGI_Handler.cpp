@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/17 14:12:53 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/06 21:55:48 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/06 23:18:32 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,14 +81,6 @@ char		**CGI_Handler::env_to_double_char(void)
 		tmp.clear();
 		++it;									//to test, first tried with strdup but can it *delete* ? idk
 	}		
-			
-	std::cout << std::endl;
-	i = 0;					
-	while (ret[i])
-	{
-		std::cout << "ret[" << i << "]=" << ret[i] << std::endl;
-		i++;
-	}
 	return (ret);
 }
 
@@ -113,7 +105,6 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 	else if (pid == 0)
 	{
 		char	**env = env_to_double_char();
-		std::cout << "env[13]:" << env[13] << std::endl;
 		char	*args[2];
 
 
@@ -133,7 +124,6 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 		if (execve(args[0], args, env) == -1)
 		{
 			std::cout << "execve error : " <<  args[0] << std::endl;
-			perror("errno:");
 			exit(EXIT_FAILURE);							//add more error management
 		}
 		close(0);
