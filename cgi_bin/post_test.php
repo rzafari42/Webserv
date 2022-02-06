@@ -1,7 +1,7 @@
 #!/usr/local/bin/php
 <html>
     <body>
-        Welcome <?php echo $_POST["lastName"]; $_POST["firstName"]; ?>
-        Message is: <?php echo $_POST["message"]; ?>
+        Welcome <?php echo $_GET["lastName"]; $_GET["firstName"]; ?>
+        Message is: <?php echo $_GET["message"]; ?>
     </body>
 </html>
