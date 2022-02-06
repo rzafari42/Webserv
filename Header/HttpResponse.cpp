@@ -100,6 +100,7 @@ void HttpResponse::initErrorMap()
     _error.insert(std::pair<int, std::string>(405,"Method Not Allowed")); //done
     _error.insert(std::pair<int, std::string>(411,"Length Required"));
     _error.insert(std::pair<int, std::string>(413,"Payload Too Large"));
+    _error.insert(std::pair<int, std::string>(500,"Internal Server Error")); //done
     _error.insert(std::pair<int, std::string>(501,"Not Implemented")); //done
     _error.insert(std::pair<int, std::string>(505,"HTTP Version Not Supported")); //done
 
@@ -348,8 +349,11 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
     {        
         CGI_Handler tmp_cgi(*req, *conf, *loc);
         _content = tmp_cgi.run_CGI(loc->get_cgi_path());
+        if (!_content.empty())
+            _statusCode =  200;
+        else
+            _statusCode = 500;
         _contentLength = _content.size();
-        // _statusCode = ....; Add status code from the cgi here
         _reasonPhrase = _error[_statusCode];
     }
     constructResponse();
