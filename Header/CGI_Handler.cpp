@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/17 14:12:53 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/06 23:25:09 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/06 23:46:52 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,7 +123,6 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 		dup2(fd_tmp, 2);
 		if (execve(args[0], args, env) == -1)
 		{
-			std::cout << "execve error : " <<  args[0] << std::endl;
 			exit(EXIT_FAILURE);							//add more error management
 		}
 		close(0);

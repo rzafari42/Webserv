@@ -346,13 +346,23 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
         sourceFile.close();
     }
     else
-    {        
+    {   
         CGI_Handler tmp_cgi(*req, *conf, *loc);
         _content = tmp_cgi.run_CGI(loc->get_cgi_path());
         if (!_content.empty())
             _statusCode =  200;
         else
-            _statusCode = 500;
+        {
+            req->set_url(ERROR_500_PATH);
+            std::ifstream sourceFile(req->get_url().c_str(), std::ifstream::in);
+            if (sourceFile.good())
+            {
+                std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
+                _content = ans;
+                _statusCode = 500;
+            }
+            sourceFile.close();
+        }
         _contentLength = _content.size();
         _reasonPhrase = _error[_statusCode];
     }
