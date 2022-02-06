@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/17 14:12:53 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/05 22:19:19 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/06 17:57:12 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,8 +109,6 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 
 		args[0] = strdup(script.c_str());				//modified this, should work as expected
 		args[1] = NULL;
-		std::cout << "args[0]: " << args[0] << std::endl;
-		std::cout << "args[1]:" << args[1] << std::endl;
 
 		close(pipe_fd[1]);
 		dup2(pipe_fd[0], 0);
@@ -122,7 +120,7 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 
 		dup2(fd_tmp, 1);
 		dup2(fd_tmp, 2);
-		if (execve("/bin/echo lol", args, env) == -1)
+		if (execve(args[0], args, env) == -1)
 		{
 			std::cout << "execve error : " <<  args[0] << std::endl;
 			exit(EXIT_FAILURE);							//add more error management
