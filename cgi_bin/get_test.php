@@ -2,6 +2,7 @@
 <html>
     <body>
         <?php
+            echo "GET <br>";
             echo "QUERY_STRING->" . $_SERVER['QUERY_STRING'] . "<br><br>";
             $queries = array();
             parse_str($_SERVER['QUERY_STRING'], $queries);

@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/17 14:12:53 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/06 23:46:52 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/07 22:17:08 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,9 @@ CGI_Handler::CGI_Handler(Request &request, ServerInfo &conf, Location &loc) : _r
 {
 	std::vector<std::string> tmp = request.get_body();
 
-	for (std::vector<std::string>::const_iterator i = tmp.begin();
-		i != tmp.end(); ++i)
+	for (std::vector<std::string>::const_iterator i = tmp.begin(); i != tmp.end(); ++i)
 		_body += *i;
-
+		
 	_env["AUTH_TYPE"]			= "";					//no security
 	_env["CONTENT_TYPE"]		= _req.get_contentType();					//_req.get_type(); -> parsing in request POST
 	_env["GATEWAY_INTERFACE"]	= "CGI/1.1";
@@ -29,7 +28,10 @@ CGI_Handler::CGI_Handler(Request &request, ServerInfo &conf, Location &loc) : _r
 	if (_req.get_method() == "GET")
 		_env["CONTENT_LENGTH"]		= "0";
 	else if (_req.get_method() == "POST")
+	{
+		_env["QUERY_STRING"]		= _body;
 		_env["CONTENT_LENGTH"]		= _body.length();
+	}
 	_env["SCRIPT_NAME"]			= _loc.get_cgi_path();
 	_env["SERVER_NAME"]			= _conf.get_server_name();
 	std::ostringstream s;

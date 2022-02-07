@@ -1,15 +1,14 @@
 #!/usr/local/bin/php
 <html>
     <body>
-        Welcome 
-        <?php if(isset($_POST['lastName'])): ?>
-            <?php echo $_POST['lastName']; ?>
-        <?php endif; ?>
-        <?php if(isset($_POST['firstName'])): ?>
-            <?php echo $_POST['firstName']; ?>
-        <?php endif; ?>
-        <?php if(isset($_POST['message'])): ?>
-            Message is: <?php echo $_POST['message']; ?>
-        <?php endif; ?>
+        <?php
+            echo "POST <br>";
+            echo "QUERY_STRING->" . $_SERVER['QUERY_STRING'] . "<br><br>";
+            $queries = array();
+            parse_str($_SERVER['QUERY_STRING'], $queries);
+        
+            echo "Welcome " . $queries["lastName"] . " " . $queries["firstName"] . "<br>"; 
+            echo "Your message is: " . $queries["message"];
+        ?>
     </body>
 </html>

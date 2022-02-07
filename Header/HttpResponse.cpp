@@ -247,7 +247,6 @@ static bool ft_is_there_get(Location loc) {
 
 void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redirects)
 {
-    std::cout << "GET" << std::endl;
     std::vector<Location> locations = conf->get_locations();
 
     Location *loc = which_location(&locations, req->get_url());
@@ -372,15 +371,27 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
 
 void HttpResponse::handle_post_method(Request *req, ServerInfo *conf)
 {
-    std::cout << "POST" << std::endl;
     std::vector<Location> locations = conf->get_locations();
     Location *loc = which_location(&locations, req->get_url());
 
     CGI_Handler tmp_cgi(*req, *conf, *loc);
 
     _content = tmp_cgi.run_CGI(loc->get_cgi_path());
+    if (!_content.empty())
+        _statusCode =  200;
+    else
+    {
+        req->set_url(ERROR_500_PATH);
+        std::ifstream sourceFile(req->get_url().c_str(), std::ifstream::in);
+        if (sourceFile.good())
+        {
+            std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
+            _content = ans;
+            _statusCode = 500;
+        }
+        sourceFile.close();
+    }
     _contentLength = _content.size();
-    // _statusCode = ....; Add status code from the cgi here
     _reasonPhrase = _error[_statusCode];
     constructResponse();
 }

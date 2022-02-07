@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/21 12:19:15 by rzafari           #+#    #+#             */
-/*   Updated: 2022/02/04 16:04:04 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/07 18:31:38 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,8 +61,8 @@ int check_format_rqline(std::string s, Request *req)
     int nb_space = 0;
     int nb_arg = 0;
 
-    if (s.find('\r') == std::string::npos)
-        return error(REQUEST_LINE_FORMAT_CRLF, 1, req);
+   /* if (s.find('\r') == std::string::npos)
+        return error(REQUEST_LINE_FORMAT_CRLF, 1, req);*/
     s.erase(s.size() - 2);
     while (i < s.length())
     {
@@ -115,7 +115,7 @@ int check_cgi(Request *req, std::string &cgi)
     std::size_t pos = 0;
 
     pos = url.find(CGI_EXTENSION);
-    if (pos != std::string::npos)
+    if (pos != std::string::npos && url.find("?") != std::string::npos)
     {
         while (url[pos] != '?' && pos != url.size())
             pos++;
@@ -260,8 +260,8 @@ void parsing(std::string file, Request *request)
                         return;
                     }
                 }
-                if (flux.eof())
-                {
+                if (!flux.eof())
+                {   
                     while (getline(flux, line))
                     {
                         body.push_back(line);

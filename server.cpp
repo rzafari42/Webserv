@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 22:01:31 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/06 18:13:12 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/07 22:21:26 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,19 +33,19 @@ int		check(int exp, const char *msg)
 //ajouter parsing de la requette et tt le reste
 void	*handle_connection(int client_socket, ServerInfo conf)
 {
-	char	buffer[BUFF_SIZE];
+	char	buffer[BUFF_SIZE + 1];
 	size_t	bytes_read;
 	int		msg_size = 0;
 	static int i = 0;
-
-	while ((bytes_read = read(client_socket, buffer + msg_size, sizeof(buffer) - msg_size - 1)))
+	memset(buffer, '\0', sizeof(buffer));
+	while((bytes_read = recv(client_socket, buffer, BUFF_SIZE, 0)))
 	{
 		msg_size += bytes_read;
-		if (msg_size > BUFF_SIZE - 1 || buffer[msg_size - 1] == '\n')
+		if (msg_size > BUFF_SIZE - 1 || buffer[msg_size - 1] == '\n' || buffer[msg_size] == '\0')
 			break;
 	}
+	//buffer[BUFF_SIZE]  = '\0';
 	check(bytes_read, "recv error");
-	//buffer[msg_size - 1]  = 0;
 
 	printf("REQUEST: \n%s\n", buffer);
 	fflush(stdout);
@@ -67,9 +67,7 @@ void	*handle_connection(int client_socket, ServerInfo conf)
 
 	HttpResponse res(&req, &conf);
 	std::string cont = res.getResponse();
-
 	write(client_socket , cont.c_str(), cont.length()); //Envoie de la reponse au client
-
 	close(client_socket);
 	printf("closing connection\n");
 	return (NULL);
