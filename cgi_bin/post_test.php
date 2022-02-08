@@ -2,8 +2,7 @@
 <html>
     <body>
         <?php
-            $input_data = file_get_contents("php://stdin");
-            parse_str($input_data, $_POST);
+            parse_str(file_get_contents("php://stdin"), $_POST);
             echo "POST <br>";
 
             echo "Welcome " . $_POST["lastName"] . " " . $_POST["firstName"] . "<br>";
