@@ -6,7 +6,7 @@
 /*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/17 14:12:53 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/08 19:37:01 by simbarre         ###   ########.fr       */
+/*   Updated: 2022/02/08 22:16:20 by simbarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,11 +38,12 @@ CGI_Handler::CGI_Handler(Request &request, ServerInfo &conf, Location &loc) : _r
 	_env["SERVER_PROTOCOL"]		= "HTTP/1.1";
 	_env["SERVER_SOFTWARE"]		= "webserv/1.1";
 	_env["DIR_PATH"]			= _loc.get_root();
-	_env["PATH_INFO"]			= _loc.get_uri();
-	std::cout << "PATH_INFO: " << _env["PATH_INFO"] << std::endl;
-	_env["PATH_TRANSLATED"]		= _loc.get_uri();
 
-}	//AUTH_TYPE, CONTENT_LENGTH, CONTENT_TYPE, GATEWAY_INTERFACE, PATH_INFO, PATH_TRANSLATED, QUERY_STRING, REMOTE_ADDR, REMOTE_HOST, REMOTE_IDENT, REMOTE_USER, REQUEST_METHOD, SCRIPT_NAME, SERVER_NAME, SERVER_PORT, SERVER_PROTOCOL, and SERVER_SOFTWARE
+	_env["REMOTE_ADDR"]			= "";		//get client IP
+	_env["REMOTE_HOST"]			= "";		//can be left empty
+	_env["REMOTE_IDENT"]		= "";		//can be left empty
+	_env["REMOTE_USER"]			= "";		//can be left empty
+}
 
 CGI_Handler::CGI_Handler(CGI_Handler const &src) : _env(src._env)
 {}
