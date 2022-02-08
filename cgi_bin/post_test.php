@@ -1,2 +1,14 @@
-Bonjour, <?php echo htmlspecialchars($_POST['nom']); ?>.
-Tu as <?php echo (int)$_POST['age']; ?> ans.
+#!/usr/local/bin/php
+<html>
+    <body>
+        <?php
+            echo "POST <br>";
+            echo "QUERY_STRING->" . $_SERVER['QUERY_STRING'] . "<br><br>";
+            $queries = array();
+            parse_str($_SERVER['QUERY_STRING'], $queries);
+        
+            echo "Welcome " . $queries["lastName"] . " " . $queries["firstName"] . "<br>"; 
+            echo "Your message is: " . $queries["message"];
+        ?>
+    </body>
+</html>
