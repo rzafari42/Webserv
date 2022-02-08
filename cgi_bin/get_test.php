@@ -2,13 +2,11 @@
 <html>
     <body>
         <?php
+            parse_str(getenv('QUERY_STRING'), $_GET);
             echo "GET <br>";
-            echo "QUERY_STRING->" . $_SERVER['QUERY_STRING'] . "<br><br>";
-            $queries = array();
-            parse_str($_SERVER['QUERY_STRING'], $queries);
-        
-            echo "Welcome " . $queries["lastName"] . " " . $queries["firstName"] . "<br>"; 
-            echo "Your message is: " . $queries["message"];
+            
+            echo "Welcome " . $_GET["lastName"] . " " . $_GET["firstName"] . "<br>"; 
+            echo "Your message is: " . $_GET["message"];
         ?>
     </body>
 </html>

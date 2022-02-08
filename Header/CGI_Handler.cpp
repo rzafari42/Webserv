@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CGI_Handler.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/17 14:12:53 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/08 12:07:31 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/08 19:22:53 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,10 +29,7 @@ CGI_Handler::CGI_Handler(Request &request, ServerInfo &conf, Location &loc) : _r
 	if (_req.get_method() == "GET")
 		_env["CONTENT_LENGTH"]		= "0";
 	else if (_req.get_method() == "POST")
-	{
-		_env["QUERY_STRING"]		= _body;
 		_env["CONTENT_LENGTH"]		= _body.length();
-	}
 	_env["SCRIPT_NAME"]			= _loc.get_cgi_path();
 	_env["SERVER_NAME"]			= _conf.get_server_name();
 	std::ostringstream s;
