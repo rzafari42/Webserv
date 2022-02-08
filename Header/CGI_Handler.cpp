@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CGI_Handler.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/17 14:12:53 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/08 22:16:20 by simbarre         ###   ########.fr       */
+/*   Updated: 2022/02/08 23:33:11 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ CGI_Handler::CGI_Handler(Request &request, ServerInfo &conf, Location &loc) : _r
 	_env["SERVER_SOFTWARE"]		= "webserv/1.1";
 	_env["DIR_PATH"]			= _loc.get_root();
 
-	_env["REMOTE_ADDR"]			= "";		//get client IP
+	_env["REMOTE_ADDR"]			= "0.0.0.0";		//get client IP
 	_env["REMOTE_HOST"]			= "";		//can be left empty
 	_env["REMOTE_IDENT"]		= "";		//can be left empty
 	_env["REMOTE_USER"]			= "";		//can be left empty
