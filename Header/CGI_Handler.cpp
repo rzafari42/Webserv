@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CGI_Handler.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
+/*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/17 14:12:53 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/07 22:17:08 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/08 06:52:34 by simbarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ CGI_Handler::CGI_Handler(Request &request, ServerInfo &conf, Location &loc) : _r
 
 	for (std::vector<std::string>::const_iterator i = tmp.begin(); i != tmp.end(); ++i)
 		_body += *i;
-		
+
 	_env["AUTH_TYPE"]			= "";					//no security
 	_env["CONTENT_TYPE"]		= _req.get_contentType();					//_req.get_type(); -> parsing in request POST
 	_env["GATEWAY_INTERFACE"]	= "CGI/1.1";
@@ -82,7 +82,7 @@ char		**CGI_Handler::env_to_double_char(void)
 		ret[i++][tmp.length()] = '\0';
 		tmp.clear();
 		++it;									//to test, first tried with strdup but can it *delete* ? idk
-	}		
+	}
 	return (ret);
 }
 
@@ -130,10 +130,11 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 		close(0);
 		close(fd_tmp);
 		close(pipe_fd[0]);
-		exit(0);
 
 		free(args[0]);
 		delete [] env;									//see if this deletes all
+
+		exit(0);
 	}
 	else
 	{
