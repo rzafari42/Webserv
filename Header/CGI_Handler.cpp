@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CGI_Handler.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
+/*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/17 14:12:53 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/08 19:22:53 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/08 19:37:01 by simbarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,8 @@ CGI_Handler::CGI_Handler(Request &request, ServerInfo &conf, Location &loc) : _r
 	for (std::vector<std::string>::const_iterator i = tmp.begin(); i != tmp.end(); ++i)
 		_body += *i;
 
-	_env["AUTH_TYPE"]			= "";					//no security
-	_env["CONTENT_TYPE"]		= _req.get_contentType();					//_req.get_type(); -> parsing in request POST
+	_env["AUTH_TYPE"]			= "";
+	_env["CONTENT_TYPE"]		= _req.get_contentType();
 	_env["GATEWAY_INTERFACE"]	= "CGI/1.1";
 	_env["QUERY_STRING"]		= _req.get_cgi();
 	_env["REDIRECT_STATUS"]		= "200";
@@ -42,7 +42,7 @@ CGI_Handler::CGI_Handler(Request &request, ServerInfo &conf, Location &loc) : _r
 	std::cout << "PATH_INFO: " << _env["PATH_INFO"] << std::endl;
 	_env["PATH_TRANSLATED"]		= _loc.get_uri();
 
-}														//we'll see if we need more env var
+}	//AUTH_TYPE, CONTENT_LENGTH, CONTENT_TYPE, GATEWAY_INTERFACE, PATH_INFO, PATH_TRANSLATED, QUERY_STRING, REMOTE_ADDR, REMOTE_HOST, REMOTE_IDENT, REMOTE_USER, REQUEST_METHOD, SCRIPT_NAME, SERVER_NAME, SERVER_PORT, SERVER_PROTOCOL, and SERVER_SOFTWARE
 
 CGI_Handler::CGI_Handler(CGI_Handler const &src) : _env(src._env)
 {}
@@ -105,7 +105,7 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 
 	pid = fork();
 	if (pid == -1)
-		return ("Status: 500\r\n\r\n");
+		return (NULL);
 	else if (pid == 0)
 	{
 		char	**env = env_to_double_char();
@@ -121,14 +121,11 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 		int	fd_tmp = open("/tmp/cgi_output", O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
 
 		if (fd_tmp < 0)
-			fprintf(stderr, "this is an error\n");
+			return (NULL);
 
 		dup2(fd_tmp, 1);
-		dup2(fd_tmp, 2);
 		if (execve(args[0], args, env) == -1)
-		{
-			exit(EXIT_FAILURE);							//add more error management
-		}
+			return (NULL);
 		close(0);
 		close(fd_tmp);
 		close(pipe_fd[0]);
@@ -156,3 +153,4 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 
 	return (file_to_str("/tmp/cgi_output"));
 }
+
