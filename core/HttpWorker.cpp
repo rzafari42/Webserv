@@ -15,19 +15,7 @@
 #define SERVER_BACKLOG		100
 
 #include "Header/main_header.hpp"
-
-typedef struct sockaddr		SA;
-typedef struct sockaddr_in	SA_IN;
-
-int		check(int exp, const char *msg)
-{
-	if (exp < 0)
-	{
-		perror(msg);
-		exit(1);
-	}
-	return (exp);
-}
+#include "HttpWorker.hpp"
 
 //pour l'instant cette fonction affiche juste la requette qu'elle recoit
 //ajouter parsing de la requette et tt le reste
@@ -86,93 +74,51 @@ int		accept_new_connection(int server_socket)
 	return (client_socket);
 }
 
-int		setup_server(short port, int backlog)
-{
-	int		server_socket, client_socket, addr_size;
-	int		opt = 1;
+void HttpWorker::run() {
+	// FD_SETS
+	fd_set available_read	= { 0 };
+	fd_set available_write	= { 0 };
 
-	SA_IN	server_addr;
-
-	check((server_socket = socket(AF_INET, SOCK_STREAM, 0)), "Failed to create socket.");
-	check(setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR , &opt, sizeof(opt)), "Setsockopt failed!");
-	check(fcntl(server_socket, F_SETFL, O_NONBLOCK), "fcntl() failed!");
-
-	server_addr.sin_family		= AF_INET;
-	server_addr.sin_addr.s_addr	= INADDR_ANY;
-	server_addr.sin_port		= htons(port);
-
-	check(bind(server_socket, (SA*)&server_addr, sizeof(server_addr)), "Bind failed!");
-	check(listen(server_socket, backlog), "Listen failed!");
-
-	(void)client_socket;				//added to remove -Werror compilation error
-	(void)addr_size;					//added to remove -Werror compilation error
-
-	return (server_socket);
-}
-
-//nc -c localhost 8080
-int		main(int argc, char *argv[])
-{
-	if (argc > 1)
+	std::map<ServerInfo, int>::iterator it_m = server_sockets.begin();
+	std::map<ServerInfo, int>::iterator it_me = server_sockets.end();
+	
+	while (it_m != it_me)
 	{
-		std::vector<ServerInfo> conf;
-		ParserConf parser;
-		std::map<ServerInfo, int> server_socket;
-		std::map<int, ServerInfo> client_socket;
-		fd_set	current_sockets, ready_sockets;
+		FD_SET(it_m->first, &active_read);
+		it_m++;
+	}
 
-		parser.parse(argv[1], &conf);
-
-		std::vector<ServerInfo>::const_iterator it = conf.begin();
-		std::vector<ServerInfo>::const_iterator ite = conf.end();
-		FD_ZERO(&current_sockets);
-		while (it != ite)
+	while (true)
+	{
+		ready_sockets = current_sockets;
+		check(select(FD_SETSIZE, &ready_sockets, NULL, NULL, NULL), "Failed to select");
+		for (int i = 0; i < FD_SETSIZE; i++)
 		{
-			server_socket.insert(std::make_pair(*it, setup_server(it->get_listen(), SERVER_BACKLOG)));
-			it++;
-		}
-		std::map<ServerInfo, int>::iterator it_m = server_socket.begin();
-		std::map<ServerInfo, int>::iterator it_me = server_socket.end();
-		while (it_m != it_me)
-		{
-			FD_SET(it_m->second, &current_sockets);
-			it_m++;
-		}
-		while (true)
-		{
-			ready_sockets = current_sockets;
-			check(select(FD_SETSIZE, &ready_sockets, NULL, NULL, NULL), "Failed to select");
-
-			for (int i = 0; i < FD_SETSIZE; i++)
+			it_m = server_socket.begin();
+			it_me = server_socket.end();
+			if (FD_ISSET(i, &ready_sockets))
 			{
-				it_m = server_socket.begin();
-				it_me = server_socket.end();
-				if (FD_ISSET(i, &ready_sockets))
+				while (it_m != it_me)
 				{
-
-					while (it_m != it_me)
+					if (i == it_m->second)
 					{
-						if (i == it_m->second)
-						{
-							int new_client_socket = accept_new_connection(i);
-							FD_SET(new_client_socket, &current_sockets);
-							client_socket.insert(std::pair<int, ServerInfo>(new_client_socket, it_m->first));
-							break;
-						}
-						it_m++;
+						int new_client_socket = accept_new_connection(i);
+						FD_SET(new_client_socket, &current_sockets);
+						client_socket.insert(std::pair<int, ServerInfo>(new_client_socket, it_m->first));
+						break;
 					}
-					if (it_m == it_me)
-					{
-						handle_connection(i, (client_socket.at(i)));
-						FD_CLR(i, &current_sockets);
-						client_socket.erase(i);
-					}
+					it_m++;
+				}
+				if (it_m == it_me)
+				{
+					handle_connection(i, (client_socket.at(i)));
+					FD_CLR(i, &current_sockets);
+					client_socket.erase(i);
 				}
 			}
 		}
-		server_socket.clear();
 	}
-	else
-		std::cout << "Configuraion File might be missing !" << std::endl;
+	server_socket.clear();
+
 	return (0);
 }
