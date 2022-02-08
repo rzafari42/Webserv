@@ -6,11 +6,7 @@
 /*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/17 14:12:53 by simbarre          #+#    #+#             */
-<<<<<<< HEAD
 /*   Updated: 2022/02/08 12:07:31 by rzafari          ###   ########.fr       */
-=======
-/*   Updated: 2022/02/08 06:52:34 by simbarre         ###   ########.fr       */
->>>>>>> ae29e817266c3cd63f308e0248e7684cf3f25c24
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +27,7 @@ CGI_Handler::CGI_Handler(Request &request, ServerInfo &conf, Location &loc) : _r
 	_env["REQUEST_METHOD"]		= _req.get_method();
 	_env["REQUEST_URI"]			= _loc.get_uri();
 	if (_req.get_method() == "GET")
-		_env["CONTENT_LENGTH"]		= "10";
+		_env["CONTENT_LENGTH"]		= "0";
 	else if (_req.get_method() == "POST")
 	{
 		_env["QUERY_STRING"]		= _body;
