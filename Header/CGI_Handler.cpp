@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/17 14:12:53 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/07 22:17:08 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/08 12:07:31 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,15 +18,16 @@ CGI_Handler::CGI_Handler(Request &request, ServerInfo &conf, Location &loc) : _r
 
 	for (std::vector<std::string>::const_iterator i = tmp.begin(); i != tmp.end(); ++i)
 		_body += *i;
-		
+
 	_env["AUTH_TYPE"]			= "";					//no security
 	_env["CONTENT_TYPE"]		= _req.get_contentType();					//_req.get_type(); -> parsing in request POST
 	_env["GATEWAY_INTERFACE"]	= "CGI/1.1";
 	_env["QUERY_STRING"]		= _req.get_cgi();
 	_env["REDIRECT_STATUS"]		= "200";
 	_env["REQUEST_METHOD"]		= _req.get_method();
+	_env["REQUEST_URI"]			= _loc.get_uri();
 	if (_req.get_method() == "GET")
-		_env["CONTENT_LENGTH"]		= "0";
+		_env["CONTENT_LENGTH"]		= "10";
 	else if (_req.get_method() == "POST")
 	{
 		_env["QUERY_STRING"]		= _body;
@@ -40,6 +41,10 @@ CGI_Handler::CGI_Handler(Request &request, ServerInfo &conf, Location &loc) : _r
 	_env["SERVER_PROTOCOL"]		= "HTTP/1.1";
 	_env["SERVER_SOFTWARE"]		= "webserv/1.1";
 	_env["DIR_PATH"]			= _loc.get_root();
+	_env["PATH_INFO"]			= _loc.get_uri();
+	std::cout << "PATH_INFO: " << _env["PATH_INFO"] << std::endl;
+	_env["PATH_TRANSLATED"]		= _loc.get_uri();
+
 }														//we'll see if we need more env var
 
 CGI_Handler::CGI_Handler(CGI_Handler const &src) : _env(src._env)
@@ -82,7 +87,7 @@ char		**CGI_Handler::env_to_double_char(void)
 		ret[i++][tmp.length()] = '\0';
 		tmp.clear();
 		++it;									//to test, first tried with strdup but can it *delete* ? idk
-	}		
+	}
 	return (ret);
 }
 
@@ -130,10 +135,11 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 		close(0);
 		close(fd_tmp);
 		close(pipe_fd[0]);
-		exit(0);
 
 		free(args[0]);
 		delete [] env;									//see if this deletes all
+
+		exit(0);
 	}
 	else
 	{

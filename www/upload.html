@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <title>Webserv - Upload</title>
+        <link rel="stylesheet" href="upload_style.css">
+    </head>
+    <body>
+        <header>
+            <h1>Upload</h1>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                </ul>
+            </nav>
+        </header>
+        <form action="uploadScript.php" method="POST" enctype="multipart/form-data">
+            <input id="choseFile" type="file" name="fichier" />
+            <input type="submit" value="SEND" id="send"/>
+         </form>
+    </body>
+</html>
