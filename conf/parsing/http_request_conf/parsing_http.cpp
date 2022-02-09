@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/21 12:19:15 by rzafari           #+#    #+#             */
-/*   Updated: 2022/02/09 15:14:09 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/09 17:21:33 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -300,7 +300,6 @@ void parsing(std::string file, Request *request)
             request->set_contentType("text/html");
         else
             request->set_contentType(*it_c);
-
         request->set_fields(values);
         request->set_cgi(cgi);
         request->set_body(body);

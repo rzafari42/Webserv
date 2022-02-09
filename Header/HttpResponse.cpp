@@ -52,7 +52,8 @@ HttpResponse::HttpResponse(Request *req, ServerInfo *conf)
     initMethods();
     int does_method_exist = 0;
     std::string method = req->get_method();
-
+    if (!req->get_contentType().empty())
+        _contentType = req->get_contentType();
     if (check_basic_error(req) == false)
         return;
     does_method_exist = check_method_existence(method);
@@ -341,7 +342,6 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
                 _contentType = "image/jpg";
             else
                 _contentType = "text/html";
-            std::cout << "CONTENT-_TYPE:" << _contentType << std::endl;
         }
         sourceFile.close();
         delete [] dir;
@@ -374,11 +374,12 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
 void HttpResponse::handle_post_method(Request *req, ServerInfo *conf)
 {
     std::vector<Location> locations = conf->get_locations();
+
     Location *loc = which_location(&locations, req->get_url());
-
     CGI_Handler tmp_cgi(*req, *conf, *loc);
-
     _content = tmp_cgi.run_CGI(loc->get_cgi_path());
+    
+    std::cout << "Content: " << _content << std::endl;
     if (!_content.empty())
         _statusCode =  200;
     else

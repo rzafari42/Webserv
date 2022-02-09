@@ -65,7 +65,7 @@ form input
     width: auto;
 }
 
-#choseFile
+#fileToUpload
 {
     border:  none;
     margin-bottom: 25px;
