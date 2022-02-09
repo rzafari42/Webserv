@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+         #
+#    By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/01/29 02:31:17 by simbarre          #+#    #+#              #
-#    Updated: 2022/02/03 15:56:51 by rzafari          ###   ########.fr        #
+#    Updated: 2022/02/09 01:42:19 by simbarre         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -42,3 +42,6 @@ re:				fclean $(NAME)
 
 test: re
 				./$(NAME) conf/conf_files/default00.conf
+
+valgrind: re
+				valgrind --leak-check=full -s ./$(NAME) conf/conf_files/default00.conf

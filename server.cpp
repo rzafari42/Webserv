@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
+/*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 22:01:31 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/07 22:29:19 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/09 01:37:15 by simbarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,17 @@
 
 typedef struct sockaddr		SA;
 typedef struct sockaddr_in	SA_IN;
+
+sig_atomic_t volatile g_running = 1;
+
+void sig_handler(int signum)
+{
+	if (signum == SIGINT)
+	{
+		g_running = 0;
+		std::cerr << std::endl << "Received CTRL-C signal, stopping webserv..." << std::endl;
+	}
+}
 
 int		check(int exp, const char *msg)
 {
@@ -121,6 +132,8 @@ int		main(int argc, char *argv[])
 		std::map<int, ServerInfo> client_socket;
 		fd_set	current_sockets, ready_sockets;
 
+		signal(SIGINT, &sig_handler);
+
 		parser.parse(argv[1], &conf);
 
 		std::vector<ServerInfo>::const_iterator it = conf.begin();
@@ -141,7 +154,8 @@ int		main(int argc, char *argv[])
 		while (true)
 		{
 			ready_sockets = current_sockets;
-			check(select(FD_SETSIZE, &ready_sockets, NULL, NULL, NULL), "Failed to select");
+			if (select(FD_SETSIZE, &ready_sockets, NULL, NULL, NULL) < 0)
+				break;
 
 			for (int i = 0; i < FD_SETSIZE; i++)
 			{
@@ -174,5 +188,6 @@ int		main(int argc, char *argv[])
 	}
 	else
 		std::cout << "Configuraion File might be missing !" << std::endl;
+	//check if everything is freed
 	return (0);
 }

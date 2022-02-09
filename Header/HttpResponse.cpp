@@ -343,9 +343,10 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
                 _contentType = "text/html";
         }
         sourceFile.close();
+        delete [] dir;
     }
     else
-    {   
+    {
         CGI_Handler tmp_cgi(*req, *conf, *loc);
         _content = tmp_cgi.run_CGI(loc->get_cgi_path());
         if (!_content.empty())
