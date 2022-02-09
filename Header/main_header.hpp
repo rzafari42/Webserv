@@ -53,6 +53,11 @@
 #include "../conf/parsing/nginx_conf/Location.hpp"
 #include "../conf/parsing/nginx_conf/ServerInfo.hpp"
 #include "../conf/parsing/nginx_conf/ParserConf.hpp"
+
+#include "../core/Connexion.hpp"
+#include "../core/HttpWorker.hpp"
+#include "../core/VirtualServer.hpp"
+
 #include "HttpResponse.hpp"
 #include "CGI_Handler.hpp"
 

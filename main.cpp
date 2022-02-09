@@ -22,7 +22,8 @@ int		main(int argc, char *argv[])
         server_sockets.insert(std::make_pair(VirtualServer(it->get_listen()).get_sock(), *it));
     
     // Run http worker ->
-
+    HttpWorker worker(server_sockets);
+    worker.run();
 
     return 0;
 }

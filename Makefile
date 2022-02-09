@@ -10,12 +10,13 @@
 #                                                                              #
 # **************************************************************************** #
 
-SRCS			=	server.cpp \
+SRCS			=	main.cpp \
 					conf/parsing/http_request_conf/parsing_http.cpp \
 					conf/parsing/nginx_conf/ParserConf.cpp \
 					Header/CGI_Handler.cpp \
 					Header/HttpResponse.cpp \
-					Header/utils.cpp
+					Header/utils.cpp \
+					core/HttpWorker.cpp
 
 OBJS			=	$(SRCS:.cpp=.o)
 
