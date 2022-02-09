@@ -90,8 +90,10 @@ void HttpWorker::run() {
         // Handle connections
         for (it_c = connexions.begin(); it_c != connexions.end(); it_c++) {
             Connexion *c = it_c->first;
-            if (c->isReadReady())
+            if (c->isReadReady()) {
                 handle_connection(c->get_sock(), it_c->second);
+                FD_CLR(c->get_sock(), &active_read);
+            }
         }
     }
     
