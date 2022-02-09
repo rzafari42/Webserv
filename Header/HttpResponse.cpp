@@ -341,6 +341,7 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
                 _contentType = "image/jpg";
             else
                 _contentType = "text/html";
+            std::cout << "CONTENT-_TYPE:" << _contentType << std::endl;
         }
         sourceFile.close();
         delete [] dir;

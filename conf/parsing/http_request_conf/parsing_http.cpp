@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/21 12:19:15 by rzafari           #+#    #+#             */
-/*   Updated: 2022/02/08 09:03:21 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/09 15:14:09 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,8 @@ void Request::initContentType()
     _contentTypeArray.push_back("application/xhtml+xml");
     _contentTypeArray.push_back("application/xml");
     _contentTypeArray.push_back("application/pdf");
+
+    _contentTypeArray.push_back("multipart/form-data");
 }
 
 int check_format_rqline(std::string s, Request *req)
@@ -281,24 +283,24 @@ void parsing(std::string file, Request *request)
             parsingClear(flux, values, body, line);
             return;
         }
-        if (!cgi.empty())
-        {
-            std::map<std::string ,std::string>::iterator it = values.find("Content-Type");
-            std::vector<std::string> content_type = request->get_contentTypeArray();
-            std::vector<std::string>::iterator it_c = content_type.begin();
-            std::vector<std::string>::iterator it_ce = content_type.end();
 
-            while (it_c != it_ce )
-            {
-                if (!it->second.compare(*it_c))
-                    break;
-                it_c++;
-            }
-            if (it == values.end() || it_c == it_ce )
-                request->set_contentType("text/html");
-            else
-                request->set_contentType(*it_c);
+        //set content_type; Set to text/html if undefined in header
+        std::map<std::string ,std::string>::iterator it = values.find("Content-Type");
+        std::vector<std::string> content_type = request->get_contentTypeArray();
+        std::vector<std::string>::iterator it_c = content_type.begin();
+        std::vector<std::string>::iterator it_ce = content_type.end();
+
+        while (it_c != it_ce )
+        {
+            if (!it->second.compare(*it_c))
+                break;
+            it_c++;
         }
+        if (it == values.end() || it_c == it_ce )
+            request->set_contentType("text/html");
+        else
+            request->set_contentType(*it_c);
+
         request->set_fields(values);
         request->set_cgi(cgi);
         request->set_body(body);
