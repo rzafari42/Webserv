@@ -6,7 +6,7 @@
 /*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/17 14:12:53 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/09 01:25:08 by simbarre         ###   ########.fr       */
+/*   Updated: 2022/02/09 02:08:11 by simbarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,7 +113,7 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 		char	*args[2];
 
 
-		args[0] = strdup(script.c_str());				//modified this, should work as expected
+		args[0] = (char*)script.c_str();
 		args[1] = NULL;
 
 		close(pipe_fd[1]);
@@ -131,8 +131,7 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 		close(fd_tmp);
 		close(pipe_fd[0]);
 
-		free(args[0]);
-		delete [] env;									//see if this deletes all
+		delete [] env;
 
 		exit(0);
 	}

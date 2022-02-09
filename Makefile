@@ -6,7 +6,7 @@
 #    By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/01/29 02:31:17 by simbarre          #+#    #+#              #
-#    Updated: 2022/02/09 01:42:19 by simbarre         ###   ########.fr        #
+#    Updated: 2022/02/09 02:08:06 by simbarre         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -44,4 +44,4 @@ test: re
 				./$(NAME) conf/conf_files/default00.conf
 
 valgrind: re
-				valgrind --leak-check=full -s ./$(NAME) conf/conf_files/default00.conf
+				valgrind --leak-check=full --leak-check=full --trace-children=yes ./$(NAME) conf/conf_files/default00.conf
