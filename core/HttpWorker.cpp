@@ -1,5 +1,4 @@
-#define SERVER_PORT			8080
-#define BUFF_SIZE			4096
+#define BUFF_SIZE			8192
 
 #include "HttpWorker.hpp"
 
