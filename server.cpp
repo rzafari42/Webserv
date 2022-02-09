@@ -6,7 +6,7 @@
 /*   By: simbarre <simbarre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 22:01:31 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/09 01:37:15 by simbarre         ###   ########.fr       */
+/*   Updated: 2022/02/09 01:53:36 by simbarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,11 +151,15 @@ int		main(int argc, char *argv[])
 			FD_SET(it_m->second, &current_sockets);
 			it_m++;
 		}
-		while (true)
+		while (g_running)
 		{
 			ready_sockets = current_sockets;
 			if (select(FD_SETSIZE, &ready_sockets, NULL, NULL, NULL) < 0)
+			{
+				if (g_running != 0)
+					std::cerr << "Failed to select" << std::endl;
 				break;
+			}
 
 			for (int i = 0; i < FD_SETSIZE; i++)
 			{
@@ -188,6 +192,5 @@ int		main(int argc, char *argv[])
 	}
 	else
 		std::cout << "Configuraion File might be missing !" << std::endl;
-	//check if everything is freed
 	return (0);
 }
