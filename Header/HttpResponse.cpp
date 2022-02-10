@@ -17,6 +17,7 @@ bool HttpResponse::check_basic_error(Request *req)
         {
             std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
             _content = ans;
+            _contentType = "text/html";
             _statusCode = 400;
             _reasonPhrase = _error[_statusCode];
             _contentLength = _content.size();
@@ -33,6 +34,7 @@ bool HttpResponse::check_basic_error(Request *req)
         {
             std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
             _content = ans;
+            _contentType = "text/html";
             _statusCode = 505;
             _reasonPhrase = _error[_statusCode];
             _contentLength = _content.size();
@@ -256,6 +258,7 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
     if (redirects > 20)
     {
         req->set_url(ERROR_310_PATH);
+        _contentType = "text/html";
         createHeader(req->get_url(), 310, conf);
         constructResponse();
         return ;
@@ -275,6 +278,7 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
     if (loc) {
         if (!ft_is_there_get(*loc) && !(loc->get_methods().empty())) {
             req->set_url(ERROR_405_PATH);
+            _contentType = "text/html";
             createHeader(req->get_url(), 405, conf);
             constructResponse();
             return ;
@@ -305,6 +309,7 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
         else {
             _statusCode = 403;
             req->set_url(ERROR_403_PATH);
+            _contentType = "text/html";
             createHeader(req->get_url(), 403, conf);
         }
     }
@@ -321,6 +326,7 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
         if (d || !sourceFile.good())
         {
             req->set_url(ERROR_404_PATH);
+            _contentType = "text/html";
             createHeader(req->get_url(), 404, conf);
         }
         else
@@ -361,6 +367,7 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
                 std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
                 _content = ans;
                 _statusCode = 500;
+                _contentType = "text/html";
             }
             sourceFile.close();
         }
@@ -392,6 +399,7 @@ void HttpResponse::handle_post_method(Request *req, ServerInfo *conf)
             std::string ans((std::istreambuf_iterator<char>(sourceFile)), (std::istreambuf_iterator<char>()));
             _content = ans;
             _statusCode = 500;
+            _contentType = "text/html";
         }
         sourceFile.close();       
     }
@@ -415,12 +423,14 @@ void HttpResponse::handle_delete_method(Request *req)
         else
         {
             req->set_url(ERROR_404_PATH);
+            _contentType = "text/html";
             createHeader(req->get_url(), 404, NULL);
         }
     }
     else
     {
             req->set_url(ERROR_404_PATH);
+            _contentType = "text/html";
             createHeader(req->get_url(), 404, NULL);
     }
     fileToDelete.close();
