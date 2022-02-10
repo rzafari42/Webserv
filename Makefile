@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+         #
+#    By: user42 <user42@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/01/29 02:31:17 by simbarre          #+#    #+#              #
-#    Updated: 2022/02/03 15:56:51 by rzafari          ###   ########.fr        #
+#    Updated: 2022/02/10 18:45:00 by user42           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,7 +24,7 @@ HEADERS			=	Header/
 
 CXX				=	g++
 RM				=	rm -f
-CXXFLAGS		=	-Wall -Wextra -Werror -I $(HEADERS) -std=c++98
+CXXFLAGS		=	-g3 -Wall -Wextra -Werror -I $(HEADERS) -std=c++98
 
 NAME			=	webserv
 

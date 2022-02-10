@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
+/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/29 02:50:51 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/03 15:59:41 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/10 19:30:17 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,11 @@ int error(std::string str, int i, Request *request)
     return -1;
 }
 
-void parsingClear(std::ifstream &flux, std::map<std::string, std::string> values, std::vector<std::string> body, std::string line)
+void parsingClear(std::map<std::string, std::string> values, std::vector<std::string> body, std::string line)
 {
     line.clear();
     values.clear();
     body.clear();
-    flux.close();
 }
 
 void printCGI(std::string cgi)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing_http.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
+/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/21 12:19:15 by rzafari           #+#    #+#             */
-/*   Updated: 2022/02/08 09:03:21 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/10 19:31:58 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -218,17 +218,14 @@ void check_errors(Request *req)
 
 void parsing(std::string file, Request *request)
 {
-    std::ifstream flux(file.c_str());
 
-    if (flux)
-    {
         std::map<std::string, std::string> values;
         std::string cgi;
         std::vector<std::string> body;
         std::string line;
 
         char c;
-        while (flux.get(c) && c != '\n')
+        while (file.get(c) && c != '\n')
             line.push_back(c);
         line.push_back(c);
         if (!check_format_rqline(line, request))
@@ -239,7 +236,7 @@ void parsing(std::string file, Request *request)
                 line.clear();
                 while (1)
                 {
-                    while (flux.get(c) && c != '\n')
+                    while (file.get(c) && c != '\n')
                         line.push_back(c);
                     line.push_back(c);
                     if ((line[0] == '\r' && line[1] == '\n' ) || line[0] == '\r')
@@ -249,20 +246,20 @@ void parsing(std::string file, Request *request)
                         line.erase(line.size() - 2);
                         if (catchvalues(line, values, request) != 0)
                         {
-                            parsingClear(flux, values, body, line);
+                            parsingClear(values, body, line);
                             return;
                         }
                         line.clear();
                     }
                     else
                     {
-                        parsingClear(flux, values, body, line);
+                        parsingClear(values, body, line);
                         return;
                     }
                 }
-                if (!flux.eof())
+                if (!file.eof())
                 {   
-                    while (getline(flux, line))
+                    while (getline(file, line))
                     {
                         body.push_back(line);
                         line.clear();
@@ -271,14 +268,14 @@ void parsing(std::string file, Request *request)
             }
             else
             {
-                parsingClear(flux, values, body, line);
+                parsingClear(values, body, line);
                 error(CGI_CONTENT_TYPE, 1, request);
                 return;
             }
         }
         else
         {
-            parsingClear(flux, values, body, line);
+            parsingClear(values, body, line);
             return;
         }
         if (!cgi.empty())
@@ -303,11 +300,8 @@ void parsing(std::string file, Request *request)
         request->set_cgi(cgi);
         request->set_body(body);
         //print_map(request->get_fields(), request->get_body());
-        parsingClear(flux, values, body, line);
+        parsingClear(values, body, line);
         return;
-    }
-    else
-        error(OPENING_FAILURE, 0, request);
 }
 
 Request req_parsing(std::string av)
@@ -316,16 +310,3 @@ Request req_parsing(std::string av)
     parsing(av, &request);
     return request;
 }
-
-/*int main(int ac, char **av)
-{
-    Request request;
-    std::vector<std::string> vec = request.get_contentTypeArray();
-    if (ac < 2)
-        return error(EMPTY, 0, &request);
-    parsing(av[1], &request);
-    printCGI(request.get_cgi());
-    print_map(request.get_fields(), request.get_body());
-    //check if there's an CLRF at the end of each lines and if there's empty line before the body
-    return 0;
-}*/

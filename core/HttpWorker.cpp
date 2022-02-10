@@ -4,46 +4,6 @@
 
 //pour l'instant cette fonction affiche juste la requette qu'elle recoit
 //ajouter parsing de la requette et tt le reste
-static void	*handle_connection(int client_socket, ServerInfo conf)
-{
-    char	buffer[BUFF_SIZE + 1];
-    size_t	bytes_read;
-    int		msg_size = 0;
-    static int i = 0;
-    memset(buffer, '\0', sizeof(buffer));
-    while((bytes_read = recv(client_socket, buffer, BUFF_SIZE, 0)))
-    {
-        msg_size += bytes_read;
-        if (msg_size > BUFF_SIZE - 1 || buffer[msg_size - 1] == '\n' || buffer[msg_size] == '\0')
-            break;
-    }
-    //buffer[BUFF_SIZE]  = '\0';
-
-    printf("REQUEST: \n%s\n", buffer);
-    fflush(stdout);
-
-    //Name file creation
-    std::string namefile = "Request_";
-    std::ostringstream s;
-    s << i;
-    namefile.append(s.str());
-    namefile.append(".txt");
-    i++;
-
-    std::ofstream myfile;
-    myfile.open(namefile.c_str(), std::ofstream::app);
-    myfile << buffer; //Write the request in a file
-    myfile.close();
-    Request req = req_parsing(namefile);			//Parsing
-    std::remove(namefile.c_str());
-
-    HttpResponse res(&req, &conf);
-    std::string cont = res.getResponse();
-    write(client_socket , cont.c_str(), cont.length()); //Envoie de la reponse au client
-    close(client_socket);
-    printf("closing connection\n");
-    return (NULL);
-}
 
 void HttpWorker::acceptConnection( int server_socket, ServerInfo s_info ) {
     try {
@@ -52,6 +12,32 @@ void HttpWorker::acceptConnection( int server_socket, ServerInfo s_info ) {
     } catch (const std::exception& e) {
         e.what();
     }
+}
+
+bool HttpWorker::handleRead(Connexion *c, ServerInfo conf) {
+    int     client_socket = c->get_sock();
+    char	buffer[BUFF_SIZE + 1];
+    bool    can_continue = true;
+    Request req;
+
+	memset(buffer, '\0', sizeof(buffer));
+	if (recv(client_socket, buffer, BUFF_SIZE, 0) > 0) {
+		c->app_request(buffer);
+        req = req_parsing(buffer);
+        can_continue = false;
+	}
+
+    if (can_continue) {
+        std::cout << c->get_request() << std::endl;
+	    fflush(stdout);
+	    
+	    HttpResponse res(&req, &conf);
+	    std::string cont = res.getResponse();
+	    write(client_socket , cont.c_str(), cont.length()); //Envoie de la reponse au client
+	    close(client_socket);
+	    printf("closing connection\n");
+    }
+    return can_continue;
 }
 
 void HttpWorker::run() {
@@ -90,8 +76,8 @@ void HttpWorker::run() {
         for (it_c = connexions.begin(); it_c != connexions.end(); it_c++) {
             Connexion *c = it_c->first;
             if (c->isReadReady()) {
-                handle_connection(c->get_sock(), it_c->second);
-                FD_CLR(c->get_sock(), &active_read);
+                if (handleRead(c, it_c->second))
+                    FD_CLR(c->get_sock(), &active_read);
             }
         }
     }

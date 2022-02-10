@@ -5,9 +5,10 @@
 
 class Connexion {
     private:
-        int     sock;
-        fd_set* active_read;
-        fd_set* active_write;
+        int         sock;
+        std::string request;
+        fd_set*     active_read;
+        fd_set*     active_write;
 
     public:
         Connexion( int server_socket, fd_set* r, fd_set* w ) : active_read(r), active_write(w) {
@@ -30,6 +31,9 @@ class Connexion {
         int isWriteReady( void ) { return FD_ISSET(sock, active_write); }
 
         int get_sock( void ) { return sock; }
+        std::string get_request( void ) { return request; }
+
+        void app_request( char *buffer ) { request.append(buffer); }
 
         class ConnexionException : public std::exception 
         {
