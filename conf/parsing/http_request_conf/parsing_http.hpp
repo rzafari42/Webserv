@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing_http.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
+/*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/29 02:50:20 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/10 19:03:03 by user42           ###   ########.fr       */
+/*   Updated: 2022/02/10 20:05:48 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ class Request{
         void set_cgi(std::string str){_cgi = str;}
         void set_contentType(std::string str){_contentType = str;};
         void set_fields(std::map<std::string, std::string> mp){_fields = mp;}
-        void set_body(std::vector<std::string> str){_body = str;};
+        void set_body(std::string str){_body = str;};
         void set_isErrorSyntax(void){_isErrorSyntax = true;};
 
         std::string get_method() {return _method;}
@@ -48,7 +48,7 @@ class Request{
         std::string get_cgi() {return _cgi;}
         std::string get_contentType() {return _contentType;}
         std::map<std::string, std::string> get_fields() {return _fields;}
-        std::vector<std::string> get_body() {return _body;}
+        std::string get_body() {return _body;}
         std::vector<std::string> get_contentTypeArray() { return _contentTypeArray;}
         bool get_isErrorSyntax() {return _isErrorSyntax;};
 
@@ -61,7 +61,7 @@ class Request{
             std::string _cgi;
             std::string _contentType;
             std::map<std::string, std::string> _fields;
-            std::vector<std::string> _body;
+            std::string _body;
             std::vector<std::string> _contentTypeArray;
             bool _isErrorSyntax;
 

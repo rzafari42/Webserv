@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main_header.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
+/*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/14 21:13:24 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/10 19:31:54 by user42           ###   ########.fr       */
+/*   Updated: 2022/02/10 20:07:31 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@
 # define LF '\n'
 
 int error(std::string str, int i, Request *request);
-void parsingClear(std::map<std::string, std::string> values, std::vector<std::string> body, std::string line);
+void parsingClear(std::map<std::string, std::string> values, std::string body, std::string line);
 void printCGI(std::string cgi);
 void print_map(std::map<std::string, std::string> mymap, std::vector<std::string> vec);
 

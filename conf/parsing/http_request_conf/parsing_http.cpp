@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing_http.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
+/*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/21 12:19:15 by rzafari           #+#    #+#             */
-/*   Updated: 2022/02/10 19:31:58 by user42           ###   ########.fr       */
+/*   Updated: 2022/02/10 20:07:11 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -221,13 +221,13 @@ void parsing(std::string file, Request *request)
 
         std::map<std::string, std::string> values;
         std::string cgi;
-        std::vector<std::string> body;
+        std::string body;
         std::string line;
 
-        char c;
-        while (file.get(c) && c != '\n')
-            line.push_back(c);
-        line.push_back(c);
+        int i = 0;
+        while (file[i] && file[i] != '\n')
+            line.push_back(file[i++]);
+        line.push_back(file[i++]);
         if (!check_format_rqline(line, request))
         {
             line.erase(line.size() - 2);
@@ -236,9 +236,9 @@ void parsing(std::string file, Request *request)
                 line.clear();
                 while (1)
                 {
-                    while (file.get(c) && c != '\n')
-                        line.push_back(c);
-                    line.push_back(c);
+                    while (file[i] && file[i] != '\n')
+                        line.push_back(file[i++]);
+                    line.push_back(file[i++]);
                     if ((line[0] == '\r' && line[1] == '\n' ) || line[0] == '\r')
                         break;
                     if (!check_format_rqfield(line, request))
@@ -257,13 +257,12 @@ void parsing(std::string file, Request *request)
                         return;
                     }
                 }
-                if (!file.eof())
+                std::string::iterator it = file.begin() + i;
+                std::string::iterator ite = file.end();
+                if (it != ite)
                 {   
-                    while (getline(file, line))
-                    {
-                        body.push_back(line);
-                        line.clear();
-                    }
+                    while (file[i])
+                        body.push_back(file[i++]);
                 }
             }
             else
