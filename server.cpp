@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 22:01:31 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/10 19:36:16 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/10 20:40:44 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,11 +30,12 @@ void sig_handler(int signum)
 	}
 }
 
-int		check(int exp, const char *msg)
+int		check(int exp, const char *msg, char* buff)
 {
 	if (exp < 0)
 	{
 		perror(msg);
+		free (buff);
 		exit(1);
 	}
 	return (exp);
@@ -70,7 +71,7 @@ void	*handle_connection(int client_socket, ServerInfo conf)
 	static int i = 0;
 
 	buffer = static_cast<char*>(calloc(BUFF_SIZE + 1, sizeof(buffer)));
-
+@
 	while((bytes_read = read(client_socket, buffer, BUFF_SIZE)))
 	{
 		msg_size += bytes_read;
@@ -78,7 +79,7 @@ void	*handle_connection(int client_socket, ServerInfo conf)
 			break;
 	}
 	printf("REQUEST: \n%s\n", buffer);
-	check(bytes_read, "recv error");
+	check(bytes_read, "recv error", buffer);
 
 	fflush(stdout);
 
@@ -94,6 +95,7 @@ void	*handle_connection(int client_socket, ServerInfo conf)
 	myfile.open(namefile.c_str(), std::ofstream::app);
 	myfile << buffer; //Write the request in a file
 	myfile.close();
+	free (buffer);
 	Request req = req_parsing(namefile);			//Parsing
 	std::remove(namefile.c_str());
 	HttpResponse res(&req, &conf);
@@ -110,7 +112,7 @@ int		accept_new_connection(int server_socket)
 	int		client_socket;
 	SA		client_addr;
 
-	check(client_socket = accept(server_socket, &client_addr, (socklen_t*)&addr_size), "Accept!");
+	check(client_socket = accept(server_socket, &client_addr, (socklen_t*)&addr_size), "Accept!", NULL);
 
 	(void)client_addr;					//added to remove -Werror compilation error
 
@@ -124,16 +126,16 @@ int		setup_server(short port, int backlog)
 
 	SA_IN	server_addr;
 
-	check((server_socket = socket(AF_INET, SOCK_STREAM, 0)), "Failed to create socket.");
-	check(setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR , &opt, sizeof(opt)), "Setsockopt failed!");
-	check(fcntl(server_socket, F_SETFL, O_NONBLOCK), "fcntl() failed!");
+	check((server_socket = socket(AF_INET, SOCK_STREAM, 0)), "Failed to create socket.", NULL);
+	check(setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR , &opt, sizeof(opt)), "Setsockopt failed!", NULL);
+	check(fcntl(server_socket, F_SETFL, O_NONBLOCK), "fcntl() failed!", NULL);
 
 	server_addr.sin_family		= AF_INET;
 	server_addr.sin_addr.s_addr	= INADDR_ANY;
 	server_addr.sin_port		= htons(port);
 
-	check(bind(server_socket, (SA*)&server_addr, sizeof(server_addr)), "Bind failed!");
-	check(listen(server_socket, backlog), "Listen failed!");
+	check(bind(server_socket, (SA*)&server_addr, sizeof(server_addr)), "Bind failed!", NULL);
+	check(listen(server_socket, backlog), "Listen failed!", NULL);
 
 	(void)client_socket;				//added to remove -Werror compilation error
 	(void)addr_size;					//added to remove -Werror compilation error
