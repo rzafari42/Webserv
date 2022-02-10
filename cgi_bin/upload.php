@@ -1,32 +1,24 @@
-#!/usr/local/bin/php
 <?php
-  $target_dir = "uploads/";
-  $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
-  $uploadOk = 1;
-  $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
-
-
-  // Check if file already exists
-  if (file_exists($target_file)) {
-    echo "Sorry, file already exists.";
-    $uploadOk = 0;
-  }
-
-  // Check file size
-  if ($_FILES["fileToUpload"]["size"] > 500000) {
-    echo "Sorry, your file is too large.";
-    $uploadOk = 0;
-  }
-
-  // Check if $uploadOk is set to 0 by an error
-  if ($uploadOk == 0) {
-    echo "Sorry, your file was not uploaded.";
-  // if everything is ok, try to upload file
-  } else {
-    if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
-      echo "The file ". htmlspecialchars( basename( $_FILES["fileToUpload"]["name"])). " has been uploaded.";
-    } else {
-      echo "Sorry, there was an error uploading your file.";
-    }
-  }
+   if(isset($_FILES['fichier'])){
+      $errors= array();
+      $file_name = $_FILES['fichier']['name'];
+      $file_size =$_FILES['fichier']['size'];
+      $file_tmp =$_FILES['fichier']['tmp_name'];
+      $file_type=$_FILES['fichier']['type'];
+      // $file_ext=strtolower(end(explode('.',$_FILES['fichier']['name'])));
+      $file_ext = strtolower(pathinfo($file_name,PATHINFO_EXTENSION));
+      
+      $extensions= array("html", "txt", "php");
+      
+      if(in_array($file_ext,$extensions)=== false){
+         $errors[]="extension not allowed";
+      }
+      
+      if(empty($errors)==true){
+         move_uploaded_file($file_tmp,"/Users/redwanezafari/Documents/42/Webserv/www/upload/".$file_name);
+         echo "Success";
+      }else{
+         print_r($errors);
+      }
+   }
 ?>

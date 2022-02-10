@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 22:01:31 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/09 17:20:09 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/09 23:02:50 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,7 @@ void	*handle_connection(int client_socket, ServerInfo conf)
 	std::remove(namefile.c_str());
 	HttpResponse res(&req, &conf);
 	std::string cont = res.getResponse();
+	std::cout << "\n\n\n\nFINALE RESPONSE: " << cont << std::endl;
 	write(client_socket , cont.c_str(), cont.length()); //Envoie de la reponse au client
 	close(client_socket);
 	printf("closing connection\n");

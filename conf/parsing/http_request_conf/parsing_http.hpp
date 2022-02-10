@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/29 02:50:20 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/03 18:53:12 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/10 01:37:42 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 class Request{
     public:
         Request();
-        Request(const Request& src) : _method(src._method), _url(src._url), _version(src._version), _cgi(src._cgi), _contentType(src._contentType), _fields(src._fields), _body(src._body), _contentTypeArray(src._contentTypeArray),  _isErrorSyntax(src._isErrorSyntax) {};
+        Request(const Request& src) : _method(src._method), _url(src._url), _version(src._version), _cgi(src._cgi), _contentType(src._contentType), _fields(src._fields), _body(src._body), _contentTypeArray(src._contentTypeArray),  _isErrorSyntax(src._isErrorSyntax), _isMultiPart(src._isMultiPart), _boundary(src._boundary) {};
         Request &operator=(const Request& rhs) {
             _method = rhs._method;
             _url = rhs._url;
@@ -30,6 +30,8 @@ class Request{
             _body = rhs._body;
             _contentTypeArray = rhs._contentTypeArray;
             _isErrorSyntax = rhs._isErrorSyntax;
+            _isMultiPart = rhs._isMultiPart;
+            _boundary = rhs._boundary;
             return *this;
         }
         ~Request() {_fields.clear(); _body.clear(); _contentTypeArray.clear(); return;}
@@ -41,6 +43,8 @@ class Request{
         void set_fields(std::map<std::string, std::string> mp){_fields = mp;}
         void set_body(std::vector<std::string> str){_body = str;};
         void set_isErrorSyntax(void){_isErrorSyntax = true;};
+        void set_isMultiPart(void) {_isMultiPart = true;};
+        void set_Boundary(std::string str) {_boundary = str;};
 
         std::string get_method() {return _method;}
         std::string get_url() {return _url;}
@@ -51,6 +55,9 @@ class Request{
         std::vector<std::string> get_body() {return _body;}
         std::vector<std::string> get_contentTypeArray() { return _contentTypeArray;}
         bool get_isErrorSyntax() {return _isErrorSyntax;};
+        bool get_isMultiPart() {return _isMultiPart;};
+
+        std::string get_boundary() {return _boundary;};
 
         void initContentType();
         
@@ -64,6 +71,8 @@ class Request{
             std::vector<std::string> _body;
             std::vector<std::string> _contentTypeArray;
             bool _isErrorSyntax;
+            bool _isMultiPart;
+            std::string			_boundary;
 
 };
 
