@@ -2,13 +2,11 @@
 <html>
     <body>
         <?php
+            parse_str(file_get_contents("php://stdin"), $_POST);
             echo "POST <br>";
-            echo "QUERY_STRING->" . $_SERVER['QUERY_STRING'] . "<br><br>";
-            $queries = array();
-            parse_str($_SERVER['QUERY_STRING'], $queries);
-        
-            echo "Welcome " . $queries["lastName"] . " " . $queries["firstName"] . "<br>"; 
-            echo "Your message is: " . $queries["message"];
+
+            echo "Welcome " . $_POST["lastName"] . " " . $_POST["firstName"] . "<br>";
+            echo "Your message is: " . $_POST["message"];
         ?>
     </body>
 </html>
