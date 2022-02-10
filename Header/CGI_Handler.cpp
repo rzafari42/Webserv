@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CGI_Handler.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
+/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/17 14:12:53 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/10 20:08:28 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/10 22:59:10 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,8 @@ CGI_Handler::CGI_Handler(Request &request, ServerInfo &conf, Location &loc) : _r
 {
 	_body = request.get_body();
 
-	_env["AUTH_TYPE"]			= "";					//no security
-	_env["CONTENT_TYPE"]		= _req.get_contentType();					//_req.get_type(); -> parsing in request POST
+	_env["AUTH_TYPE"]			= "";
+	_env["CONTENT_TYPE"]		= _req.get_contentType();
 	_env["GATEWAY_INTERFACE"]	= "CGI/1.1";
 	_env["QUERY_STRING"]		= _req.get_cgi();
 	_env["REDIRECT_STATUS"]		= "200";
@@ -26,10 +26,7 @@ CGI_Handler::CGI_Handler(Request &request, ServerInfo &conf, Location &loc) : _r
 	if (_req.get_method() == "GET")
 		_env["CONTENT_LENGTH"]		= "0";
 	else if (_req.get_method() == "POST")
-	{
-		_env["QUERY_STRING"]		= _body;
 		_env["CONTENT_LENGTH"]		= _body.length();
-	}
 	_env["SCRIPT_NAME"]			= _loc.get_cgi_path();
 	_env["SERVER_NAME"]			= _conf.get_server_name();
 	std::ostringstream s;
@@ -38,11 +35,12 @@ CGI_Handler::CGI_Handler(Request &request, ServerInfo &conf, Location &loc) : _r
 	_env["SERVER_PROTOCOL"]		= "HTTP/1.1";
 	_env["SERVER_SOFTWARE"]		= "webserv/1.1";
 	_env["DIR_PATH"]			= _loc.get_root();
-	_env["PATH_INFO"]			= _loc.get_uri();
-	std::cout << "PATH_INFO: " << _env["PATH_INFO"] << std::endl;
-	_env["PATH_TRANSLATED"]		= _loc.get_uri();
 
-}														//we'll see if we need more env var
+	_env["REMOTE_ADDR"]			= "0.0.0.0";		//get client IP
+	_env["REMOTE_HOST"]			= "";				//can be left empty
+	_env["REMOTE_IDENT"]		= "";				//can be left empty
+	_env["REMOTE_USER"]			= "";				//can be left empty
+}
 
 CGI_Handler::CGI_Handler(CGI_Handler const &src) : _env(src._env)
 {}
@@ -96,6 +94,8 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 
 	_env["PATH_INFO"]			= script;
 	_env["PATH_TRANSLATED"]		= script;
+	std::cout << "CGI content_type: " << _env["CONTENT_TYPE"] << std::endl;
+	std::cout << "CGI script: " << _env["SCRIPT_NAME"] << std::endl;
 
 	fd_saver[0] = dup(STDIN_FILENO);
 	fd_saver[1] = dup(STDOUT_FILENO);
@@ -105,14 +105,13 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 
 	pid = fork();
 	if (pid == -1)
-		return ("Status: 500\r\n\r\n");
+		return (NULL);
 	else if (pid == 0)
 	{
 		char	**env = env_to_double_char();
 		char	*args[2];
 
-
-		args[0] = strdup(script.c_str());				//modified this, should work as expected
+		args[0] = (char*)script.c_str();
 		args[1] = NULL;
 
 		close(pipe_fd[1]);
@@ -121,20 +120,18 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 		int	fd_tmp = open("/tmp/cgi_output", O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
 
 		if (fd_tmp < 0)
-			fprintf(stderr, "this is an error\n");
-
+			return (NULL);
 		dup2(fd_tmp, 1);
-		dup2(fd_tmp, 2);
-		if (execve(args[0], args, env) == -1)
-		{
-			exit(EXIT_FAILURE);							//add more error management
+		if (execve(args[0], args, env) == -1) {
+			std::cout << "-----> " << args[0] << std::endl;
+			perror("EXECVE :");
+			return (NULL);
 		}
 		close(0);
 		close(fd_tmp);
 		close(pipe_fd[0]);
 
-		free(args[0]);
-		delete [] env;									//see if this deletes all
+		delete [] env;
 
 		exit(0);
 	}
@@ -156,3 +153,4 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 
 	return (file_to_str("/tmp/cgi_output"));
 }
+

@@ -24,8 +24,25 @@ bool HttpWorker::handleRead(Connexion *c, ServerInfo conf) {
 	if (recv(client_socket, buffer, BUFF_SIZE, 0) > 0) {
 		c->app_request(buffer);
         req = req_parsing(buffer);
-        can_continue = false;
-	}
+        
+        std::map<std::string, std::string>::iterator it;
+        it = req.get_fields().find("Content-Length");
+
+        if (it != req.get_fields().end())
+            std::cout << it->second << "*" << std::endl;
+        else
+            std::cout << "yeet" << std::endl;
+        
+        if (c->get_request().find("\r\n\r\n") != std::string::npos) {
+            if (!req.get_method().compare("POST")) {
+                if (it != req.get_fields().end()) {
+                    std::cout << it->second << std::endl;
+                }
+            }
+        } else {
+            can_continue = false;
+        }
+    }
 
     if (can_continue) {
         std::cout << c->get_request() << std::endl;

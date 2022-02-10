@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing_http.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
+/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/21 12:19:15 by rzafari           #+#    #+#             */
-/*   Updated: 2022/02/10 21:02:58 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/10 22:30:02 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,7 +154,7 @@ int catch_request_line(const std::string s, Request *req, std::string &cgi) //Fo
     req->set_url(tmp);
     tmp.clear();
     i++;
-    while (i < s.length())
+    while (!isspace(s[i]) && i < s.length())
     {
         tmp.push_back(s[i]);
         i++;
@@ -249,7 +249,6 @@ void parsing(std::string file, Request *request)
                             parsingClear(values, body, line);
                             return;
                         }
-                        std::cout << "line: |" << line << "|" << std::endl;
                         line.clear();
                     }
                     else
