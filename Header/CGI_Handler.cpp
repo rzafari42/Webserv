@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/17 14:12:53 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/09 22:24:04 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/10 12:29:00 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,8 +97,6 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 
 	_env["PATH_INFO"]			= script;
 	_env["PATH_TRANSLATED"]		= script;
-	std::cout << "CGI content_type: " << _env["CONTENT_TYPE"] << std::endl;
-	std::cout << "CGI script: " << _env["SCRIPT_NAME"] << std::endl;
 
 	fd_saver[0] = dup(STDIN_FILENO);
 	fd_saver[1] = dup(STDOUT_FILENO);

@@ -1,5 +1,7 @@
 #!/mnt/c/Users/simbarre/Documents/42/webserv/cgi_bin/php-cgi7.2
+
 <?php
+
    if(isset($_FILES['fichier'])){
       $errors= array();
       $file_name = $_FILES['fichier']['name'];

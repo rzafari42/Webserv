@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/21 12:19:15 by rzafari           #+#    #+#             */
-/*   Updated: 2022/02/10 10:29:22 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/10 17:42:06 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -266,6 +266,7 @@ void parsing(std::string file, Request *request)
                 }
                 if (!flux.eof())
                 {   
+
                     while (getline(flux, line))
                     {
                         body.push_back(line);
@@ -303,29 +304,17 @@ void parsing(std::string file, Request *request)
             request->set_contentType("text/html");
         else
             request->set_contentType(*it_c);
-        
-        //std::cout << "CONTENT_TYPE: " << request->get_contentType() << std::endl;
-        /*if (!request->get_contentType().compare("multipart/form-data"))
+
+       /* if (!request->get_contentType().compare("multipart/form-data"))
         {
-            
             size_t i = 0;
             request->set_isMultiPart();
             request->set_Boundary(it->second);
 			i = request->get_boundary().find_first_of('=');
             std::string bound = request->get_boundary().erase(0, i + 1);
 			request->set_Boundary(bound);
-            std::cout << "BOUNDARY: " << request->get_boundary() << std::endl;
 			i = it->second.find_first_of(';');
             it->second.insert(i + 1," ");
-            std::cout << "it->second:" << it->second << std::endl;
-        }*/
-        /*if (request->get_isMultiPart() && body.find(this->_boundary))
-        {
-            this->_body += this->_rawData;
-            this->_rawData.clear();
-            if (this->_body.find(this->_boundary + "--") != std::string::npos)
-                this->_parsingStatus = 4;
-            std::cout << "body: " << _body << std::endl;
         }*/
 
         request->set_fields(values);

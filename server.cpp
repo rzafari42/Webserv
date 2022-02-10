@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 22:01:31 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/09 23:02:50 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/10 19:09:45 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,25 +40,45 @@ int		check(int exp, const char *msg)
 	return (exp);
 }
 
+void	*ft_calloc(size_t count, size_t size)
+{
+	unsigned char	*tab;
+	size_t			i;
+
+	i = 0;
+	if (size == 0 && count == 0)
+	{
+		size = 1;
+		count = 1;
+	}
+	if (!(tab = (unsigned char *)malloc(size * count)))
+		return (NULL);
+	while (i < count * size)
+	{
+		tab[i] = '\0';
+		i++;
+	}
+	return (tab);
+}
 //pour l'instant cette fonction affiche juste la requette qu'elle recoit
 //ajouter parsing de la requette et tt le reste
 void	*handle_connection(int client_socket, ServerInfo conf)
 {
-	char	buffer[BUFF_SIZE + 1];
+	char	*buffer;//[BUFF_SIZE + 1];
 	size_t	bytes_read;
 	int		msg_size = 0;
 	static int i = 0;
-	memset(buffer, '\0', sizeof(buffer));
-	while((bytes_read = recv(client_socket, buffer, BUFF_SIZE, 0)))
+
+	buffer = static_cast<char*>(ft_calloc(BUFF_SIZE + 1, sizeof(buffer)));
+	while((bytes_read = read(client_socket, buffer, BUFF_SIZE)))
 	{
 		msg_size += bytes_read;
-		if (msg_size > BUFF_SIZE - 1 || buffer[msg_size - 1] == '\n' || buffer[msg_size] == '\0')
+		if (msg_size > BUFF_SIZE - 1 || buffer[msg_size] == '\0' || buffer[msg_size - 1] == '\n' )
 			break;
 	}
-	//buffer[BUFF_SIZE]  = '\0';
+	printf("REQUEST: \n%s\n", buffer);
 	check(bytes_read, "recv error");
 
-	printf("REQUEST: \n%s\n", buffer);
 	fflush(stdout);
 
 	//Name file creation
@@ -77,7 +97,6 @@ void	*handle_connection(int client_socket, ServerInfo conf)
 	std::remove(namefile.c_str());
 	HttpResponse res(&req, &conf);
 	std::string cont = res.getResponse();
-	std::cout << "\n\n\n\nFINALE RESPONSE: " << cont << std::endl;
 	write(client_socket , cont.c_str(), cont.length()); //Envoie de la reponse au client
 	close(client_socket);
 	printf("closing connection\n");
