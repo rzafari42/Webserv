@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/29 02:50:51 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/10 20:06:29 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/10 20:13:22 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,19 +33,20 @@ void printCGI(std::string cgi)
         std::cout << "CGI: " << cgi  << std::endl;
 }
 
-void print_map(std::map<std::string, std::string> mymap, std::vector<std::string> vec)
+void print_map(std::map<std::string, std::string> mymap, std::string vec)
 {
     std::map<std::string,std::string>::iterator it;
 
     for (it = mymap.begin(); it != mymap.end(); ++it)
         std::cout << it->first << ": " << it->second << '\n';
 
-    std::vector<std::string>::iterator it_vec = vec.begin();
+    std::cout << "Body: \n" << vec << std::endl;
+   /* std::vector<std::string>::iterator it_vec = vec.begin();
     std::vector<std::string>::iterator ite_vec = vec.end();
 
     while(it_vec != ite_vec)
     {
         std::cout << *it_vec << std::endl;
         it_vec++;
-    }
+    }*/
 }

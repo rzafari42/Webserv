@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/21 12:19:15 by rzafari           #+#    #+#             */
-/*   Updated: 2022/02/10 20:07:11 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/10 21:02:58 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,8 +61,8 @@ int check_format_rqline(std::string s, Request *req)
     int nb_space = 0;
     int nb_arg = 0;
 
-   /* if (s.find('\r') == std::string::npos)
-        return error(REQUEST_LINE_FORMAT_CRLF, 1, req);*/
+   if (s.find('\n') == std::string::npos)   //cant find '\r' ??
+        return error(REQUEST_LINE_FORMAT_CRLF, 1, req);
     s.erase(s.size() - 2);
     while (i < s.length())
     {
@@ -84,9 +84,9 @@ int check_format_rqfield(std::string s, Request *req)
     int semi_colon = 0;
     int nb_arg = 0;
 
-    if (s.find("\r\n") == std::string::npos)
+    if (s.find("\n") == std::string::npos) //cant find '\r' ??
         return error(REQUEST_FIELD_FORMAT_CRLF, 1, req);
-    s.erase(s.size() - 2);
+    s.erase(s.size() - 1);
     while (i < s.length())
     {
         while (!isspace(s[i]) && i < s.length())
@@ -230,7 +230,7 @@ void parsing(std::string file, Request *request)
         line.push_back(file[i++]);
         if (!check_format_rqline(line, request))
         {
-            line.erase(line.size() - 2);
+            line.erase(line.size() - 1);
             if (!catch_request_line(line, request, cgi))
             {
                 line.clear();
@@ -239,16 +239,17 @@ void parsing(std::string file, Request *request)
                     while (file[i] && file[i] != '\n')
                         line.push_back(file[i++]);
                     line.push_back(file[i++]);
-                    if ((line[0] == '\r' && line[1] == '\n' ) || line[0] == '\r')
+                    if ((line[0] == '\r' && line[1] == '\n' ) || line[0] == '\n')
                         break;
                     if (!check_format_rqfield(line, request))
                     {
-                        line.erase(line.size() - 2);
+                        line.erase(line.size() - 1);
                         if (catchvalues(line, values, request) != 0)
                         {
                             parsingClear(values, body, line);
                             return;
                         }
+                        std::cout << "line: |" << line << "|" << std::endl;
                         line.clear();
                     }
                     else
@@ -309,3 +310,20 @@ Request req_parsing(std::string av)
     parsing(av, &request);
     return request;
 }
+
+/*
+int main(int ac, char **av)
+{
+    Request request;
+    std::vector<std::string> vec = request.get_contentTypeArray();
+
+    std::ifstream input_file(av[1]);
+    std::string file = std::string((std::istreambuf_iterator<char>(input_file)), std::istreambuf_iterator<char>());
+    if (ac < 2)
+        return error(EMPTY, 0, &request);
+    parsing(file, &request);
+    printCGI(request.get_cgi());
+    print_map(request.get_fields(), request.get_body());
+    //check if there's an CLRF at the end of each lines and if there's empty line before the body
+    return 0;
+}*/

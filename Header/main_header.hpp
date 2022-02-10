@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/14 21:13:24 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/10 20:07:31 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/10 20:13:43 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,6 @@
 int error(std::string str, int i, Request *request);
 void parsingClear(std::map<std::string, std::string> values, std::string body, std::string line);
 void printCGI(std::string cgi);
-void print_map(std::map<std::string, std::string> mymap, std::vector<std::string> vec);
+void print_map(std::map<std::string, std::string> mymap, std::string vec);
 
 #endif
