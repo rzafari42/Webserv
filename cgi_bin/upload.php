@@ -1,3 +1,5 @@
+#!/usr/local/bin/php
+
 <?php
    if(isset($_FILES['fichier'])){
       $errors= array();
