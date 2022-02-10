@@ -1,9 +1,4 @@
-<<<<<<< HEAD
 #!/mnt/c/Users/simbarre/Documents/42/webserv/cgi_bin/php-cgi7.2
-=======
-#!/usr/local/bin/php
-
->>>>>>> a859f0bcf72d6a7cbda5fdae579dcd780445dc8d
 <?php
    if(isset($_FILES['fichier'])){
       $errors= array();
