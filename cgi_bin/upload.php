@@ -1,3 +1,4 @@
+#!/mnt/c/Users/simbarre/Documents/42/webserv/cgi_bin/php-cgi7.2
 <?php
    if(isset($_FILES['fichier'])){
       $errors= array();
@@ -7,15 +8,15 @@
       $file_type=$_FILES['fichier']['type'];
       // $file_ext=strtolower(end(explode('.',$_FILES['fichier']['name'])));
       $file_ext = strtolower(pathinfo($file_name,PATHINFO_EXTENSION));
-      
+
       $extensions= array("html", "txt", "php");
-      
+
       if(in_array($file_ext,$extensions)=== false){
          $errors[]="extension not allowed";
       }
-      
+
       if(empty($errors)==true){
-         move_uploaded_file($file_tmp,"/Users/redwanezafari/Documents/42/Webserv/www/upload/".$file_name);
+         move_uploaded_file($file_tmp,"/mnt/c/Users/simbarre/Documents/42/webserv/YoupiBanane".$file_name);
          echo "Success";
       }else{
          print_r($errors);
