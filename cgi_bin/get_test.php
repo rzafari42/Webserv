@@ -1,4 +1,5 @@
-#!/mnt/c/Users/simbarre/Documents/42/webserv/cgi_bin/php-cgi7.2
+#!/usr/local/bin/php-cgi
+
 <html>
     <body>
         <?php

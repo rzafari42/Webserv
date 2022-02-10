@@ -356,6 +356,7 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
     {
         CGI_Handler tmp_cgi(*req, *conf, *loc);
         _content = tmp_cgi.run_CGI(loc->get_cgi_path());
+        std::cout << "CONTENT: \n" << _content << std::endl;
         if (!_content.empty())
             _statusCode =  200;
         else
