@@ -20,6 +20,7 @@ class HttpWorker {
         void run( void );
         void acceptConnection( int server_socket, ServerInfo s_info );
         bool handleRead(Connexion *c, ServerInfo conf);
+        bool handleWrite(Connexion *c);
 };
 
 #endif

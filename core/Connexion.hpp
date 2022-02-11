@@ -42,6 +42,7 @@ class Connexion {
 
         void app_request( char *buffer ) { request_content.append(buffer); }
         void request_parsing( char *buffer ) { request = req_parsing(buffer); }
+        void init_response( ServerInfo &conf ) { response = HttpResponse(&request, &conf); }
 
         class ConnexionException : public std::exception 
         {

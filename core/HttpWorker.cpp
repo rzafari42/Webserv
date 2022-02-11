@@ -47,18 +47,20 @@ bool HttpWorker::handleRead(Connexion *c, ServerInfo conf) {
         std::cout << c->get_request_content() << std::endl;
 	    fflush(stdout);
 	    
-	    HttpResponse res(c->get_request_ptr(), &conf);
-	    std::string cont = res.getResponse();
-	    write(client_socket , cont.c_str(), cont.length()); //Envoie de la reponse au client
-	    close(client_socket);
-	    printf("closing connection\n");
+        c->init_response(conf);
+        handleWrite(c);
     }
     return can_continue;
 }
 
-//HttpWorker::handleWrite(Connexion *c, ServerInfo conf) {
-
-//}
+bool HttpWorker::handleWrite(Connexion *c) {
+    int client_socket = c->get_sock();
+    std::string cont = c->get_response().getResponse();
+    write(client_socket , cont.c_str(), cont.length()); //Envoie de la reponse au client
+    close(client_socket);
+    printf("closing connection\n");
+    return true;
+}
 
 void HttpWorker::run() {
     // FD_SETS
