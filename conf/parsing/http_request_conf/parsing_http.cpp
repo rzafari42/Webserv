@@ -273,12 +273,14 @@ void parsing(std::string file, Request *request)
         std::vector<std::string> content_type = request->get_contentTypeArray();
         std::vector<std::string>::iterator it_c = content_type.begin();
         std::vector<std::string>::iterator it_ce = content_type.end();
-
-        while (it_c != it_ce )
-        {
-            if (!it->second.compare(*it_c))
-                break;
-            it_c++;
+        
+        if (it != values.end()) {
+            while (it_c != it_ce )
+            {
+                if (!it->second.compare(*it_c))
+                    break;
+                it_c++;
+            }
         }
         if (it == values.end() || it_c == it_ce )
             request->set_contentType("text/html");
