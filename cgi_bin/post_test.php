@@ -1,4 +1,4 @@
-#!/usr/local/bin/php
+#!/usr/bin/php-cgi
 <html>
     <body>
         <?php

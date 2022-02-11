@@ -1,23 +1,8 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   CGI_Handler.cpp                                    :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/01/17 14:12:53 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/09 18:22:58 by rzafari          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "CGI_Handler.hpp"
 
 CGI_Handler::CGI_Handler(Request &request, ServerInfo &conf, Location &loc) : _req(request), _conf(conf), _loc(loc)
 {
-	std::vector<std::string> tmp = request.get_body();
-
-	for (std::vector<std::string>::const_iterator i = tmp.begin(); i != tmp.end(); ++i)
-		_body += *i;
+	_body = request.get_body();
 
 	_env["AUTH_TYPE"]			= "";
 	_env["CONTENT_TYPE"]		= _req.get_contentType();
@@ -125,8 +110,12 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 		if (fd_tmp < 0)
 			return (NULL);
 		dup2(fd_tmp, 1);
-		if (execve(args[0], args, env) == -1)
+
+		if (execve(args[0], args, env) == -1) {
+			std::cout << "-----> " << args[0] << std::endl;
+			perror("EXECVE :");
 			return (NULL);
+		}
 		close(0);
 		close(fd_tmp);
 		close(pipe_fd[0]);

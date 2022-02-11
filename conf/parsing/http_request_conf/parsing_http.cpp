@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   parsing_http.cpp                                   :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/12/21 12:19:15 by rzafari           #+#    #+#             */
-/*   Updated: 2022/02/09 17:21:33 by rzafari          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../../../Header/main_header.hpp"
 
 Request::Request()
@@ -63,8 +51,8 @@ int check_format_rqline(std::string s, Request *req)
     int nb_space = 0;
     int nb_arg = 0;
 
-   /* if (s.find('\r') == std::string::npos)
-        return error(REQUEST_LINE_FORMAT_CRLF, 1, req);*/
+   if (s.find('\n') == std::string::npos)   //cant find '\r' ??
+        return error(REQUEST_LINE_FORMAT_CRLF, 1, req);
     s.erase(s.size() - 2);
     while (i < s.length())
     {
@@ -86,9 +74,9 @@ int check_format_rqfield(std::string s, Request *req)
     int semi_colon = 0;
     int nb_arg = 0;
 
-    if (s.find("\r\n") == std::string::npos)
+    if (s.find("\n") == std::string::npos) //cant find '\r' ??
         return error(REQUEST_FIELD_FORMAT_CRLF, 1, req);
-    s.erase(s.size() - 2);
+    s.erase(s.size() - 1);
     while (i < s.length())
     {
         while (!isspace(s[i]) && i < s.length())
@@ -156,7 +144,7 @@ int catch_request_line(const std::string s, Request *req, std::string &cgi) //Fo
     req->set_url(tmp);
     tmp.clear();
     i++;
-    while (i < s.length())
+    while (!isspace(s[i]) && i < s.length())
     {
         tmp.push_back(s[i]);
         i++;
@@ -220,67 +208,63 @@ void check_errors(Request *req)
 
 void parsing(std::string file, Request *request)
 {
-    std::ifstream flux(file.c_str());
 
-    if (flux)
-    {
         std::map<std::string, std::string> values;
         std::string cgi;
-        std::vector<std::string> body;
+        std::string body;
         std::string line;
 
-        char c;
-        while (flux.get(c) && c != '\n')
-            line.push_back(c);
-        line.push_back(c);
+        int i = 0;
+        while (file[i] && file[i] != '\n')
+            line.push_back(file[i++]);
+        line.push_back(file[i++]);
         if (!check_format_rqline(line, request))
         {
-            line.erase(line.size() - 2);
+            line.erase(line.size() - 1);
             if (!catch_request_line(line, request, cgi))
             {
                 line.clear();
                 while (1)
                 {
-                    while (flux.get(c) && c != '\n')
-                        line.push_back(c);
-                    line.push_back(c);
-                    if ((line[0] == '\r' && line[1] == '\n' ) || line[0] == '\r')
+                    while (file[i] && file[i] != '\n')
+                        line.push_back(file[i++]);
+                    line.push_back(file[i++]);
+                    if ((line[0] == '\r' && line[1] == '\n' ) || line[0] == '\n')
                         break;
                     if (!check_format_rqfield(line, request))
                     {
-                        line.erase(line.size() - 2);
+                        line.erase(line.size() - 1);
                         if (catchvalues(line, values, request) != 0)
                         {
-                            parsingClear(flux, values, body, line);
+                            parsingClear(values, body, line);
                             return;
                         }
                         line.clear();
                     }
                     else
                     {
-                        parsingClear(flux, values, body, line);
+                        parsingClear(values, body, line);
                         return;
                     }
                 }
-                if (!flux.eof())
+                std::string::iterator it = file.begin() + i;
+                std::string::iterator ite = file.end();
+                if (it != ite)
                 {   
-                    while (getline(flux, line))
-                    {
-                        body.push_back(line);
-                        line.clear();
-                    }
+                    while (file[i])
+                        body.push_back(file[i++]);
                 }
             }
             else
             {
-                parsingClear(flux, values, body, line);
+                parsingClear(values, body, line);
                 error(CGI_CONTENT_TYPE, 1, request);
                 return;
             }
         }
         else
         {
-            parsingClear(flux, values, body, line);
+            parsingClear(values, body, line);
             return;
         }
 
@@ -304,11 +288,8 @@ void parsing(std::string file, Request *request)
         request->set_cgi(cgi);
         request->set_body(body);
         //print_map(request->get_fields(), request->get_body());
-        parsingClear(flux, values, body, line);
+        parsingClear(values, body, line);
         return;
-    }
-    else
-        error(OPENING_FAILURE, 0, request);
 }
 
 Request req_parsing(std::string av)
@@ -317,16 +298,3 @@ Request req_parsing(std::string av)
     parsing(av, &request);
     return request;
 }
-
-/*int main(int ac, char **av)
-{
-    Request request;
-    std::vector<std::string> vec = request.get_contentTypeArray();
-    if (ac < 2)
-        return error(EMPTY, 0, &request);
-    parsing(av[1], &request);
-    printCGI(request.get_cgi());
-    print_map(request.get_fields(), request.get_body());
-    //check if there's an CLRF at the end of each lines and if there's empty line before the body
-    return 0;
-}*/
