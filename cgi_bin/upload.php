@@ -1,4 +1,3 @@
-
 #!/usr/bin/php-cgi
 <?php
   $target_dir = "uploads/";
