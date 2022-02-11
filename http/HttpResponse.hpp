@@ -12,7 +12,10 @@
 
 #ifndef HTTPRESPONSE_HPP
 # define HTTPRESPONSE_HPP
-# include "main_header.hpp"
+
+# include "parsing_http.hpp"
+# include "../conf/ServerInfo.hpp"
+# include "../main_header.hpp"
 
 class HttpResponse
 {

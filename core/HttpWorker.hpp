@@ -1,7 +1,10 @@
 #ifndef HTTP_WORKER_HPP
 # define HTTP_WORKER_HPP
 
-# include "../Header/main_header.hpp"
+# include "VirtualServer.hpp"
+# include "Connexion.hpp"
+# include "../conf/ServerInfo.hpp"
+# include "../main_header.hpp"
 
 class HttpWorker {
     private:

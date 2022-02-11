@@ -1,14 +1,18 @@
 #ifndef CONNEXION_HPP
 # define CONNEXION_HPP
 
-# include "../Header/main_header.hpp"
+# include "../http/parsing_http.hpp"
+# include "../http/HttpResponse.hpp"
+# include "../main_header.hpp"
 
 class Connexion {
     private:
-        int         sock;
-        std::string request;
-        fd_set*     active_read;
-        fd_set*     active_write;
+        int             sock;
+        std::string     request_content;
+        Request         request;
+        HttpResponse    response;
+        fd_set*         active_read;
+        fd_set*         active_write;
 
     public:
         Connexion( int server_socket, fd_set* r, fd_set* w ) : active_read(r), active_write(w) {
@@ -30,10 +34,14 @@ class Connexion {
         int isReadReady( void ) { return FD_ISSET(sock, active_read); }
         int isWriteReady( void ) { return FD_ISSET(sock, active_write); }
 
-        int get_sock( void ) { return sock; }
-        std::string get_request( void ) { return request; }
+        int             get_sock( void ) { return sock; }
+        std::string     get_request_content( void ) { return request_content; }
+        Request         get_request( void ) { return request; }
+        Request*        get_request_ptr( void ) { return &request; }
+        HttpResponse    get_response( void ) { return response; }
 
-        void app_request( char *buffer ) { request.append(buffer); }
+        void app_request( char *buffer ) { request_content.append(buffer); }
+        void request_parsing( char *buffer ) { request = req_parsing(buffer); }
 
         class ConnexionException : public std::exception 
         {

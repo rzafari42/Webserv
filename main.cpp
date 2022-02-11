@@ -1,7 +1,10 @@
 #define SERVER_PORT			8080
 #define BUFF_SIZE			4096
 
-#include "Header/main_header.hpp"
+#include "main_header.hpp"
+#include "conf/ParserConf.hpp"
+#include "http/parsing_http.hpp"
+#include "core/HttpWorker.hpp"
 
 int		main(int argc, char *argv[])
 {

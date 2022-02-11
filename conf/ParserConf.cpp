@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "../../../Header/main_header.hpp"
+# include "ParserConf.hpp"
 
 ParserConf::ParserConf( void ) {}
 ParserConf::~ParserConf() {}

@@ -13,7 +13,9 @@
 #ifndef PARSING_HTTP_HPP
 # define PARSING_HTTP_HPP
 
-# include "../../../Header/main_header.hpp"
+# include "../conf/ServerInfo.hpp"
+# include "parsing_http.hpp"
+# include "../main_header.hpp"
 # define CGI_EXTENSION ".php"
 
 class Request{

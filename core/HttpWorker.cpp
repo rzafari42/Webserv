@@ -18,24 +18,23 @@ bool HttpWorker::handleRead(Connexion *c, ServerInfo conf) {
     int     client_socket = c->get_sock();
     char	buffer[BUFF_SIZE + 1];
     bool    can_continue = true;
-    Request req;
 
 	memset(buffer, '\0', sizeof(buffer));
 	if (recv(client_socket, buffer, BUFF_SIZE, 0) > 0) {
 		c->app_request(buffer);
-        req = req_parsing(buffer);
+        c->request_parsing(buffer);
         
         std::map<std::string, std::string>::iterator it;
-        it = req.get_fields().find("Content-Length");
+        it = c->get_request().get_fields().find("Content-Length");
 
-        if (it != req.get_fields().end())
+        if (it != c->get_request().get_fields().end())
             std::cout << it->second << "*" << std::endl;
         else
             std::cout << "yeet" << std::endl;
         
-        if (c->get_request().find("\r\n\r\n") != std::string::npos) {
-            if (!req.get_method().compare("POST")) {
-                if (it != req.get_fields().end()) {
+        if (c->get_request_content().find("\r\n\r\n") != std::string::npos) {
+            if (!c->get_request().get_method().compare("POST")) {
+                if (it != c->get_request().get_fields().end()) {
                     std::cout << it->second << std::endl;
                 }
             }
@@ -45,10 +44,10 @@ bool HttpWorker::handleRead(Connexion *c, ServerInfo conf) {
     }
 
     if (can_continue) {
-        std::cout << c->get_request() << std::endl;
+        std::cout << c->get_request_content() << std::endl;
 	    fflush(stdout);
 	    
-	    HttpResponse res(&req, &conf);
+	    HttpResponse res(c->get_request_ptr(), &conf);
 	    std::string cont = res.getResponse();
 	    write(client_socket , cont.c_str(), cont.length()); //Envoie de la reponse au client
 	    close(client_socket);
@@ -56,6 +55,10 @@ bool HttpWorker::handleRead(Connexion *c, ServerInfo conf) {
     }
     return can_continue;
 }
+
+//HttpWorker::handleWrite(Connexion *c, ServerInfo conf) {
+
+//}
 
 void HttpWorker::run() {
     // FD_SETS

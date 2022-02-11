@@ -1,4 +1,5 @@
 #include "HttpResponse.hpp"
+#include "../cgi/CGI_Handler.hpp"
 
 HttpResponse::HttpResponse()
 {

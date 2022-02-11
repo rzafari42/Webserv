@@ -13,10 +13,10 @@
 #ifndef CGI_HANDLER_HPP
 # define CGI_HANDLER_HPP
 
-#include "main_header.hpp"
-
-	#include <sys/types.h>			//include in main_header at the end
-	#include <sys/wait.h>			//same
+# include "../http/HttpResponse.hpp"
+# include "../conf/ServerInfo.hpp"
+# include "../http/parsing_http.hpp"
+# include "../main_header.hpp"
 
 class	CGI_Handler
 {

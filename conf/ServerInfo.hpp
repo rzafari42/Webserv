@@ -13,7 +13,8 @@
 #ifndef SERVER_INFO_HPP
 # define SERVER_INFO_HPP
 
-# include "../../../Header/main_header.hpp"
+# include "Location.hpp"
+# include "../main_header.hpp"
 
 class ServerInfo
 {

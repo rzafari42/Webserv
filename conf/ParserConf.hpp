@@ -13,7 +13,9 @@
 #ifndef PARSER_CONF_HPP
 # define PARSER_CONF_HPP
 
-# include "../../../Header/main_header.hpp"
+
+# include "ServerInfo.hpp"
+# include "../main_header.hpp"
 
 # define EMPTY "Error: Not enough arguments"
 # define OPENING_FAILURE "Error: File is not accessible in reading mode"

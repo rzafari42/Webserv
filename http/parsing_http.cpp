@@ -1,4 +1,19 @@
-#include "../../../Header/main_header.hpp"
+#include "parsing_http.hpp"
+
+static int error(std::string str, int i, Request *request)
+{
+    if(i == 1)
+        request->set_isErrorSyntax();
+    std::cout << str << std::endl;
+    return -1;
+}
+
+static void parsingClear(std::map<std::string, std::string> values, std::string body, std::string line)
+{
+    line.clear();
+    values.clear();
+    body.clear();
+}
 
 Request::Request()
 {

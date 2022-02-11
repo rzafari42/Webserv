@@ -13,7 +13,7 @@
 #ifndef LOCATION_HPP
 # define LOCATION_HPP
 
-# include "../../../Header/main_header.hpp"
+# include "../main_header.hpp"
 
 class Location
 {
