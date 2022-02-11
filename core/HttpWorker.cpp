@@ -18,24 +18,24 @@ bool HttpWorker::handleRead(Connexion *c, ServerInfo conf) {
     int     client_socket = c->get_sock();
     char	buffer[BUFF_SIZE + 1];
     bool    can_continue = true;
+    int     len;
 
 	memset(buffer, '\0', sizeof(buffer));
-	if (recv(client_socket, buffer, BUFF_SIZE, 0) > 0) {
+    len = recv(client_socket, buffer, BUFF_SIZE, 0); 
+	if (len > 0) {
 		c->app_request(buffer);
         c->request_parsing(buffer);
         
+        std::map<std::string, std::string> mymap = c->get_request().get_fields();
         std::map<std::string, std::string>::iterator it;
-        it = c->get_request().get_fields().find("Content-Length");
+        it = mymap.find("Content-Length");
 
-        if (it != c->get_request().get_fields().end())
-            std::cout << it->second << "*" << std::endl;
-        else
-            std::cout << "yeet" << std::endl;
-        
         if (c->get_request_content().find("\r\n\r\n") != std::string::npos) {
             if (!c->get_request().get_method().compare("POST")) {
-                if (it != c->get_request().get_fields().end()) {
-                    std::cout << it->second << std::endl;
+                if (it != mymap.end()) {
+                    if ((int)c->get_request().get_body().size() > std::atoi((it->second).c_str())) {
+                        can_continue = false;
+                    }
                 }
             }
         } else {
