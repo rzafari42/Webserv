@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 22:01:31 by simbarre          #+#    #+#             */
-/*   Updated: 2022/02/10 20:40:44 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/11 12:11:35 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ void	*handle_connection(int client_socket, ServerInfo conf)
 	static int i = 0;
 
 	buffer = static_cast<char*>(calloc(BUFF_SIZE + 1, sizeof(buffer)));
-@
+
 	while((bytes_read = read(client_socket, buffer, BUFF_SIZE)))
 	{
 		msg_size += bytes_read;

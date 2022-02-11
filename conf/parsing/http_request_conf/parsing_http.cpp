@@ -6,7 +6,7 @@
 /*   By: rzafari <rzafari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/21 12:19:15 by rzafari           #+#    #+#             */
-/*   Updated: 2022/02/10 17:42:06 by rzafari          ###   ########.fr       */
+/*   Updated: 2022/02/11 14:23:12 by rzafari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -293,12 +293,15 @@ void parsing(std::string file, Request *request)
         std::vector<std::string>::iterator it_c = content_type.begin();
         std::vector<std::string>::iterator it_ce = content_type.end();
 
+        
         //std::cout << "it->second:" << it->second << std::endl;
-        while (it_c != it_ce )
-        {
-            if (it->second.find(*it_c) != std::string::npos)
-                break;
-            it_c++;
+        if (it != values.end()){
+            while (it_c != it_ce )
+            {
+                if (it->second.find(*it_c) != std::string::npos)
+                    break;
+                it_c++;
+            }
         }
         if (it == values.end() || it_c == it_ce )
             request->set_contentType("text/html");

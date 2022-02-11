@@ -1,4 +1,4 @@
-#!/mnt/c/Users/simbarre/Documents/42/webserv/cgi_bin/php-cgi7.2
+#!/Users/redwanezafari/Documents/42/Webserv/cgi_bin/php-cgi7.2
 
 <?php
 
@@ -18,7 +18,7 @@
       }
 
       if(empty($errors)==true){
-         move_uploaded_file($file_tmp,"/mnt/c/Users/simbarre/Documents/42/webserv/YoupiBanane".$file_name);
+         move_uploaded_file($file_tmp,"/Users/redwanezafari/Documents/42/Webserv/YoupiBanane".$file_name);
          echo "Success";
       }else{
          print_r($errors);
