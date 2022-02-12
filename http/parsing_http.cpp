@@ -54,6 +54,7 @@ void Request::initContentType()
     _contentTypeArray.push_back("application/pkcs12");
     _contentTypeArray.push_back("application/vnd.mspowerpoint");
     _contentTypeArray.push_back("application/xhtml+xml");
+    _contentTypeArray.push_back("application/x-www-form-urlencoded");
     _contentTypeArray.push_back("application/xml");
     _contentTypeArray.push_back("application/pdf");
 
@@ -301,6 +302,11 @@ void parsing(std::string file, Request *request)
             request->set_contentType("text/html");
         else
             request->set_contentType(*it_c);
+        std::cout << "CONTENT-TYPE:" << request->get_contentType() << std::endl;
+        if (!request->get_contentType().compare("application/x-www-form-urlencoded") && body.empty())
+        {
+            std::cout << "PARSING00" << std::endl;
+        }
         request->set_fields(values);
         request->set_cgi(cgi);
         request->set_body(body);

@@ -8,8 +8,10 @@ CGI_Handler::CGI_Handler(Request &request, ServerInfo &conf, Location &loc) : _r
 
 	_env["AUTH_TYPE"]			= "";
 	_env["CONTENT_TYPE"]		= _req.get_contentType();
+	std::cout << "CGI content_type: " << _req.get_contentType() << std::endl;
 	_env["GATEWAY_INTERFACE"]	= "CGI/1.1";
 	_env["QUERY_STRING"]		= _req.get_cgi();
+	std::cout << "Query_string: " << _env["QUERY_STRING"] << std::endl;
 	_env["REDIRECT_STATUS"]		= "200";
 	_env["REQUEST_METHOD"]		= _req.get_method();
 	_env["REQUEST_URI"]			= _loc.get_uri();
@@ -84,10 +86,8 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 
 	_env["PATH_INFO"]			= script;
 	_env["PATH_TRANSLATED"]		= script;
-	std::cout << "CGI content_type: " << _env["CONTENT_TYPE"] << std::endl;
 	std::cout << "CGI script: " << _env["SCRIPT_NAME"] << std::endl;
 	std::cout << "my body is ready : \n" << _body << std::endl;
-
 
 	fd_saver[0] = dup(STDIN_FILENO);
 	fd_saver[1] = dup(STDOUT_FILENO);
@@ -100,7 +100,6 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 		return (NULL);
 	else if (pid == 0)
 	{
-		std::cout << "LOL" << std::endl;
 		char	**env = env_to_double_char();
 		char	*args[2];
 
@@ -132,7 +131,6 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 		close(pipe_fd[0]);
 		write(pipe_fd[1], _body.c_str(), _body.length());
 		close(pipe_fd[1]);
-		std::cout << "LOL" << std::endl;
 		int status = 0;
         waitpid(pid, &status, 0);						//everyone uses -1 instead of pid, maybe move it at the top ?
 	}
