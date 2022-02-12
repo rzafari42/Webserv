@@ -78,70 +78,81 @@ char		**CGI_Handler::env_to_double_char(void)
 
 std::string	CGI_Handler::run_CGI(const std::string &script)
 {
-	pid_t	pid;
-	int		fd_saver[2];
-	int		pipe_fd[2];									//not everybody uses pipes, but it makes more sense to me
+	int fdOut[2];
+	int fdIN[2];
+	std::string msgbody;
+
+	std::cout << "BODY = [" << _req.get_body() << "]" << std::endl;
 
 	_env["PATH_INFO"]			= script;
 	_env["PATH_TRANSLATED"]		= script;
-	std::cout << "CGI content_type: " << _env["CONTENT_TYPE"] << std::endl;
-	std::cout << "CGI script: " << _env["SCRIPT_NAME"] << std::endl;
 
-	fd_saver[0] = dup(STDIN_FILENO);
-	fd_saver[1] = dup(STDOUT_FILENO);
+	if (pipe(fdOut) < 0 || pipe(fdIN) < 0)
+		std::cout << "pipe failed in executeCGI method" << std::endl;
 
-	if (pipe(pipe_fd))
-		exit(EXIT_FAILURE);								//add more error management
+	pid_t pid = fork();
 
-	pid = fork();
-	if (pid == -1)
-		return (NULL);
-	else if (pid == 0)
-	{
+	if (!pid){ // in child
+
 		char	**env = env_to_double_char();
 		char	*args[2];
 
-		args[0] = (char*)script.c_str();
-		args[1] = NULL;
+		args[0] = (char*)"/usr/bin/php-cgi";
+		args[1] = (char*)script.c_str();
+		args[2] = NULL;
 
-		close(pipe_fd[1]);
-		dup2(pipe_fd[0], 0);
+		// stdout is now a copy of fdOut[1] and in case post method, stdin is a copy of fdIn[0]
+		dup2(fdOut[1], STDOUT_FILENO);
+		close(fdOut[0]);
+		close(fdOut[1]);
 
-		int	fd_tmp = open("/tmp/cgi_output", O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
+		dup2(fdIN[0], STDIN_FILENO);
+		close(fdIN[0]);
+		close(fdIN[1]);
 
-		if (fd_tmp < 0)
-			return (NULL);
-		dup2(fd_tmp, 1);
+		// change the repo into where the program is
+		chdir(this->_loc.get_root().c_str());
 
-		if (execve(args[0], args, env) == -1) {
-			std::cout << "-----> " << args[0] << std::endl;
-			perror("EXECVE :");
-			return (NULL);
+		if (execve(args[0], args, env) < 0){
+			exit(-1);
 		}
-		close(0);
-		close(fd_tmp);
-		close(pipe_fd[0]);
 
 		delete [] env;
-
-		exit(0);
 	}
-	else
-	{
-		close(pipe_fd[0]);
-		write(pipe_fd[1], _body.c_str(), _body.length());
-		close(pipe_fd[1]);
-		waitpid(pid, NULL, 0);							//everyone uses -1 instead of pid, maybe move it at the top ?
+	else if (pid > 0){ // in parent
+
+		close(fdOut[1]);
+		write(fdIN[1], _body.c_str(), _body.length());
+		close(fdIN[1]);
+		close(fdIN[0]);
+
+        // Checking if execve correctly worked
+        int status = 0;
+        waitpid(pid, &status, 0);
+        if (WIFEXITED(status) && WEXITSTATUS(status) == -1)
+			std::cerr << "error: execve failed in executeCGI method" << std::endl;
+		char buf[64 + 1] = {0};
+		while (read(fdOut[0], buf, 64) > 0)
+		{
+			msgbody += buf;
+			memset(buf, 0, 64 + 1);
+		}
+		msgbody += buf;
+
+		close(fdOut[0]);
+	}
+	else{
+		close(fdOut[1]);
+		close(fdOut[0]);
+		if (this->_req.get_method() == "POST")
+		{
+			close(fdIN[0]);
+			close(fdIN[1]);
+		}
+		std::cout << "fork failed executeCGI method" << std::endl;
 	}
 
-	dup2(fd_saver[0], STDIN_FILENO);
-	dup2(fd_saver[1], STDOUT_FILENO);
-	close(fd_saver[0]);
-	close(fd_saver[1]);
+	return msgbody;
 
-	if (pid == 0)
-		exit(0);
-
-	return (file_to_str("/tmp/cgi_output"));
 }
 

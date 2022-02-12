@@ -29,7 +29,7 @@ fclean:			clean
 re:				fclean $(NAME)
 
 test: re
-				./$(NAME) conf/conf_files/default00.conf
+				./$(NAME) conf_files/default00.conf
 
 valgrind: re
 				valgrind --leak-check=full --leak-check=full --trace-children=yes ./$(NAME) conf/conf_files/default00.conf
