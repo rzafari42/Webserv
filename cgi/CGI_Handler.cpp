@@ -97,9 +97,11 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 		char	**env = env_to_double_char();
 		char	*args[2];
 
-		args[0] = (char*)"/usr/bin/php-cgi";
-		args[1] = (char*)script.c_str();
-		args[2] = NULL;
+		args[0] = (char*)"/mnt/c/Users/simon/Documents/42/webserv/cgi_bin/php-cgi7.2";
+		args[1] = (char*)"-c";
+		args[2] = (char*)"/mnt/c/Users/simon/Documents/42/webserv/cgi_bin/php.ini";
+		args[3] = (char*)script.c_str();
+		args[4] = NULL;
 
 		// stdout is now a copy of fdOut[1] and in case post method, stdin is a copy of fdIn[0]
 		dup2(fdOut[1], STDOUT_FILENO);

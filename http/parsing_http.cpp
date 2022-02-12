@@ -68,7 +68,7 @@ int check_format_rqline(std::string s, Request *req)
 
    if (s.find('\n') == std::string::npos)   //cant find '\r' ??
         return error(REQUEST_LINE_FORMAT_CRLF, 1, req);
-    s.erase(s.size() - 2);
+    s.erase(s.size() - 1);
     while (i < s.length())
     {
         while (!isspace(s[i]) && i < s.length())
@@ -198,7 +198,7 @@ int catchvalues(const std::string s, std::map<std::string, std::string> &mp, Req
         if (isspace(s[i]))
             i++;
         else
-        { 
+        {
             value.push_back(s[i]);
             i++;
         }
@@ -265,7 +265,7 @@ void parsing(std::string file, Request *request)
                 std::string::iterator it = file.begin() + i;
                 std::string::iterator ite = file.end();
                 if (it != ite)
-                {   
+                {
                     while (file[i])
                         body.push_back(file[i++]);
                 }
@@ -288,7 +288,7 @@ void parsing(std::string file, Request *request)
         std::vector<std::string> content_type = request->get_contentTypeArray();
         std::vector<std::string>::iterator it_c = content_type.begin();
         std::vector<std::string>::iterator it_ce = content_type.end();
-        
+
         if (it != values.end()) {
             while (it_c != it_ce )
             {

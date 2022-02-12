@@ -16,14 +16,15 @@ void HttpWorker::acceptConnection( int server_socket, ServerInfo s_info ) {
 
 bool HttpWorker::handleRead(Connexion *c, ServerInfo conf) {
     int     client_socket = c->get_sock();
-    char	buffer[BUFF_SIZE + 1];
+    char	*buffer;
     bool    can_continue = true;
 
-	memset(buffer, '\0', sizeof(buffer));
+	buffer = (char*)calloc(BUFF_SIZE, sizeof(char));
 	if (recv(client_socket, buffer, BUFF_SIZE, 0) > 0) {
+        fprintf(stderr, "AWHDLIAWHDFLAIE HFLISWRE GLIUR EGLIAEU RTLGHIUA ETLIHU SLREITUH LSIRTU HLSIRUT HLISRTU H = \n[%s]\n", buffer);
 		c->app_request(buffer);
         c->request_parsing(buffer);
-        
+
         std::map<std::string, std::string>::iterator it;
         it = c->get_request().get_fields().find("Content-Length");
 
@@ -31,7 +32,7 @@ bool HttpWorker::handleRead(Connexion *c, ServerInfo conf) {
             std::cout << it->second << "*" << std::endl;
         else
             std::cout << "yeet" << std::endl;
-        
+
         if (c->get_request_content().find("\r\n\r\n") != std::string::npos) {
             if (!c->get_request().get_method().compare("POST")) {
                 if (it != c->get_request().get_fields().end()) {
@@ -46,7 +47,7 @@ bool HttpWorker::handleRead(Connexion *c, ServerInfo conf) {
     if (can_continue) {
         std::cout << c->get_request_content() << std::endl;
 	    fflush(stdout);
-	    
+
 	    HttpResponse res(c->get_request_ptr(), &conf);
 	    std::string cont = res.getResponse();
 	    write(client_socket , cont.c_str(), cont.length()); //Envoie de la reponse au client
@@ -68,7 +69,7 @@ void HttpWorker::run() {
     // Initialise reading set with Server Sockets
     std::map<int, ServerInfo>::iterator it_s;
     std::map<Connexion*, ServerInfo>::iterator it_c;
-    
+
     FD_ZERO(&active_read);
     FD_ZERO(&active_write);
 
@@ -86,7 +87,7 @@ void HttpWorker::run() {
             std::cerr << "Select failed: " << strerror(errno) << std::endl;
             return ;
         }
-        
+
         // New connection
         for (it_s = virtual_servers.begin(); it_s != virtual_servers.end(); it_s++)
             if (FD_ISSET(it_s->first, &available_read))
@@ -101,9 +102,9 @@ void HttpWorker::run() {
             }
         }
     }
-    
+
     virtual_servers.clear();
     connexions.clear();
-    
+
     return ;
 }
