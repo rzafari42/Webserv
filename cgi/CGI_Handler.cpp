@@ -4,7 +4,7 @@ CGI_Handler::CGI_Handler(Request &request, ServerInfo &conf, Location &loc) : _r
 {
 	_body = request.get_body();
 
-	std::cout << "my body is ready : " << _body << std::endl;
+	//std::cout << "my body is ready : " << _body << std::endl;
 
 	_env["AUTH_TYPE"]			= "";
 	_env["CONTENT_TYPE"]		= _req.get_contentType();
@@ -86,6 +86,8 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 	_env["PATH_TRANSLATED"]		= script;
 	std::cout << "CGI content_type: " << _env["CONTENT_TYPE"] << std::endl;
 	std::cout << "CGI script: " << _env["SCRIPT_NAME"] << std::endl;
+	std::cout << "my body is ready : \n" << _body << std::endl;
+
 
 	fd_saver[0] = dup(STDIN_FILENO);
 	fd_saver[1] = dup(STDOUT_FILENO);
@@ -98,6 +100,7 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 		return (NULL);
 	else if (pid == 0)
 	{
+		std::cout << "LOL" << std::endl;
 		char	**env = env_to_double_char();
 		char	*args[2];
 
@@ -114,8 +117,6 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 		dup2(fd_tmp, 1);
 
 		if (execve(args[0], args, env) == -1) {
-			std::cout << "-----> " << args[0] << std::endl;
-			perror("EXECVE :");
 			return (NULL);
 		}
 		close(0);
@@ -131,7 +132,9 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 		close(pipe_fd[0]);
 		write(pipe_fd[1], _body.c_str(), _body.length());
 		close(pipe_fd[1]);
-		waitpid(pid, NULL, 0);							//everyone uses -1 instead of pid, maybe move it at the top ?
+		std::cout << "LOL" << std::endl;
+		int status = 0;
+        waitpid(pid, &status, 0);						//everyone uses -1 instead of pid, maybe move it at the top ?
 	}
 
 	dup2(fd_saver[0], STDIN_FILENO);
