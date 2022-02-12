@@ -376,9 +376,13 @@ void HttpResponse::handle_post_method(Request *req, ServerInfo *conf)
 {
     std::vector<Location> locations = conf->get_locations();
 
+//std::cout << "URL:" << req->get_url() << std::endl;
     Location *loc = which_location(&locations, req->get_url());
+//std::cout << "URL:" << req->get_url() << std::endl;
     CGI_Handler tmp_cgi(*req, *conf, *loc);
+//std::cout << "URL:" << req->get_url() << std::endl;
     _content = tmp_cgi.run_CGI(loc->get_cgi_path());
+//std::cout << "URL:" << req->get_url() << std::endl;
     
     std::cout << "Content: " << _content << std::endl;
     if (!_content.empty())
@@ -386,6 +390,7 @@ void HttpResponse::handle_post_method(Request *req, ServerInfo *conf)
     else
     {
         req->set_url(ERROR_500_PATH);
+//      std::cout << "URL:" << req->get_url() << std::endl;
         std::ifstream sourceFile(req->get_url().c_str(), std::ifstream::in);
         if (sourceFile.good())
         {

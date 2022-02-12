@@ -54,7 +54,7 @@ void Request::initContentType()
     _contentTypeArray.push_back("application/pkcs12");
     _contentTypeArray.push_back("application/vnd.mspowerpoint");
     _contentTypeArray.push_back("application/xhtml+xml");
-    _contentTypeArray.push_back("application/x-www-form-urlencoded");
+    //_contentTypeArray.push_back("application/x-www-form-urlencoded");
     _contentTypeArray.push_back("application/xml");
     _contentTypeArray.push_back("application/pdf");
 
@@ -67,7 +67,7 @@ int check_format_rqline(std::string s, Request *req)
     int nb_space = 0;
     int nb_arg = 0;
 
-   if (s.find('\n') == std::string::npos)   //cant find '\r' ??
+    if(s.find("\r") == std::string::npos && s.find("\n") == std::string::npos )  //cant find '\r' ??
         return error(REQUEST_LINE_FORMAT_CRLF, 1, req);
     s.erase(s.size() - 2);
     while (i < s.length())
@@ -90,7 +90,7 @@ int check_format_rqfield(std::string s, Request *req)
     int semi_colon = 0;
     int nb_arg = 0;
 
-    if (s.find("\n") == std::string::npos) //cant find '\r' ??
+    if (s.find("\r") == std::string::npos && s.find("\n") == std::string::npos ) //cant find '\r' ??
         return error(REQUEST_FIELD_FORMAT_CRLF, 1, req);
     s.erase(s.size() - 1);
     while (i < s.length())

@@ -4,26 +4,32 @@ CGI_Handler::CGI_Handler(Request &request, ServerInfo &conf, Location &loc) : _r
 {
 	_body = request.get_body();
 
-	//std::cout << "my body is ready : " << _body << std::endl;
+	std::cout << "my body is ready:" << _body << std::endl;
+
 
 	_env["AUTH_TYPE"]			= "";
 	_env["CONTENT_TYPE"]		= _req.get_contentType();
-	std::cout << "CGI content_type: " << _req.get_contentType() << std::endl;
 	_env["GATEWAY_INTERFACE"]	= "CGI/1.1";
 	_env["QUERY_STRING"]		= _req.get_cgi();
-	std::cout << "Query_string: " << _env["QUERY_STRING"] << std::endl;
 	_env["REDIRECT_STATUS"]		= "200";
 	_env["REQUEST_METHOD"]		= _req.get_method();
 	_env["REQUEST_URI"]			= _loc.get_uri();
 	if (_req.get_method() == "GET")
 		_env["CONTENT_LENGTH"]		= "0";
 	else if (_req.get_method() == "POST")
-		_env["CONTENT_LENGTH"]		= _body.length();
+		_env["CONTENT_LENGTH"]		= _body.size();
+	
+	/*std::cout << "SIZE : " << _body.size() << std::endl;
+	std::cout << "QUERY_STRING: |" << _env["QUERY_STRING"] << "|" << std::endl;
+	_env["CONTENT_LENGTH"] = "38";
+	std::cout << std::string("message=red&lastName=red&firstName=red").length() << "|>>>>>|" << _env["CONTENT_LENGTH"] << "|<<<<<|" << std::endl;*/
+
 	_env["SCRIPT_NAME"]			= _loc.get_cgi_path();
 	_env["SERVER_NAME"]			= _conf.get_server_name();
 	std::ostringstream s;
 	s << _conf.get_listen();
 	_env["SERVER_PORT"]			= s.str();
+
 	_env["SERVER_PROTOCOL"]		= "HTTP/1.1";
 	_env["SERVER_SOFTWARE"]		= "webserv/1.1";
 	_env["DIR_PATH"]			= _loc.get_root();
