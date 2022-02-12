@@ -48,18 +48,29 @@ bool HttpWorker::handleRead(Connexion *c, ServerInfo conf) {
 	    fflush(stdout);
 	    
         c->init_response(conf);
-        handleWrite(c);
+        c->setWritten(0);
+    
     }
     return can_continue;
 }
 
 bool HttpWorker::handleWrite(Connexion *c) {
+    int w = c->getWritten();
+    int len;
     int client_socket = c->get_sock();
     std::string cont = c->get_response().getResponse();
-    write(client_socket , cont.c_str(), cont.length()); //Envoie de la reponse au client
-    close(client_socket);
-    printf("closing connection\n");
-    return true;
+    int str_len = cont.length();
+
+    len = write(client_socket , &(cont.c_str()[w]), cont.length()); //Envoie de la reponse au client
+
+    c->setWritten(w + len);
+
+    if (w + len >= str_len) {
+        close(client_socket);
+        printf("closing connection\n");
+        return true;
+    }
+    return false;
 }
 
 void HttpWorker::run() {
@@ -98,8 +109,14 @@ void HttpWorker::run() {
         for (it_c = connexions.begin(); it_c != connexions.end(); it_c++) {
             Connexion *c = it_c->first;
             if (c->isReadReady()) {
-                if (handleRead(c, it_c->second))
-                    FD_CLR(c->get_sock(), &active_read);
+                if (handleRead(c, it_c->second)) {
+                    c->unsetRead();
+                    c->setWrite();
+                }
+            }
+            if (c->isWriteReady()) {
+                if (handleWrite(c))
+                    c->unsetWrite();
             }
         }
     }

@@ -13,6 +13,7 @@ class Connexion {
         HttpResponse    response;
         fd_set*         active_read;
         fd_set*         active_write;
+        int             written;
 
     public:
         Connexion( int server_socket, fd_set* r, fd_set* w ) : active_read(r), active_write(w) {
@@ -39,10 +40,12 @@ class Connexion {
         Request         get_request( void ) { return request; }
         Request*        get_request_ptr( void ) { return &request; }
         HttpResponse    get_response( void ) { return response; }
+        int             getWritten( void ) { return written; }
 
         void app_request( char *buffer ) { request_content.append(buffer); }
         void request_parsing( char *buffer ) { request = req_parsing(buffer); }
         void init_response( ServerInfo &conf ) { response = HttpResponse(&request, &conf); }
+        void setWritten( int yolo ) { written = yolo; }
 
         class ConnexionException : public std::exception 
         {
