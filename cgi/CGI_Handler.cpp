@@ -47,6 +47,9 @@ CGI_Handler::CGI_Handler(Request &request, ServerInfo &conf, Location &loc) : _r
 	tmp = "QUERY_STRING" + _req.get_cgi();
 	_env[i++] = strdup(tmp.c_str());
 	_env[i++] = strdup("REMOTE_ADDR=0.0.0.0");
+	_env[i] = NULL;
+
+	std::cout << ">>>>>>>>>>>>LENGHT:" << _env[0] << std::endl;
 }
 
 CGI_Handler::CGI_Handler(CGI_Handler const &src) : _env(src._env)
@@ -90,7 +93,8 @@ char		**CGI_Handler::env_to_double_char(void)
 		tmp.clear();
 		++it;									//to test, first tried with strdup but can it *delete* ? idk
 	}
-	return (ret);*/return NULL;
+	return (ret);*/
+	return NULL;
 }
 
 std::string	CGI_Handler::run_CGI(const std::string &script)
@@ -102,7 +106,7 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 	//_env["PATH_INFO"]			= script;
 	//_env["PATH_TRANSLATED"]		= script;
 	//std::cout << "CGI script: " << _env["SCRIPT_NAME"] << std::endl;
-//	std::cout << "CGI method: " << _env["REQUEST_METHOD"] << std::endl;
+	//std::cout << "CGI method: " << _env["REQUEST_METHOD"] << std::endl;
 
 	fd_saver[0] = dup(STDIN_FILENO);
 	fd_saver[1] = dup(STDOUT_FILENO);
@@ -111,13 +115,11 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 	if (pipe(pipe_fd))
 		exit(EXIT_FAILURE);								//add more error management
 
-	std::cout << "RUN_CGI00" << std::endl;
 	pid = fork();
 	if (pid == -1)
 		return (NULL);
 	else if (pid == 0)
 	{
-		std::cout << "RUN_CGI01" << std::endl;
 
 		//char	**env = env_to_double_char();
 
@@ -132,7 +134,6 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 
 		args[0] = (char*)script.c_str();
 		args[1] = NULL;
-		std::cout << "RUN_CGI01" << std::endl;
 
 
 		close(pipe_fd[1]);
