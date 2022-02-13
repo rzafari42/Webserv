@@ -93,6 +93,7 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 	_env["PATH_INFO"]			= script;
 	_env["PATH_TRANSLATED"]		= script;
 	std::cout << "CGI script: " << _env["SCRIPT_NAME"] << std::endl;
+	std::cout << "CGI method: " << _env["REQUEST_METHOD"] << std::endl;
 	std::cout << "my body is ready : \n" << _body << std::endl;
 
 	fd_saver[0] = dup(STDIN_FILENO);

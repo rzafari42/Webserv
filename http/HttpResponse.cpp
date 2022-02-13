@@ -58,6 +58,7 @@ HttpResponse::HttpResponse(Request *req, ServerInfo *conf)
     if (check_basic_error(req) == false)
         return;
     does_method_exist = check_method_existence(method);
+    std::cout << "|<<<<< METHOD >>>>>>| " << method << std::endl;
     if (does_method_exist == 0)
     {
         if (!method.compare("GET"))
@@ -374,6 +375,7 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
 
 void HttpResponse::handle_post_method(Request *req, ServerInfo *conf)
 {
+    std::cout << "HANDLE_POST_METHOD" << std::endl;
     std::vector<Location> locations = conf->get_locations();
 
 //std::cout << "URL:" << req->get_url() << std::endl;
