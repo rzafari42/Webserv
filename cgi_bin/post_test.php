@@ -1,11 +1,4 @@
-#!/usr/bin/php
+#!/usr/bin/php-cgi
 <html>
-    <body>
-        <?php
-            echo "POST <br>";
-            
-            echo "Welcome " . $_POST["lastName"] . " " . $_POST["firstName"] . "<br>"; 
-            echo "Your message is: " . $_POST["message"];
-        ?>
-    </body>
+    <body><?php echo "POST<br>"; echo "Welcome " . $_POST["lastName"] . " " . $_POST["firstName"] . "<br>";  echo "Your message is:" . $_POST["message"];?></body>
 </html>
