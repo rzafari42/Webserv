@@ -1,43 +1,52 @@
 #include "CGI_Handler.hpp"
+#include <sstream>
+
+std::string s;
+std::stringstream out;
+
 
 CGI_Handler::CGI_Handler(Request &request, ServerInfo &conf, Location &loc) : _req(request), _conf(conf), _loc(loc)
 {
+	int i = 0;
+
+	_env = new char*[16];
+	std::stringstream out;
 	_body = request.get_body();
-
-	std::cout << "my body is ready:" << _body << std::endl;
-
-
-	_env["AUTH_TYPE"]			= "";
-	_env["CONTENT_TYPE"]		= _req.get_contentType();
-	_env["GATEWAY_INTERFACE"]	= "CGI/1.1";
-	_env["QUERY_STRING"]		= _req.get_cgi();
-	_env["REDIRECT_STATUS"]		= "200";
-	_env["REQUEST_METHOD"]		= _req.get_method();
-	_env["REQUEST_URI"]			= _loc.get_uri();
+	out << _body.size();
+	std::string tmp;
+	tmp = "CONTENT_LENGTH=";
 	if (_req.get_method() == "GET")
-		_env["CONTENT_LENGTH"]		= "0";
-	else if (_req.get_method() == "POST")
-		_env["CONTENT_LENGTH"]		= _body.size();
-	
-	/*std::cout << "SIZE : " << _body.size() << std::endl;
-	std::cout << "QUERY_STRING: |" << _env["QUERY_STRING"] << "|" << std::endl;
-	_env["CONTENT_LENGTH"] = "38";
-	std::cout << std::string("message=red&lastName=red&firstName=red").length() << "|>>>>>|" << _env["CONTENT_LENGTH"] << "|<<<<<|" << std::endl;*/
+		tmp += "0";
+	else if (!_req.get_method().compare("POST"))
+		tmp += out.str(); 
+	_env[i++] = strdup(tmp.c_str());
+	tmp = "CONTENT_TYPE=" + _req.get_contentType();
+	_env[i++] = strdup(tmp.c_str());
+	_env[i++] = strdup("GATEWAY_INTERFACE=CGI/1.1");
+	//tmp = "PATH_INFO=" + ;
+	//_env[i++] = strdup(tmp.c_str());
+	//tmp = "PATH_TRANSLATED=" + ;
+	//_env[i++] = strdup(tmp.c_str());
+	_env[i++] = strdup("REDIRECT_STATUS=200");
+	if (_req.get_method() == "GET")
+		_env[i++] = strdup("REQUEST_METHOD=GET");
+	else if (_req.get_method()== "POST")
+		_env[i++] = strdup("REQUEST_METHOD=POST");
+	//tmp = "REQUEST_URI=" + pathFile;
+	//_env[i++] = strdup(tmp.c_str());
+	_env[i++] = strdup("SERVER_NAME=servername");
+	std::stringstream out1;
+	int port = conf.get_listen();
+	out1 << port;
+	tmp = "SERVER_PORT=" + out1.str();
+	_env[i++] = strdup(tmp.c_str());
+	_env[i++] = strdup("SERVER_PROTOCOL=HTTP/1.1");
+	_env[i++] = strdup("SERVER_SOFTWARE=webserv/1.1");
+	_env[i++] = strdup(_loc.get_root().c_str());
 
-	_env["SCRIPT_NAME"]			= _loc.get_cgi_path();
-	_env["SERVER_NAME"]			= _conf.get_server_name();
-	std::ostringstream s;
-	s << _conf.get_listen();
-	_env["SERVER_PORT"]			= s.str();
-
-	_env["SERVER_PROTOCOL"]		= "HTTP/1.1";
-	_env["SERVER_SOFTWARE"]		= "webserv/1.1";
-	_env["DIR_PATH"]			= _loc.get_root();
-
-	_env["REMOTE_ADDR"]			= "0.0.0.0";		//get client IP
-	_env["REMOTE_HOST"]			= "";				//can be left empty
-	_env["REMOTE_IDENT"]		= "";				//can be left empty
-	_env["REMOTE_USER"]			= "";				//can be left empty
+	tmp = "QUERY_STRING" + _req.get_cgi();
+	_env[i++] = strdup(tmp.c_str());
+	_env[i++] = strdup("REMOTE_ADDR=0.0.0.0");
 }
 
 CGI_Handler::CGI_Handler(CGI_Handler const &src) : _env(src._env)
@@ -65,7 +74,7 @@ std::string	file_to_str(std::string in)
 
 char		**CGI_Handler::env_to_double_char(void)
 {
-	char	**ret = new char*[this->_env.size() + 1];
+	/*char	**ret = new char*[this->_env.size() + 1];
 
 	std::map<std::string, std::string>::iterator it = _env.begin();
 
@@ -81,7 +90,7 @@ char		**CGI_Handler::env_to_double_char(void)
 		tmp.clear();
 		++it;									//to test, first tried with strdup but can it *delete* ? idk
 	}
-	return (ret);
+	return (ret);*/return NULL;
 }
 
 std::string	CGI_Handler::run_CGI(const std::string &script)
@@ -90,28 +99,41 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 	int		fd_saver[2];
 	int		pipe_fd[2];									//not everybody uses pipes, but it makes more sense to me
 
-	_env["PATH_INFO"]			= script;
-	_env["PATH_TRANSLATED"]		= script;
-	std::cout << "CGI script: " << _env["SCRIPT_NAME"] << std::endl;
-	std::cout << "CGI method: " << _env["REQUEST_METHOD"] << std::endl;
-	std::cout << "my body is ready : \n" << _body << std::endl;
+	//_env["PATH_INFO"]			= script;
+	//_env["PATH_TRANSLATED"]		= script;
+	//std::cout << "CGI script: " << _env["SCRIPT_NAME"] << std::endl;
+//	std::cout << "CGI method: " << _env["REQUEST_METHOD"] << std::endl;
 
 	fd_saver[0] = dup(STDIN_FILENO);
 	fd_saver[1] = dup(STDOUT_FILENO);
 
+
 	if (pipe(pipe_fd))
 		exit(EXIT_FAILURE);								//add more error management
 
+	std::cout << "RUN_CGI00" << std::endl;
 	pid = fork();
 	if (pid == -1)
 		return (NULL);
 	else if (pid == 0)
 	{
-		char	**env = env_to_double_char();
+		std::cout << "RUN_CGI01" << std::endl;
+
+		//char	**env = env_to_double_char();
+
+		/*std::map<std::string, std::string>::iterator it = _env.begin();
+		int i = 0;
+		for (; it != _env.end(); it++)
+		{
+			std::cout << env[i] << std::endl;
+			i++;
+		}*/
 		char	*args[2];
 
 		args[0] = (char*)script.c_str();
 		args[1] = NULL;
+		std::cout << "RUN_CGI01" << std::endl;
+
 
 		close(pipe_fd[1]);
 		dup2(pipe_fd[0], 0);
@@ -121,15 +143,16 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 		if (fd_tmp < 0)
 			return (NULL);
 		dup2(fd_tmp, 1);
-
-		if (execve(args[0], args, env) == -1) {
+		//std::cout << "args[0]=" << args[0] << std::endl;
+		if (execve(args[0], args, _env) == -1) {
+			perror("error:");
 			return (NULL);
 		}
 		close(0);
 		close(fd_tmp);
 		close(pipe_fd[0]);
 
-		delete [] env;
+		delete [] _env;
 
 		exit(0);
 	}

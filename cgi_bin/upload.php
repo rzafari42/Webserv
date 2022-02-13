@@ -1,62 +1,35 @@
+#!/usr/bin/php-cg
+
 <?php
 
-// Config
-//$currentDirectory = getcwd();
-$uploadDirectory = "/uploads/";
-$fileExtensionsAllowed = ['jpeg','jpg','png', 'txt']; // These will be the only file extensions allowed
-$fileLimitMb = 20; // File limit in MB
-$uploadOk = true;
+	print_r($_ENV);
+  $target_dir = "uploads/";
+  $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
+  $uploadOk = 1;
+  $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
 
-$fileName = $_FILES['fileToUpload']['name'];
-//echo $fileName;
-$fileSize = $_FILES['fileToUpload']['size'];
-$fileTmpName  = $_FILES['fileToUpload']['tmpName'];
-$fileType = $_FILES['fileToUpload']['type'];
-$fileExtension = strtolower(end(explode('.',$fileName)));
-//$fileType = strtolower(pathinfo($fileName,PATHINFO_EXTENSION));
 
-$uploadPath = $currentDirectory . $uploadDirectory . basename($fileName);
+  // Check if file already exists
+  if (file_exists($target_file)) {
+    echo "Sorry, file already exists.";
+    $uploadOk = 0;
+  }
 
-// Check if image file is an actual image or fake image
-if (isset($_POST["submit"])) {
-	if (getimagesize($fileTmpName) !== false) {         //or 0 or null
-		echo "File is an image - " . $check["mime"] . ".";
-		$uploadOk = true;
-	} else {
-		echo "File is not an image.";
-		$uploadOk = false;
-	}
-}
+  // Check file size
+  if ($_FILES["fileToUpload"]["size"] > 500000) {
+    echo "Sorry, your file is too large.";
+    $uploadOk = 0;
+  }
 
-// Check if file already exists
-if ($uploadDirectory . basename($fileName) {
-	echo "File already exists.";
-	$uploadOk = false;
-}
-
-// Check file size
-if ($fileSize > ($fileLimitMb * 100000)) {
-	echo "File must be less than" . $fileLimitMb . "MB.";
-	$uploadOk = false;
-}
-
-/*
-// Allow certain file formats; needs to do foreach from array fileExtensionsAllowed
-if($imageFileType != $fileExtensionsAllowed  {
-	echo "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
-	$uploadOk = false;
-}*/
-
-// Check if $uploadOk then process
-if ($uploadOk == false) {
-	echo "File couldn't be uploaded.";
-
-} else {
-	if (move_uploaded_file($fileTmpName, $target_file)) {
-		echo "The file ". basename($fileName). " has been uploaded.";
-	} else {
-		echo "Sorry, there was an error uploading your file.";
-	}
-}
-
+  // Check if $uploadOk is set to 0 by an error
+  if ($uploadOk == 0) {
+    echo "Sorry, your file was not uploaded.";
+  // if everything is ok, try to upload file
+  } else {
+    if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
+      echo "The file ". htmlspecialchars( basename( $_FILES["fileToUpload"]["name"])). " has been uploaded.";
+    } else {
+      echo "Sorry, there was an error uploading your file.";
+    }
+  }
 ?>

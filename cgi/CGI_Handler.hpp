@@ -31,7 +31,8 @@ class	CGI_Handler
 		char		**env_to_double_char(void);
 
 	private:
-		std::map<std::string, std::string>	_env;
+		//std::map<std::string, std::string>	_env;
+		char** _env;
 		Request								_req;
 		ServerInfo							_conf;
 		Location							_loc;

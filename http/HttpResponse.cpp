@@ -58,7 +58,6 @@ HttpResponse::HttpResponse(Request *req, ServerInfo *conf)
     if (check_basic_error(req) == false)
         return;
     does_method_exist = check_method_existence(method);
-    std::cout << "|<<<<< METHOD >>>>>>| " << method << std::endl;
     if (does_method_exist == 0)
     {
         if (!method.compare("GET"))

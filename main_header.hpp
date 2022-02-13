@@ -25,7 +25,8 @@
 # include <sys/stat.h>
 # include <sys/types.h>
 # include <sys/wait.h>
-
+# include <cstdlib>
+# include <cstdio>
 # define HTTP_VERSION "HTTP/1.1"
 
 # define ERROR_400_PATH "www/error400.html"

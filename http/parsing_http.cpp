@@ -54,7 +54,7 @@ void Request::initContentType()
     _contentTypeArray.push_back("application/pkcs12");
     _contentTypeArray.push_back("application/vnd.mspowerpoint");
     _contentTypeArray.push_back("application/xhtml+xml");
-    _contentTypeArray.push_back("application/x-www-form-urlencoded");
+    //_contentTypeArray.push_back("application/x-www-form-urlencoded");
     _contentTypeArray.push_back("application/xml");
     _contentTypeArray.push_back("application/pdf");
 
