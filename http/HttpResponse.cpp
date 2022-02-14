@@ -228,7 +228,7 @@ static Location *which_location(std::vector<Location> *loc, std::string url) {
 }
 
 static bool ft_is_directory(std::string path){
-    if (path.find("&"))
+    if (path.find("?") && path != "www/")
         return (false);
     struct stat s;
 
