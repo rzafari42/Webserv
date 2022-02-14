@@ -4,7 +4,7 @@ CGI_Handler::CGI_Handler(Request &request, ServerInfo &conf, Location &loc) : _r
 {
 	_body = request.get_body();
 
-	std::cout << "my body is ready : " << _body << std::endl;
+	//std::cout << "my body is ready : " << _body << std::endl;
 
 	_env["AUTH_TYPE"]			= "";
 	_env["CONTENT_TYPE"]		= _req.get_contentType();
