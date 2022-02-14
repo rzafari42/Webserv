@@ -288,7 +288,6 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
     if (loc)
         path_tofile = loc->get_root() + path_tofile;
     path_tofile = conf->get_root() + path_tofile;
-    std::cout << "PATH_TOFILE = " << path_tofile << std::endl;
     if (loc)
         if (ft_is_directory(path_tofile))
             path_tofile = path_tofile + loc->get_index();
@@ -348,6 +347,7 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
                 _contentType = "text/html";
         }
         sourceFile.close();
+        closedir(d);
         delete [] dir;
     }
     else

@@ -20,6 +20,8 @@ class Connexion {
             socklen_t       size;
             struct sockaddr client_addr;
 
+            size = sizeof(struct sockaddr*);
+
             sock = accept(server_socket, &client_addr, &size);
 	        if (sock == -1)
                 throw ConnexionException("Connexion failed!", errno);
