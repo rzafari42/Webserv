@@ -76,6 +76,7 @@ char		**CGI_Handler::env_to_double_char(void)
 		tmp.clear();
 		++it;
 	}
+	ret[i] = NULL;
 	return (ret);
 }
 

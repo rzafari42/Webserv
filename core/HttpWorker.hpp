@@ -12,10 +12,14 @@ class HttpWorker {
         std::map<Connexion*, ServerInfo> connexions;
         fd_set active_read;
         fd_set active_write;
+        Connexion *c;
 
     public:
         HttpWorker(std::map<int, ServerInfo> s_sockets) : virtual_servers(s_sockets) {}
-        ~HttpWorker() {}
+        ~HttpWorker() 
+        {
+            delete c;
+        }
 
         void run( void );
         void acceptConnection( int server_socket, ServerInfo s_info );

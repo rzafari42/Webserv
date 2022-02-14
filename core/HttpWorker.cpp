@@ -7,7 +7,7 @@
 
 void HttpWorker::acceptConnection( int server_socket, ServerInfo s_info ) {
     try {
-        Connexion *c = new Connexion(server_socket, &active_read, &active_write);
+        c = new Connexion(server_socket, &active_read, &active_write);
         connexions.insert(std::pair<Connexion*, ServerInfo>(c, s_info));
     } catch (const std::exception& e) {
         e.what();

@@ -25,7 +25,7 @@ int		main(int argc, char *argv[])
         return 0;
     }
 
-    signal(SIGINT, &sig_handler);
+    //signal(SIGINT, &sig_handler);
 
     // Parsing ->
     ParserConf parser;

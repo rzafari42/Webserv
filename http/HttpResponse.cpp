@@ -228,6 +228,8 @@ static Location *which_location(std::vector<Location> *loc, std::string url) {
 }
 
 static bool ft_is_directory(std::string path){
+    if (path.find("&"))
+        return (false);
     struct stat s;
 
     stat(path.c_str(), &s);
@@ -286,6 +288,7 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
     if (loc)
         path_tofile = loc->get_root() + path_tofile;
     path_tofile = conf->get_root() + path_tofile;
+    std::cout << "PATH_TOFILE = " << path_tofile << std::endl;
     if (loc)
         if (ft_is_directory(path_tofile))
             path_tofile = path_tofile + loc->get_index();
