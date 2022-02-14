@@ -20,7 +20,6 @@ CGI_Handler::CGI_Handler(Request &request, ServerInfo &conf, Location &loc) : _r
 		std::ostringstream s1;
 		s1 << _body.length();
 		_env["CONTENT_LENGTH"]		= s1.str();
-		std::cout << "<<<<<<<<<<<<<<<< S1:" << _env["CONTENT_LENGTH"] << std::endl;
 	}
 	_env["SCRIPT_NAME"]			= _loc.get_cgi_path();
 	_env["SERVER_NAME"]			= _conf.get_server_name();
