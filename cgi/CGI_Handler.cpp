@@ -16,7 +16,12 @@ CGI_Handler::CGI_Handler(Request &request, ServerInfo &conf, Location &loc) : _r
 	if (_req.get_method() == "GET")
 		_env["CONTENT_LENGTH"]		= "0";
 	else if (_req.get_method() == "POST")
-		_env["CONTENT_LENGTH"]		= _body.length();
+	{
+		std::ostringstream s1;
+		s1 << _body.length();
+		_env["CONTENT_LENGTH"]		= s1.str();
+		std::cout << "<<<<<<<<<<<<<<<< S1:" << _env["CONTENT_LENGTH"] << std::endl;
+	}
 	_env["SCRIPT_NAME"]			= _loc.get_cgi_path();
 	_env["SERVER_NAME"]			= _conf.get_server_name();
 	std::ostringstream s;
@@ -84,8 +89,7 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 
 	_env["PATH_INFO"]			= script;
 	_env["PATH_TRANSLATED"]		= script;
-	std::cout << "CGI content_type: " << _env["CONTENT_TYPE"] << std::endl;
-	std::cout << "CGI script: " << _env["SCRIPT_NAME"] << std::endl;
+
 
 	fd_saver[0] = dup(STDIN_FILENO);
 	fd_saver[1] = dup(STDOUT_FILENO);
@@ -114,7 +118,6 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 		dup2(fd_tmp, 1);
 
 		if (execve(args[0], args, env) == -1) {
-			std::cout << "-----> " << args[0] << std::endl;
 			perror("EXECVE :");
 			return (NULL);
 		}
