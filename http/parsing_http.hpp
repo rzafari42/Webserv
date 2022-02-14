@@ -16,7 +16,7 @@
 # include "../conf/ServerInfo.hpp"
 # include "parsing_http.hpp"
 # include "../main_header.hpp"
-# define CGI_EXTENSION ".php"
+# define CGI_EXTENSION ".out"
 
 class Request{
     public:

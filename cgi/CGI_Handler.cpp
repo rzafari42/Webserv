@@ -20,6 +20,7 @@ CGI_Handler::CGI_Handler(Request &request, ServerInfo &conf, Location &loc) : _r
 		std::ostringstream s1;
 		s1 << _body.length();
 		_env["CONTENT_LENGTH"]		= s1.str();
+		_env["BODY"]				= _req.get_body();
 	}
 	_env["SCRIPT_NAME"]			= _loc.get_cgi_path();
 	_env["SERVER_NAME"]			= _conf.get_server_name();
@@ -71,11 +72,9 @@ char		**CGI_Handler::env_to_double_char(void)
 		std::string tmp = it->first;
 		tmp.append("=");
 		tmp.append(it->second);
-		ret[i] = new char[tmp.length()];
-		tmp.copy(ret[i], tmp.length(), 0);
-		ret[i++][tmp.length()] = '\0';
+		ret[i++] = strdup(tmp.c_str());
 		tmp.clear();
-		++it;									//to test, first tried with strdup but can it *delete* ? idk
+		++it;
 	}
 	return (ret);
 }
@@ -84,7 +83,7 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 {
 	pid_t	pid;
 	int		fd_saver[2];
-	int		pipe_fd[2];									//not everybody uses pipes, but it makes more sense to me
+	int		pipe_fd[2];
 
 	_env["PATH_INFO"]			= script;
 	_env["PATH_TRANSLATED"]		= script;
@@ -94,7 +93,7 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 	fd_saver[1] = dup(STDOUT_FILENO);
 
 	if (pipe(pipe_fd))
-		exit(EXIT_FAILURE);								//add more error management
+		exit(EXIT_FAILURE);
 
 	pid = fork();
 	if (pid == -1)
@@ -103,6 +102,8 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 	{
 		char	**env = env_to_double_char();
 		char	*args[2];
+
+		chdir(_loc.get_root().c_str());
 
 		args[0] = (char*)script.c_str();
 		args[1] = NULL;
@@ -133,7 +134,7 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 		close(pipe_fd[0]);
 		write(pipe_fd[1], _body.c_str(), _body.length());
 		close(pipe_fd[1]);
-		waitpid(pid, NULL, 0);							//everyone uses -1 instead of pid, maybe move it at the top ?
+		waitpid(pid, NULL, 0);
 	}
 
 	dup2(fd_saver[0], STDIN_FILENO);

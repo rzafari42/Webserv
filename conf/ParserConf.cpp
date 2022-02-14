@@ -302,7 +302,7 @@ static void fill_struct(std::vector<std::vector<std::string> > v, std::vector<Se
 void ParserConf::parse(std::string file, std::vector<ServerInfo> *serv_info) {
     std::ifstream flux(file.c_str());
 
-    if (flux)
+    if (flux.good() == 1)
     {
         std::vector<std::vector<std::string> > values;
         std::vector<std::string> tmp;
@@ -320,5 +320,8 @@ void ParserConf::parse(std::string file, std::vector<ServerInfo> *serv_info) {
         flux.close();
     }
     else
+    {
         error(OPENING_FAILURE);
+        exit(0);
+    }
 }

@@ -6,6 +6,17 @@
 #include "http/parsing_http.hpp"
 #include "core/HttpWorker.hpp"
 
+sig_atomic_t volatile g_running = 1;
+
+void sig_handler(int signum)
+{
+	if (signum == SIGINT)
+	{
+		g_running = 0;
+		std::cerr << std::endl << "Received CTRL-C signal, stopping webserv..." << std::endl;
+	}
+}
+
 int		main(int argc, char *argv[])
 {
     // Argument checking ->
@@ -13,6 +24,8 @@ int		main(int argc, char *argv[])
         std::cout << "Usage : './webserv configuration_file'" << std::endl;
         return 0;
     }
+
+    signal(SIGINT, &sig_handler);
 
     // Parsing ->
     ParserConf parser;
