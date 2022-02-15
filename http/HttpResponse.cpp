@@ -406,8 +406,10 @@ void HttpResponse::handle_post_method(Request *req, ServerInfo *conf)
 
 void HttpResponse::handle_delete_method(Request *req)
 {
+    std::string url = req->get_url(); 
+    url.erase(0,1);
+    req->set_url(url);
     std::ifstream fileToDelete(req->get_url().c_str(), std::ifstream::in);
-
     if (fileToDelete.good())
     {
         if (!remove(req->get_url().c_str()))
