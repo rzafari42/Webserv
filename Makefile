@@ -9,9 +9,9 @@ OBJS			=	$(SRCS:.cpp=.o)
 
 HEADERS			=	./
 
-CXX				=	g++
+CXX				=	clang++
 RM				=	rm -f
-CXXFLAGS		=	-g3 -Wall -Wextra -Werror -I $(HEADERS) -std=c++98
+CXXFLAGS		=	 -Wall -Wextra -Werror -I $(HEADERS) -std=c++98
 
 NAME			=	webserv
 
