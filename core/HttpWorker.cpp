@@ -67,7 +67,7 @@ bool HttpWorker::handleWrite(Connexion *c) {
 
     if (w + len >= str_len) {
         close(client_socket);
-        printf("closing connection\n");
+        std::cout << "closing connection" << std::endl;
         return true;
     }
     return false;

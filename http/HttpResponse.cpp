@@ -383,7 +383,7 @@ void HttpResponse::handle_post_method(Request *req, ServerInfo *conf)
     CGI_Handler tmp_cgi(*req, *conf, *loc);
     _content = tmp_cgi.run_CGI(loc->get_cgi_path());
     
-    std::cout << "Content: " << _content << std::endl;
+    //std::cout << "Content: " << _content << std::endl;
     if (!_content.empty())
         _statusCode =  200;
     else
