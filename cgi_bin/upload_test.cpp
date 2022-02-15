@@ -11,9 +11,12 @@ int main()
     std::string boundary;
     std::string filename = "upload/";
     std::string content;
+    std::string response;
     std::size_t found = fileToParse.find("filename=\"");
     found += strlen("filename=\"") - 1;
 
+    std::size_t found_body = fileToParse.find("Content-Disposition:");
+ 
     if (found == std::string::npos)
         return 1;
 
@@ -34,9 +37,13 @@ int main()
     while (++found < found1)
         content.push_back((fileToParse[found]));
 
+     while (found_body < found1)
+        response.push_back((fileToParse[found_body++]));
+
     std::ofstream myfile;
     myfile.open (filename);
     myfile << content;
     myfile.close();
 
+    std::cout << content;
 }
