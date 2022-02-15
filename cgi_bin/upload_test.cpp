@@ -9,7 +9,7 @@ int main()
 {
     std::string fileToParse =  getenv("BODY");
     std::string boundary;
-    std::string filename;
+    std::string filename = "upload/";
     std::string content;
     std::size_t found = fileToParse.find("filename=\"");
     found += strlen("filename=\"") - 1;
