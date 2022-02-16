@@ -37,7 +37,7 @@
 # define ERROR_505_PATH "www/error505.html"
 # define ERROR_310_PATH "www/error310.html"
 
-# define FILE_DELETED "/file_deleted.html"
+# define FILE_DELETED "www/file_deleted.html"
 
 # define EMPTY "Error: Not enough arguments"
 # define OPENING_FAILURE "Error: File is not accessible in reading mode"

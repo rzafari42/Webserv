@@ -66,7 +66,7 @@ int check_format_rqline(std::string s, Request *req)
     int nb_space = 0;
     int nb_arg = 0;
 
-    if(s.find("\r") == std::string::npos && s.find("\n") == std::string::npos )  //cant find '\r' ??
+   if(s.find("\r") == std::string::npos && s.find("\n") == std::string::npos )  //cant find '\r' ??
         return error(REQUEST_LINE_FORMAT_CRLF, 1, req);
     s.erase(s.size() - 2);
     while (i < s.length())

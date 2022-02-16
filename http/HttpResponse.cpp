@@ -220,20 +220,18 @@ static Location *which_location(std::vector<Location> *loc, std::string url) {
             tmp.replace(found, tmp.length() - found, "");
         if (tmp.empty())
             tmp = "/";
-        else {
-            // IF WE HERE WE F*CKED
-        }
     }
     return NULL;
 }
 
 static bool ft_is_directory(std::string path){
-    if (path.find("?") && path != "www/")
-        return (false);
     struct stat s;
 
-    stat(path.c_str(), &s);
-    return S_ISDIR(s.st_mode);
+    int res = stat(path.c_str(), &s);
+    if (res != 0)
+        return false;
+    else
+        return S_ISDIR(s.st_mode);
 }
 
 static bool ft_is_there_get(Location loc) {
@@ -254,6 +252,7 @@ void HttpResponse::handle_get_method(Request *req, ServerInfo *conf, size_t redi
     std::vector<Location> locations = conf->get_locations();
 
     Location *loc = which_location(&locations, req->get_url());
+    //std::cout << "LOC = " << loc->get_uri() << std::endl;
     std::string base_url = req->get_url();
 
     if (redirects > 20)
@@ -383,7 +382,7 @@ void HttpResponse::handle_post_method(Request *req, ServerInfo *conf)
     CGI_Handler tmp_cgi(*req, *conf, *loc);
     _content = tmp_cgi.run_CGI(loc->get_cgi_path());
     
-    std::cout << "Content: " << _content << std::endl;
+    //std::cout << "Content: " << _content << std::endl;
     if (!_content.empty())
         _statusCode =  200;
     else
@@ -406,8 +405,10 @@ void HttpResponse::handle_post_method(Request *req, ServerInfo *conf)
 
 void HttpResponse::handle_delete_method(Request *req)
 {
+    std::string url = req->get_url(); 
+    url.erase(0,1);
+    req->set_url(url);
     std::ifstream fileToDelete(req->get_url().c_str(), std::ifstream::in);
-
     if (fileToDelete.good())
     {
         if (!remove(req->get_url().c_str()))

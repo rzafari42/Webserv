@@ -1,0 +1,124 @@
+body
+{
+    font-family: 'Source Sans Pro', sans-serif;
+    color: #000000;
+    background-color: rgba(216, 216, 216, 0.904);
+    height: 600px;
+    margin-top: 60px;
+    margin-bottom: 60px;
+    font-size: 18px;
+    font-weight: bolder;
+    letter-spacing: 3px;
+}
+
+header
+{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+header h1
+{
+    font-size: 60px;
+    filter: drop-shadow(2px 2px 0px grey);
+}
+
+header nav
+{
+    position: absolute;
+    top: 8%;
+    left: 0%;
+}
+
+header li
+{
+    margin-left: 40px;
+    list-style-type: none;
+}
+
+header a
+{
+    color: black;
+    text-decoration: none;
+}
+
+form
+{
+    display: flex;
+    flex-direction: column;
+    justify-content:center;
+    align-items: center;
+    padding: 0;
+}
+
+.names
+{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+#lastNameID
+{
+    display: flex;
+    flex-direction: row;
+}
+
+form input
+{
+    background-color: #E8E8E8;
+    border-color: #E8E8E8;
+    border: none;
+    border-radius: 4px;
+    filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.25));
+    outline: none;
+    height: 25px;
+    width: 140px;
+}
+
+
+form textarea
+{
+    background-color: #E8E8E8;
+    width: 550px;
+    height: 200px;
+    filter: drop-shadow(5px 5px 20px rgba(0, 0, 0, 0.25));
+    border: none;
+    border-radius: 15px;
+    margin-top: 5px;
+    resize: none;
+    outline: none;
+}
+
+
+#send
+{
+
+    margin-left: auto;
+    margin-right: auto;
+    color: #E8E8E8;
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 0.904);
+    filter: none;
+    height: 30px;
+    width: 90px;
+    font-size: 20px;
+    letter-spacing: 2px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 3px rgb(160, 160, 160);
+}
+
+#send:hover
+{
+    cursor: pointer;
+}
+
+#send:active
+{
+    border: none;
+    transform: translateY(2px);
+    box-shadow: none;
+}

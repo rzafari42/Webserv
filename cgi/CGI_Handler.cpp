@@ -4,8 +4,6 @@ CGI_Handler::CGI_Handler(Request &request, ServerInfo &conf, Location &loc) : _r
 {
 	_body = request.get_body();
 
-	std::cout << "my body is ready : " << _body << std::endl;
-
 	_env["AUTH_TYPE"]			= "";
 	_env["CONTENT_TYPE"]		= _req.get_contentType();
 	_env["GATEWAY_INTERFACE"]	= "CGI/1.1";
@@ -119,7 +117,6 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 		dup2(fd_tmp, 1);
 
 		if (execve(args[0], args, env) == -1) {
-			perror("EXECVE :");
 			return (NULL);
 		}
 		close(0);
@@ -133,7 +130,8 @@ std::string	CGI_Handler::run_CGI(const std::string &script)
 	else
 	{
 		close(pipe_fd[0]);
-		write(pipe_fd[1], _body.c_str(), _body.length());
+		if (write(pipe_fd[1], _body.c_str(), _body.length()) < 0)
+			std::cerr << "Writing failed in CGI" << std::endl;
 		close(pipe_fd[1]);
 		waitpid(pid, NULL, 0);
 	}

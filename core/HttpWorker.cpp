@@ -61,14 +61,15 @@ bool HttpWorker::handleWrite(Connexion *c) {
     std::string cont = c->get_response().getResponse();
     int str_len = cont.length();
 
-    len = write(client_socket , &(cont.c_str()[w]), cont.length()); //Envoie de la reponse au client
+    if ((len = write(client_socket , &(cont.c_str()[w]), cont.length())) > 0) //Envoie de la reponse au client
+    {
+        c->setWritten(w + len);
 
-    c->setWritten(w + len);
-
-    if (w + len >= str_len) {
-        close(client_socket);
-        printf("closing connection\n");
-        return true;
+        if (w + len >= str_len) {
+            close(client_socket);
+            std::cout << "closing connection" << std::endl;
+            return true;
+        }
     }
     return false;
 }
@@ -81,6 +82,7 @@ void HttpWorker::run() {
     // Initialise reading set with Server Sockets
     std::map<int, ServerInfo>::iterator it_s;
     std::map<Connexion*, ServerInfo>::iterator it_c;
+    std::map<Connexion*, ServerInfo>::iterator tmp;
     
     FD_ZERO(&active_read);
     FD_ZERO(&active_write);
@@ -106,8 +108,12 @@ void HttpWorker::run() {
                 acceptConnection(it_s->first, it_s->second);
 
         // Handle connections
-        for (it_c = connexions.begin(); it_c != connexions.end(); it_c++) {
+        bool must_delete;
+        for (it_c = connexions.begin(); it_c != connexions.end(); /*nothing*/) {
+            must_delete = false;
             Connexion *c = it_c->first;
+            ServerInfo si = it_c->second;
+            std::cout << "LISTEN = " << si.get_listen() << std::endl;
             if (c->isReadReady()) {
                 if (handleRead(c, it_c->second)) {
                     c->unsetRead();
@@ -115,8 +121,16 @@ void HttpWorker::run() {
                 }
             }
             if (c->isWriteReady()) {
-                if (handleWrite(c))
+                if (handleWrite(c)){
                     c->unsetWrite();
+                    must_delete = true;
+                }
+            }
+            if (must_delete){
+                delete it_c->first;
+                connexions.erase(it_c++);
+            } else {
+                it_c++;
             }
         }
     }
